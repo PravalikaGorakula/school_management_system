@@ -1,0 +1,706 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+Parent Results
+{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --orange-light: #FFF4E6;
+        --white: #FFFFFF;
+        --background: #F6F8FB;
+        --text-primary: #172033;
+        --text-secondary: #64748B;
+        --border: #E2E8F0;
+        --success: #198754;
+        --danger: #DC2626;
+    }
+
+    .parent-results-page {
+        min-height: calc(100vh - 70px);
+        padding: 24px;
+        background: var(--background);
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+
+    .heading-area {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .heading-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 10px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 23px;
+    }
+
+    .heading-area h1 {
+        margin: 0;
+        color: var(--deep-blue);
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+    .heading-area p {
+        margin: 5px 0 0;
+        color: var(--text-secondary);
+        font-size: 18px;
+    }
+
+    /* FILTER */
+
+    .filter-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        margin-bottom: 22px;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, .05);
+    }
+
+    .filter-header {
+        padding: 18px 22px;
+        border-bottom: 1px solid var(--border);
+        color: var(--deep-blue);
+        font-size: 20px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+    }
+
+    .filter-body {
+        padding: 20px 22px;
+    }
+
+    .filter-form {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 15px;
+        align-items: end;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .form-group label {
+        color: var(--text-primary);
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .form-group select {
+        height: 46px;
+        padding: 0 12px;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        background: var(--white);
+        color: var(--text-primary);
+        font-size: 18px;
+        outline: none;
+    }
+
+    .form-group select:focus {
+        border-color: var(--deep-blue);
+        box-shadow: 0 0 0 3px rgba(18,59,99,.08);
+    }
+
+    .filter-btn {
+        height: 46px;
+        padding: 0 20px;
+        border: 0;
+        border-radius: 7px;
+        background: var(--deep-blue);
+        color: var(--white);
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .filter-btn:hover {
+        background: var(--deep-blue-dark);
+    }
+
+    /* CHILDREN */
+
+    .children-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .child-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(15,23,42,.05);
+    }
+
+    .child-header {
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .child-avatar {
+        width: 54px;
+        height: 54px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+    .child-name {
+        color: var(--deep-blue);
+        font-size: 21px;
+        font-weight: 700;
+    }
+
+    .child-class {
+        margin-top: 4px;
+        color: var(--text-secondary);
+        font-size: 18px;
+    }
+
+    .child-body {
+        padding: 20px;
+    }
+
+    .exam-title {
+        color: var(--deep-blue);
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .exam-year {
+        color: var(--text-secondary);
+        font-size: 18px;
+        margin-bottom: 18px;
+    }
+
+    /* SUMMARY */
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 18px;
+    }
+
+    .summary-item {
+        padding: 13px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: #FAFCFE;
+    }
+
+    .summary-label {
+        color: var(--text-secondary);
+        font-size: 16px;
+        margin-bottom: 5px;
+    }
+
+    .summary-value {
+        color: var(--deep-blue);
+        font-size: 21px;
+        font-weight: 700;
+    }
+
+    /* RESULT */
+
+    .result-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 0;
+        border-top: 1px solid var(--border);
+    }
+
+    .result-label {
+        color: var(--text-secondary);
+        font-size: 18px;
+    }
+
+    .result-value {
+        color: var(--text-primary);
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .passed {
+        color: var(--success);
+    }
+
+    .failed {
+        color: var(--danger);
+    }
+
+    .published-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 12px;
+        border-radius: 20px;
+        background: #EAF7EF;
+        color: var(--success);
+        font-size: 17px;
+        font-weight: 600;
+    }
+
+    .view-btn {
+        width: 100%;
+        min-height: 46px;
+        margin-top: 15px;
+        border-radius: 7px;
+        border: 1px solid var(--orange);
+        background: var(--orange);
+        color: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 18px;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .view-btn:hover {
+        background: var(--orange-hover);
+        border-color: var(--orange-hover);
+    }
+
+    /* EMPTY */
+
+    .empty-state {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 65px 20px;
+        text-align: center;
+    }
+
+    .empty-icon {
+        width: 70px;
+        height: 70px;
+        margin: 0 auto 16px;
+        border-radius: 50%;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+    }
+
+    .empty-state h3 {
+        margin: 0 0 8px;
+        color: var(--deep-blue);
+        font-size: 21px;
+    }
+
+    .empty-state p {
+        margin: 0;
+        color: var(--text-secondary);
+        font-size: 18px;
+    }
+
+    @media (max-width: 900px) {
+
+        .children-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-form {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 600px) {
+
+        .parent-results-page {
+            padding: 16px;
+        }
+
+        .heading-area h1 {
+            font-size: 24px;
+        }
+
+        .summary-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+
+<div class="parent-results-page">
+
+    <!-- HEADER -->
+
+    <div class="page-header">
+
+        <div class="heading-area">
+
+            <div class="heading-icon">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+
+            <div>
+                <h1>
+                    Child Results
+                </h1>
+
+                <p>
+                    View your children's published examination results
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- FILTER -->
+
+    <div class="filter-card">
+
+        <div class="filter-header">
+
+            <i class="fa-solid fa-filter"></i>
+
+            Select Examination
+
+        </div>
+
+        <div class="filter-body">
+
+            <form method="get" class="filter-form">
+
+                <div class="form-group">
+
+                    <label for="child">
+                        Child
+                    </label>
+
+                    <select id="child" name="child">
+
+                        <option value="">
+                            All Children
+                        </option>
+
+                        {% for child in children %}
+
+                            <option
+                                value="{{ child.pk }}"
+                                {% if selected_child and selected_child.pk == child.pk %}
+                                    selected
+                                {% endif %}
+                            >
+
+                                {% if child.full_name %}
+                                    {{ child.full_name }}
+                                {% else %}
+                                    {{ child.first_name }} {{ child.last_name }}
+                                {% endif %}
+
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="examination">
+                        Examination
+                    </label>
+
+                    <select id="examination" name="examination">
+
+                        <option value="">
+                            All Examinations
+                        </option>
+
+                        {% for exam in examinations %}
+
+                            <option
+                                value="{{ exam.pk }}"
+                                {% if selected_examination and selected_examination.pk == exam.pk %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ exam.exam_name }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="filter-btn"
+                >
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    View Results
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- RESULTS -->
+
+    {% if results %}
+
+        <div class="children-grid">
+
+            {% for result in results %}
+
+                <div class="child-card">
+
+                    <!-- CHILD HEADER -->
+
+                    <div class="child-header">
+
+                        <div class="child-avatar">
+
+                            {% if result.student.first_name %}
+                                {{ result.student.first_name|first|upper }}
+                            {% else %}
+                                S
+                            {% endif %}
+
+                        </div>
+
+                        <div>
+
+                            <div class="child-name">
+
+                                {% if result.student.full_name %}
+
+                                    {{ result.student.full_name }}
+
+                                {% else %}
+
+                                    {{ result.student.first_name }}
+                                    {{ result.student.last_name }}
+
+                                {% endif %}
+
+                            </div>
+
+                            <div class="child-class">
+
+                                {{ result.class_section|default:"Class not assigned" }}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- RESULT BODY -->
+
+                    <div class="child-body">
+
+                        <div class="exam-title">
+
+                            {{ result.examination.exam_name }}
+
+                        </div>
+
+                        <div class="exam-year">
+
+                            Academic Year:
+                            {{ result.examination.academic_year }}
+
+                        </div>
+
+
+                        <!-- SUMMARY -->
+
+                        <div class="summary-grid">
+
+                            <div class="summary-item">
+
+                                <div class="summary-label">
+                                    Obtained
+                                </div>
+
+                                <div class="summary-value">
+                                    {{ result.total_obtained }}
+                                </div>
+
+                            </div>
+
+
+                            <div class="summary-item">
+
+                                <div class="summary-label">
+                                    Maximum
+                                </div>
+
+                                <div class="summary-value">
+                                    {{ result.total_maximum }}
+                                </div>
+
+                            </div>
+
+
+                            <div class="summary-item">
+
+                                <div class="summary-label">
+                                    Percentage
+                                </div>
+
+                                <div class="summary-value">
+                                    {{ result.percentage }}%
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- RESULT STATUS -->
+
+                        <div class="result-row">
+
+                            <span class="result-label">
+                                Result Status
+                            </span>
+
+                            <span
+                                class="result-value
+                                {% if result.is_passed %}
+                                    passed
+                                {% else %}
+                                    failed
+                                {% endif %}"
+                            >
+
+                                {% if result.result_status %}
+
+                                    {{ result.result_status }}
+
+                                {% elif result.is_passed %}
+
+                                    PASS
+
+                                {% else %}
+
+                                    FAIL
+
+                                {% endif %}
+
+                            </span>
+
+                        </div>
+
+
+                        <!-- PUBLISHED -->
+
+                        <div class="result-row">
+
+                            <span class="result-label">
+                                Status
+                            </span>
+
+                            <span class="published-badge">
+
+                                <i class="fa-solid fa-circle-check"></i>
+
+                                Published
+
+                            </span>
+
+                        </div>
+
+
+                        <!-- REPORT CARD -->
+
+                        <a
+                            href="{% url 'exams:report_card' result.examination.pk result.student.pk %}"
+                            class="view-btn"
+                        >
+
+                            <i class="fa-solid fa-file-lines"></i>
+
+                            View Report Card
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                <i class="fa-solid fa-chart-column"></i>
+            </div>
+
+            <h3>
+                No Published Results
+            </h3>
+
+            <p>
+                Published examination results for your children will appear here.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

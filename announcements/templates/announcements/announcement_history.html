@@ -1,0 +1,261 @@
+{% extends "dashboard/base.html" %}
+
+{% load static %}
+
+{% block title %}
+Announcement History
+{% endblock %}
+
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'announcements/css/announcements.css' %}"
+>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="announcement-page">
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <div class="page-head">
+
+        <div>
+
+            <h1>
+                Announcement History
+            </h1>
+
+            <p>
+                View announcements created by you.
+            </p>
+
+        </div>
+
+
+        <div class="announcement-actions">
+
+            <a
+                href="{% url 'announcements:list' %}"
+                class="secondary-btn"
+            >
+
+                <i class="fa-solid fa-bullhorn"></i>
+
+                Received
+
+            </a>
+
+
+            <a
+                href="{% url 'announcements:create' %}"
+                class="primary-btn"
+            >
+
+                <i class="fa-solid fa-plus"></i>
+
+                Create New
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         HISTORY TABLE
+    ====================================================== -->
+
+    <div class="history-panel">
+
+        {% if announcements %}
+
+        <div class="table-wrapper">
+
+            <table class="announcement-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Title
+                        </th>
+
+                        <th>
+                            Audience
+                        </th>
+
+                        <th>
+                            Priority
+                        </th>
+
+                        <th>
+                            Published
+                        </th>
+
+                        <th>
+                            Expiry
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for announcement in announcements %}
+
+                    <tr>
+
+                        <td>
+
+                            <div class="table-title">
+
+                                {{ announcement.title }}
+
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            {{ announcement.get_audience_display }}
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="priority-badge {{ announcement.priority }}">
+
+                                {{ announcement.get_priority_display }}
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            {{ announcement.publish_date|date:"d M Y, h:i A" }}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if announcement.expiry_date %}
+
+                                {{ announcement.expiry_date|date:"d M Y, h:i A" }}
+
+                            {% else %}
+
+                                No expiry
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if announcement.is_active %}
+
+                                <span class="status-badge active">
+                                    Active
+                                </span>
+
+                            {% else %}
+
+                                <span class="status-badge inactive">
+                                    Inactive
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            <a
+                                href="{% url 'announcements:detail' announcement.id %}"
+                                class="table-action"
+                            >
+
+                                View
+
+                                <i class="fa-solid fa-arrow-right"></i>
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        {% else %}
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+
+                <i class="fa-solid fa-clock-rotate-left"></i>
+
+            </div>
+
+            <h3>
+                No announcement history
+            </h3>
+
+            <p>
+                You have not created any announcements yet.
+            </p>
+
+            <a
+                href="{% url 'announcements:create' %}"
+                class="primary-btn"
+            >
+
+                <i class="fa-solid fa-plus"></i>
+
+                Create Announcement
+
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

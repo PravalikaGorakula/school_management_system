@@ -1,0 +1,13 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% block title %}Student Fee Demands | SMS{% endblock %}
+{% block page_title %}Student Fee Demands{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'finance/css/finance.css' %}">{% endblock %}
+{% block content %}
+<div class="finance-page"><header class="finance-hero"><div><h2>Student Fee Management</h2><p>Track each student's demand, amount collected and outstanding balance.</p></div><div class="finance-actions"><a class="finance-btn finance-secondary" href="{% url 'finance:fee_structure_list' %}">Fee Structures</a><a class="finance-btn finance-primary" href="{% url 'finance:fee_create' %}">+ Add Demand</a><a class="finance-btn finance-success" href="{% url 'finance:payment_create' %}">Record Payment</a></div></header>
+{% if messages %}{% for message in messages %}<div class="finance-message">{{ message }}</div>{% endfor %}{% endif %}
+<section class="finance-panel"><form method="get" class="finance-filters"><div class="finance-field"><label>Search student / application ID / academic year</label><input name="q" value="{{ query }}" placeholder="Search records"></div><button class="finance-btn finance-primary">Search</button><a class="finance-btn finance-secondary" href="{% url 'finance:fee_list' %}">Reset</a></form>
+<div class="finance-table-wrap"><table class="finance-table"><thead><tr><th>Student ID</th><th>Student</th><th>Class</th><th>Year</th><th>Fee Type</th><th>Demand</th><th>Paid</th><th>Balance</th><th>Due Date</th><th>Status</th></tr></thead><tbody>
+{% for fee in fees %}<tr><td>{{ fee.student.application_id }}</td><td>{{ fee.student.first_name }} {{ fee.student.last_name }}</td><td>{{ fee.student.applying_class }}</td><td>{{ fee.academic_year }}</td><td>{{ fee.get_fee_type_display }}</td><td>₹{{ fee.total_amount|floatformat:2 }}</td><td>₹{{ fee.paid_amount|floatformat:2 }}</td><td><strong>₹{{ fee.balance|floatformat:2 }}</strong></td><td>{{ fee.due_date|date:"d M Y"|default:"—" }}</td><td><span class="finance-badge {% if fee.balance <= 0 %}badge-paid{% elif fee.paid_amount > 0 %}badge-pending{% else %}badge-unpaid{% endif %}">{{ fee.payment_status }}</span></td></tr>{% empty %}<tr><td colspan="10" class="finance-empty">No student fee demands yet. Create a fee structure and publish it, or add a demand manually.</td></tr>{% endfor %}
+</tbody></table></div></section></div>
+{% endblock %}

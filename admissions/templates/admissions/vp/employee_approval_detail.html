@@ -1,0 +1,1193 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Employee Approval Details{% endblock %}
+
+{% block extra_css %}
+<style>
+    .approval-page {
+        padding: 10px 0 40px;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 25px;
+    }
+
+    .page-title h1 {
+        margin: 0;
+        color: #123B63;
+        font-size: 30px;
+        font-weight: 700;
+    }
+
+    .page-title p {
+        margin: 7px 0 0;
+        color: #64748B;
+        font-size: 17px;
+    }
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 11px 18px;
+        background: #EEF6FF;
+        color: #123B63;
+        border: 1px solid #D7E6F5;
+        border-radius: 9px;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .back-btn:hover {
+        background: #EAF2F8;
+    }
+
+    .application-header {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 14px;
+        padding: 22px 25px;
+        margin-bottom: 22px;
+        box-shadow: 0 10px 35px rgba(15, 23, 42, 0.06);
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .application-id {
+        color: #123B63;
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .application-subtitle {
+        color: #64748B;
+        font-size: 16px;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 9px 15px;
+        border-radius: 30px;
+        background: #FFF4E6;
+        color: #C2410C;
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+    .section-card {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 14px;
+        margin-bottom: 22px;
+        overflow: hidden;
+        box-shadow: 0 10px 35px rgba(15, 23, 42, 0.06);
+    }
+
+    .section-header {
+        padding: 17px 22px;
+        background: #F8FAFC;
+        border-bottom: 1px solid #E2E8F0;
+
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .section-header i {
+        color: #F28C28;
+        font-size: 19px;
+    }
+
+    .section-header h2 {
+        margin: 0;
+        color: #123B63;
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .section-body {
+        padding: 24px;
+    }
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px 30px;
+    }
+
+    .detail-item {
+        min-width: 0;
+    }
+
+    .detail-label {
+        display: block;
+        color: #64748B;
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+
+    .detail-value {
+        color: #1F2937;
+        font-size: 17px;
+        font-weight: 500;
+        word-break: break-word;
+    }
+
+    .full-width {
+        grid-column: 1 / -1;
+    }
+
+    .document-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px;
+    }
+
+    .document-item {
+        border: 1px solid #E2E8F0;
+        border-radius: 10px;
+        padding: 16px;
+        background: #FAFCFE;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+    }
+
+    .document-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+    }
+
+    .document-icon {
+        width: 42px;
+        height: 42px;
+        flex-shrink: 0;
+        border-radius: 9px;
+        background: #EEF6FF;
+        color: #123B63;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+    }
+
+    .document-name {
+        color: #1F2937;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .document-status {
+        color: #16A34A;
+        font-size: 13px;
+        margin-top: 3px;
+    }
+
+    .document-view {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 12px;
+        background: #123B63;
+        color: #FFFFFF;
+        border-radius: 7px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+
+    .document-view:hover {
+        background: #0B2945;
+    }
+
+    .document-empty {
+        color: #94A3B8;
+        font-size: 16px;
+        padding: 10px 0;
+    }
+
+    .action-card {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 14px;
+        padding: 25px;
+        box-shadow: 0 10px 35px rgba(15, 23, 42, 0.06);
+    }
+
+    .action-card h2 {
+        margin: 0 0 8px;
+        color: #123B63;
+        font-size: 21px;
+    }
+
+    .action-card p {
+        margin: 0 0 20px;
+        color: #64748B;
+        font-size: 16px;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 12px;
+    }
+
+    .action-btn {
+        border: none;
+        border-radius: 9px;
+        padding: 12px 22px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .approve-btn {
+        background: #16A34A;
+        color: #FFFFFF;
+    }
+
+    .approve-btn:hover {
+        background: #15803D;
+    }
+
+    .reject-btn {
+        background: #DC2626;
+        color: #FFFFFF;
+    }
+
+    .reject-btn:hover {
+        background: #B91C1C;
+    }
+
+    /* Modal */
+
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.60);
+        z-index: 9999;
+
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .modal-overlay.show {
+        display: flex;
+    }
+
+    .modal-box {
+        width: 100%;
+        max-width: 500px;
+        background: #FFFFFF;
+        border-radius: 14px;
+        padding: 25px;
+        box-shadow: 0 25px 60px rgba(15, 23, 42, 0.20);
+    }
+
+    .modal-box h3 {
+        margin: 0 0 8px;
+        color: #123B63;
+        font-size: 22px;
+    }
+
+    .modal-box p {
+        margin: 0 0 18px;
+        color: #64748B;
+        font-size: 16px;
+    }
+
+    .modal-box textarea,
+    .modal-box select {
+        width: 100%;
+        min-height: 46px;
+        border: 1px solid #CBD5E1;
+        border-radius: 9px;
+        padding: 12px;
+        font-family: inherit;
+        font-size: 16px;
+        outline: none;
+    }
+
+    .modal-box textarea {
+        min-height: 110px;
+        resize: vertical;
+    }
+
+    .modal-box textarea:focus,
+    .modal-box select:focus {
+        border-color: #123B63;
+        box-shadow: 0 0 0 3px rgba(18, 59, 99, 0.10);
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 18px;
+    }
+
+    .cancel-btn {
+        border: 1px solid #CBD5E1;
+        background: #FFFFFF;
+        color: #475569;
+        border-radius: 8px;
+        padding: 10px 18px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .confirm-btn {
+        border: none;
+        color: #FFFFFF;
+        border-radius: 8px;
+        padding: 10px 18px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .confirm-approve {
+        background: #16A34A;
+    }
+
+    .confirm-reject {
+        background: #DC2626;
+    }
+
+    @media (max-width: 900px) {
+        .details-grid,
+        .document-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .application-header,
+        .page-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .section-body,
+        .action-card,
+        .application-header {
+            padding: 18px;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .action-btn {
+            width: 100%;
+        }
+
+        .document-item {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .document-view {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="approval-page">
+
+    <!-- PAGE HEADER -->
+
+    <div class="page-header">
+
+        <div class="page-title">
+            <h1>Employee Approval Details</h1>
+
+            <p>
+                Review the employee application and verify the submitted information.
+            </p>
+        </div>
+
+        <a
+            href="{% url 'admissions:vp_employee_approvals' %}"
+            class="back-btn"
+        >
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to Employee Approvals
+        </a>
+
+    </div>
+
+
+    <!-- APPLICATION HEADER -->
+
+    <div class="application-header">
+
+        <div>
+            <div class="application-id">
+                {{ application.application_id }}
+            </div>
+
+            <div class="application-subtitle">
+                Employee Application
+            </div>
+        </div>
+
+        <div class="status-badge">
+            <i class="fa-solid fa-clock"></i>
+            VP Pending
+        </div>
+
+    </div>
+
+
+    <!-- PERSONAL INFORMATION -->
+
+    <div class="section-card">
+
+        <div class="section-header">
+            <i class="fa-solid fa-user"></i>
+            <h2>Personal Information</h2>
+        </div>
+
+        <div class="section-body">
+
+            <div class="details-grid">
+
+                <div class="detail-item">
+                    <span class="detail-label">First Name</span>
+                    <div class="detail-value">
+                        {{ application.first_name|default:"-" }}
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Last Name</span>
+                    <div class="detail-value">
+                        {{ application.last_name|default:"-" }}
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Date of Birth</span>
+                    <div class="detail-value">
+                        {{ application.date_of_birth|date:"d M Y"|default:"-" }}
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Gender</span>
+                    <div class="detail-value">
+                        {{ application.gender|default:"-" }}
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Marital Status</span>
+                    <div class="detail-value">
+                        {{ application.marital_status|default:"-" }}
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Email</span>
+                    <div class="detail-value">
+                        {{ application.email|default:"-" }}
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Phone</span>
+                    <div class="detail-value">
+                        {{ application.phone|default:"-" }}
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Alternate Phone</span>
+                    <div class="detail-value">
+                        {{ application.alternate_phone|default:"-" }}
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PROFESSIONAL INFORMATION -->
+
+    <div class="section-card">
+
+        <div class="section-header">
+            <i class="fa-solid fa-briefcase"></i>
+            <h2>Professional Information</h2>
+        </div>
+
+        <div class="section-body">
+
+            <div class="details-grid">
+
+                <div class="detail-item">
+                    <span class="detail-label">Designation</span>
+                    <div class="detail-value">
+                        {{ application.designation|default:"-" }}
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Department</span>
+                    <div class="detail-value">
+                        {{ application.department|default:"-" }}
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Joining Date</span>
+                    <div class="detail-value">
+                        {{ application.joining_date|date:"d M Y"|default:"-" }}
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Qualification</span>
+                    <div class="detail-value">
+                        {{ application.qualification|default:"-" }}
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Specialization</span>
+                    <div class="detail-value">
+                        {{ application.specialization|default:"-" }}
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Experience</span>
+                    <div class="detail-value">
+                        {{ application.experience_years|default:"0" }} years
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Previous Organization</span>
+                    <div class="detail-value">
+                        {{ application.previous_organization|default:"-" }}
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Previous Salary</span>
+                    <div class="detail-value">
+                        {{ application.previous_salary|default:"-" }}
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ADDRESS -->
+
+    <div class="section-card">
+
+        <div class="section-header">
+            <i class="fa-solid fa-location-dot"></i>
+            <h2>Address Information</h2>
+        </div>
+
+        <div class="section-body">
+
+            <div class="details-grid">
+
+                <div class="detail-item full-width">
+                    <span class="detail-label">Address</span>
+                    <div class="detail-value">
+                        {{ application.address|default:"-" }}
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">City</span>
+                    <div class="detail-value">
+                        {{ application.city|default:"-" }}
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">State</span>
+                    <div class="detail-value">
+                        {{ application.state|default:"-" }}
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Pincode</span>
+                    <div class="detail-value">
+                        {{ application.pincode|default:"-" }}
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- EMERGENCY CONTACT -->
+
+    <div class="section-card">
+
+        <div class="section-header">
+            <i class="fa-solid fa-phone-volume"></i>
+            <h2>Emergency Contact</h2>
+        </div>
+
+        <div class="section-body">
+
+            <div class="details-grid">
+
+                <div class="detail-item">
+                    <span class="detail-label">Contact Name</span>
+                    <div class="detail-value">
+                        {{ application.emergency_contact_name|default:"-" }}
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Contact Phone</span>
+                    <div class="detail-value">
+                        {{ application.emergency_contact_phone|default:"-" }}
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Relationship</span>
+                    <div class="detail-value">
+                        {{ application.emergency_contact_relation|default:"-" }}
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- DOCUMENTS -->
+
+    <div class="section-card">
+
+        <div class="section-header">
+            <i class="fa-solid fa-file-lines"></i>
+            <h2>Uploaded Documents</h2>
+        </div>
+
+        <div class="section-body">
+
+            <div class="document-grid">
+
+                {% if application.employee_photo %}
+                <div class="document-item">
+
+                    <div class="document-info">
+                        <div class="document-icon">
+                            <i class="fa-solid fa-image"></i>
+                        </div>
+
+                        <div>
+                            <div class="document-name">
+                                Employee Photo
+                            </div>
+
+                            <div class="document-status">
+                                Available
+                            </div>
+                        </div>
+                    </div>
+
+                    <a
+                        href="{{ application.employee_photo.url }}"
+                        target="_blank"
+                        class="document-view"
+                    >
+                        <i class="fa-solid fa-eye"></i>
+                        View
+                    </a>
+
+                </div>
+                {% endif %}
+
+
+                {% if application.aadhaar_card %}
+                <div class="document-item">
+
+                    <div class="document-info">
+                        <div class="document-icon">
+                            <i class="fa-solid fa-id-card"></i>
+                        </div>
+
+                        <div>
+                            <div class="document-name">
+                                Aadhaar Card
+                            </div>
+
+                            <div class="document-status">
+                                Available
+                            </div>
+                        </div>
+                    </div>
+
+                    <a
+                        href="{{ application.aadhaar_card.url }}"
+                        target="_blank"
+                        class="document-view"
+                    >
+                        <i class="fa-solid fa-eye"></i>
+                        View
+                    </a>
+
+                </div>
+                {% endif %}
+
+
+                {% if application.pan_card %}
+                <div class="document-item">
+
+                    <div class="document-info">
+                        <div class="document-icon">
+                            <i class="fa-solid fa-credit-card"></i>
+                        </div>
+
+                        <div>
+                            <div class="document-name">
+                                PAN Card
+                            </div>
+
+                            <div class="document-status">
+                                Available
+                            </div>
+                        </div>
+                    </div>
+
+                    <a
+                        href="{{ application.pan_card.url }}"
+                        target="_blank"
+                        class="document-view"
+                    >
+                        <i class="fa-solid fa-eye"></i>
+                        View
+                    </a>
+
+                </div>
+                {% endif %}
+
+
+                {% if application.educational_certificate %}
+                <div class="document-item">
+
+                    <div class="document-info">
+                        <div class="document-icon">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                        </div>
+
+                        <div>
+                            <div class="document-name">
+                                Educational Certificate
+                            </div>
+
+                            <div class="document-status">
+                                Available
+                            </div>
+                        </div>
+                    </div>
+
+                    <a
+                        href="{{ application.educational_certificate.url }}"
+                        target="_blank"
+                        class="document-view"
+                    >
+                        <i class="fa-solid fa-eye"></i>
+                        View
+                    </a>
+
+                </div>
+                {% endif %}
+
+
+                {% if application.experience_certificate %}
+                <div class="document-item">
+
+                    <div class="document-info">
+                        <div class="document-icon">
+                            <i class="fa-solid fa-certificate"></i>
+                        </div>
+
+                        <div>
+                            <div class="document-name">
+                                Experience Certificate
+                            </div>
+
+                            <div class="document-status">
+                                Available
+                            </div>
+                        </div>
+                    </div>
+
+                    <a
+                        href="{{ application.experience_certificate.url }}"
+                        target="_blank"
+                        class="document-view"
+                    >
+                        <i class="fa-solid fa-eye"></i>
+                        View
+                    </a>
+
+                </div>
+                {% endif %}
+
+
+                {% if application.resume %}
+                <div class="document-item">
+
+                    <div class="document-info">
+                        <div class="document-icon">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </div>
+
+                        <div>
+                            <div class="document-name">
+                                Resume
+                            </div>
+
+                            <div class="document-status">
+                                Available
+                            </div>
+                        </div>
+                    </div>
+
+                    <a
+                        href="{{ application.resume.url }}"
+                        target="_blank"
+                        class="document-view"
+                    >
+                        <i class="fa-solid fa-eye"></i>
+                        View
+                    </a>
+
+                </div>
+                {% endif %}
+
+
+                {% if application.joining_document %}
+                <div class="document-item">
+
+                    <div class="document-info">
+                        <div class="document-icon">
+                            <i class="fa-solid fa-file-contract"></i>
+                        </div>
+
+                        <div>
+                            <div class="document-name">
+                                Joining Document
+                            </div>
+
+                            <div class="document-status">
+                                Available
+                            </div>
+                        </div>
+                    </div>
+
+                    <a
+                        href="{{ application.joining_document.url }}"
+                        target="_blank"
+                        class="document-view"
+                    >
+                        <i class="fa-solid fa-eye"></i>
+                        View
+                    </a>
+
+                </div>
+                {% endif %}
+
+            </div>
+
+
+            {% if not application.employee_photo and not application.aadhaar_card and not application.pan_card and not application.educational_certificate and not application.experience_certificate and not application.resume and not application.joining_document %}
+                <div class="document-empty">
+                    No documents uploaded.
+                </div>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- SUBMISSION INFORMATION -->
+
+    <div class="section-card">
+
+        <div class="section-header">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <h2>Submission Information</h2>
+        </div>
+
+        <div class="section-body">
+
+            <div class="details-grid">
+
+                <div class="detail-item">
+                    <span class="detail-label">Submitted By</span>
+                    <div class="detail-value">
+                        {{ application.submitted_by.username|default:"-" }}
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Submitted On</span>
+                    <div class="detail-value">
+                        {{ application.submitted_at|date:"d M Y, h:i A"|default:"-" }}
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Last Updated</span>
+                    <div class="detail-value">
+                        {{ application.updated_at|date:"d M Y, h:i A"|default:"-" }}
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ACTIONS -->
+
+    <div class="action-card">
+
+        <h2>VP Approval Action</h2>
+
+        <p>
+            Review all employee information and documents before making a decision.
+        </p>
+
+        <div class="action-buttons">
+
+            <button
+                type="button"
+                class="action-btn approve-btn"
+                onclick="openApproveModal()"
+            >
+                <i class="fa-solid fa-check"></i>
+                Approve Application
+            </button>
+
+            <button
+                type="button"
+                class="action-btn reject-btn"
+                onclick="openRejectModal()"
+            >
+                <i class="fa-solid fa-xmark"></i>
+                Reject Application
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- APPROVE MODAL -->
+
+<div
+    id="approveModal"
+    class="modal-overlay"
+    onclick="closeModalOnOutside(event, 'approveModal')"
+>
+
+    <div
+        class="modal-box"
+        onclick="event.stopPropagation()"
+    >
+
+        <h3>Approve Employee Application</h3>
+
+        <p>
+            Are you sure you want to approve this employee application?
+        </p>
+
+        <form method="post" action="{% url 'admissions:vp_approve_employee' approval.id %}">
+            {% csrf_token %}
+
+            <label for="employee-staff-role">Assigned staff role</label>
+            <select id="employee-staff-role" name="staff_role" required>
+                <option value="">Select staff role</option>
+                {% for group in employee_staff_role_groups %}
+                    <optgroup label="{{ group.label }}">
+                        {% for role_value, role_label in group.roles %}
+                            <option value="{{ role_value }}" {% if application.staff_role == role_value %}selected{% endif %}>{{ role_label }}</option>
+                        {% endfor %}
+                    </optgroup>
+                {% endfor %}
+            </select>
+
+            <textarea
+                name="review_comment"
+                placeholder="Optional approval comment..."
+            ></textarea>
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="cancel-btn"
+                    onclick="closeModal('approveModal')"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="confirm-btn confirm-approve"
+                >
+                    Confirm Approval
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- REJECT MODAL -->
+
+<div
+    id="rejectModal"
+    class="modal-overlay"
+    onclick="closeModalOnOutside(event, 'rejectModal')"
+>
+
+    <div
+        class="modal-box"
+        onclick="event.stopPropagation()"
+    >
+
+        <h3>Reject Employee Application</h3>
+
+        <p>
+            Please provide a reason for rejecting this application.
+        </p>
+
+        <form method="post" action="{% url 'admissions:vp_reject_employee' approval.id %}">
+
+            {% csrf_token %}
+
+            <textarea
+                name="review_comment"
+                placeholder="Enter rejection reason..."
+                required
+            ></textarea>
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="cancel-btn"
+                    onclick="closeModal('rejectModal')"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="confirm-btn confirm-reject"
+                >
+                    Confirm Rejection
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+
+function openApproveModal() {
+    document.getElementById("approveModal").classList.add("show");
+}
+
+function openRejectModal() {
+    document.getElementById("rejectModal").classList.add("show");
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove("show");
+}
+
+function closeModalOnOutside(event, id) {
+    if (event.target.id === id) {
+        closeModal(id);
+    }
+}
+
+document.addEventListener("keydown", function(event) {
+    if (event.key === "Escape") {
+        closeModal("approveModal");
+        closeModal("rejectModal");
+    }
+});
+
+</script>
+{% endblock %}

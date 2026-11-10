@@ -1,0 +1,14 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% block title %}Fee Structures | SMS{% endblock %}
+{% block page_title %}Fee Structures{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'finance/css/finance.css' %}">{% endblock %}
+{% block content %}
+<div class="finance-page">
+<header class="finance-hero"><div><h2>Fee Structure Management</h2><p>Create class-wise fee schedules and publish demands to eligible students.</p></div><div class="finance-actions"><a class="finance-btn finance-secondary" href="{% url 'finance:fee_list' %}">Student Fee Demands</a><a class="finance-btn finance-primary" href="{% url 'finance:fee_structure_create' %}">+ Add Fee Structure</a></div></header>
+{% if messages %}{% for message in messages %}<div class="finance-message">{{ message }}</div>{% endfor %}{% endif %}
+<section class="finance-panel"><form method="get" class="finance-filters"><div class="finance-field"><label for="academic_year">Academic Year</label><input id="academic_year" name="academic_year" value="{{ academic_year }}" placeholder="2026-27"></div><div class="finance-field"><label for="status">Status</label><select id="status" name="status"><option value="">All statuses</option>{% for value,label in statuses %}<option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div><button class="finance-btn finance-primary">Apply Filters</button><a class="finance-btn finance-secondary" href="{% url 'finance:fee_structure_list' %}">Reset</a></form>
+<div class="finance-table-wrap"><table class="finance-table"><thead><tr><th>#</th><th>Academic Year</th><th>Class</th><th>Installment</th><th>Fee Type</th><th>Amount</th><th>Due Date</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+{% for structure in structures %}<tr><td>{{ forloop.counter }}</td><td>{{ structure.academic_year }}</td><td>{{ structure.target_class }}</td><td>{{ structure.installment_name }}</td><td>{{ structure.get_fee_type_display }}</td><td>₹{{ structure.total_amount|floatformat:2 }}</td><td>{{ structure.due_date|date:"d M Y"|default:"—" }}</td><td><span class="finance-badge badge-{{ structure.status }}">{{ structure.get_status_display }}</span></td><td><div class="finance-actions">{% if structure.status != "published" %}<a class="finance-btn finance-secondary" href="{% url 'finance:fee_structure_edit' structure.pk %}">Edit</a><form method="post" action="{% url 'finance:fee_structure_publish' structure.pk %}" onsubmit="return confirm('Publish this structure and generate fee demands?')">{% csrf_token %}<button class="finance-btn finance-success" type="submit">Publish</button></form>{% else %}<span class="finance-badge badge-published">Published</span>{% endif %}</div></td></tr>{% empty %}<tr><td colspan="9" class="finance-empty">No fee structures found. Add your first structure.</td></tr>{% endfor %}
+</tbody></table></div></section></div>
+{% endblock %}

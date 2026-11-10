@@ -1,0 +1,592 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}
+Create Announcement
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'announcements/css/announcements.css' %}">
+
+<style>
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --orange-light: #FFF4E6;
+        --text-main: #263445;
+        --text-muted: #64748B;
+        --border-color: #DCE4EC;
+        --white: #FFFFFF;
+    }
+
+    .announcement-page {
+        width: 100%;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 18px;
+        color: var(--text-main);
+        font-size: 18px;
+    }
+
+    /* Page Header */
+
+    .announcement-page .page-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 22px;
+    }
+
+    .announcement-page .page-head h1 {
+        margin: 0 0 7px;
+        color: var(--deep-blue);
+        font-size: 23px;
+        font-weight: 500;
+        line-height: 1.4;
+    }
+
+    .announcement-page .page-head p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 18px;
+        font-weight: 400;
+        line-height: 1.6;
+    }
+
+    /* Buttons */
+
+    .announcement-page .secondary-btn,
+    .announcement-page .cancel-btn,
+    .announcement-page .primary-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        min-height: 44px;
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-size: 18px;
+        font-weight: 400;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background-color 0.2s ease,
+                    color 0.2s ease,
+                    border-color 0.2s ease,
+                    transform 0.2s ease;
+    }
+
+    .announcement-page .secondary-btn {
+        flex-shrink: 0;
+        color: var(--deep-blue);
+        background: var(--white);
+        border: 1px solid #C9D7E5;
+    }
+
+    .announcement-page .secondary-btn:hover {
+        color: var(--white);
+        background: var(--deep-blue);
+        border-color: var(--deep-blue);
+        transform: translateY(-1px);
+    }
+
+    .announcement-page .form-panel {
+        overflow: hidden;
+        background: var(--white);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        box-shadow: 0 3px 12px rgba(18, 59, 99, 0.06);
+    }
+
+    .announcement-page .form-panel-header {
+        padding: 19px 22px;
+        background: var(--deep-blue-light);
+        border-bottom: 1px solid var(--border-color);
+        border-left: 4px solid var(--orange);
+    }
+
+    .announcement-page .form-panel-header h2 {
+        margin: 0 0 5px;
+        color: var(--deep-blue);
+        font-size: 21px;
+        font-weight: 500;
+        line-height: 1.4;
+    }
+
+    .announcement-page .form-panel-header p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 18px;
+        font-weight: 400;
+        line-height: 1.5;
+    }
+
+    /* Success and Error Messages */
+
+    .announcement-page .form-messages {
+        display: grid;
+        gap: 10px;
+        margin: 18px 22px 0;
+    }
+
+    .announcement-page .form-alert {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 12px 15px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        font-size: 18px;
+        font-weight: 400;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+    }
+
+    .announcement-page .form-alert.success {
+        color: #166534;
+        background: #F0FDF4;
+        border-color: #BBF7D0;
+    }
+
+    .announcement-page .form-alert.error {
+        color: #991B1B;
+        background: #FEF2F2;
+        border-color: #FECACA;
+    }
+
+    .announcement-page .form-alert.warning {
+        color: #92400E;
+        background: #FFFBEB;
+        border-color: #FDE68A;
+    }
+
+    .announcement-page .form-alert.info {
+        color: var(--deep-blue);
+        background: var(--deep-blue-light);
+        border-color: #C9DCEC;
+    }
+
+    /* Form Layout */
+
+    .announcement-page .announcement-form {
+        padding: 22px;
+    }
+
+    .announcement-page .form-group {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        gap: 9px;
+    }
+
+    .announcement-page .form-group.full {
+        margin-bottom: 21px;
+    }
+
+    .announcement-page .form-group label {
+        color: var(--deep-blue-dark);
+        font-size: 18px;
+        font-weight: 500;
+        line-height: 1.5;
+    }
+
+    .announcement-page .form-group label span {
+        color: #DC2626;
+    }
+
+    .announcement-page .form-group input,
+    .announcement-page .form-group select,
+    .announcement-page .form-group textarea {
+        display: block;
+        width: 100%;
+        min-width: 0;
+        padding: 12px 14px;
+        color: var(--text-main);
+        background: var(--white);
+        border: 1px solid #C9D5E2;
+        border-radius: 8px;
+        outline: none;
+        font-family: inherit;
+        font-size: 18px;
+        font-weight: 400;
+        line-height: 1.5;
+        transition: border-color 0.2s ease,
+                    box-shadow 0.2s ease;
+    }
+
+    .announcement-page .form-group input,
+    .announcement-page .form-group select {
+        min-height: 48px;
+    }
+
+    .announcement-page .form-group textarea {
+        min-height: 150px;
+        resize: vertical;
+    }
+
+    .announcement-page .form-group input::placeholder,
+    .announcement-page .form-group textarea::placeholder {
+        color: #8A97A6;
+        opacity: 1;
+    }
+
+    .announcement-page .form-group input:focus,
+    .announcement-page .form-group select:focus,
+    .announcement-page .form-group textarea:focus {
+        border-color: var(--orange);
+        box-shadow: 0 0 0 3px rgba(242, 140, 40, 0.13);
+    }
+
+    .announcement-page .form-group small {
+        color: var(--text-muted);
+        font-size: 18px;
+        font-weight: 400;
+        line-height: 1.5;
+    }
+
+    .announcement-page .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 22px;
+        margin-top: 2px;
+    }
+
+    /* Form Actions */
+
+    .announcement-page .form-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 26px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .announcement-page .cancel-btn {
+        color: var(--deep-blue);
+        background: var(--white);
+        border: 1px solid #C9D7E5;
+    }
+
+    .announcement-page .cancel-btn:hover {
+        background: var(--deep-blue-light);
+        border-color: var(--deep-blue);
+    }
+
+    .announcement-page .primary-btn {
+        color: var(--white);
+        background: var(--deep-blue);
+        border: 1px solid var(--deep-blue);
+    }
+
+    .announcement-page .primary-btn i {
+        color: #FFD3A0;
+    }
+
+    .announcement-page .primary-btn:hover {
+        background: var(--orange-hover);
+        border-color: var(--orange-hover);
+        transform: translateY(-1px);
+    }
+
+    .announcement-page button:focus-visible,
+    .announcement-page a:focus-visible {
+        outline: 3px solid rgba(242, 140, 40, 0.45);
+        outline-offset: 3px;
+    }
+
+    /* Tablet */
+
+    @media (max-width: 768px) {
+        .announcement-page {
+            padding: 14px;
+        }
+
+        .announcement-page .page-head {
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .announcement-page .page-head p {
+            max-width: 100%;
+        }
+
+        .announcement-page .form-panel-header {
+            padding: 17px 18px;
+        }
+
+        .announcement-page .announcement-form {
+            padding: 18px;
+        }
+
+        .announcement-page .form-grid {
+            gap: 18px;
+        }
+    }
+
+    /* Mobile */
+
+    @media (max-width: 560px) {
+        .announcement-page {
+            padding: 10px;
+        }
+
+        .announcement-page .page-head {
+            flex-direction: column;
+            align-items: stretch;
+            margin-bottom: 17px;
+        }
+
+        .announcement-page .page-head h1 {
+            font-size: 23px;
+        }
+
+        .announcement-page .secondary-btn {
+            align-self: flex-start;
+        }
+
+        .announcement-page .form-panel {
+            border-radius: 10px;
+        }
+
+        .announcement-page .form-panel-header {
+            padding: 15px;
+        }
+
+        .announcement-page .form-panel-header h2 {
+            font-size: 20px;
+        }
+
+        .announcement-page .announcement-form {
+            padding: 15px;
+        }
+
+        .announcement-page .form-grid {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 19px;
+        }
+
+        .announcement-page .form-group.full {
+            margin-bottom: 19px;
+        }
+
+        .announcement-page .form-actions {
+            flex-direction: column-reverse;
+            align-items: stretch;
+        }
+
+        .announcement-page .cancel-btn,
+        .announcement-page .primary-btn {
+            width: 100%;
+        }
+
+        .announcement-page .form-messages {
+            margin-right: 15px;
+            margin-left: 15px;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .announcement-page *,
+        .announcement-page *::before,
+        .announcement-page *::after {
+            transition: none !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="announcement-page">
+
+    <!-- Page Header -->
+    <div class="page-head">
+        <div>
+            <h1>Create Announcement</h1>
+            <p>Create and publish an announcement for the required audience.</p>
+        </div>
+
+        <a href="{% url 'announcements:list' %}" class="secondary-btn">
+            <i class="fa-solid fa-arrow-left"></i>
+            Back
+        </a>
+    </div>
+
+    <!-- Announcement Form Panel -->
+    <div class="form-panel">
+
+        <div class="form-panel-header">
+            <div>
+                <h2>Announcement Information</h2>
+                <p>Enter the required announcement details.</p>
+            </div>
+        </div>
+
+        <!-- Django Success / Error Messages -->
+        {% if messages %}
+            <div class="form-messages">
+                {% for message in messages %}
+                    <div class="form-alert
+                        {% if 'success' in message.tags %}success
+                        {% elif 'error' in message.tags %}error
+                        {% elif 'warning' in message.tags %}warning
+                        {% else %}info{% endif %}"
+                        role="status">
+
+                        {% if 'success' in message.tags %}
+                            <i class="fa-solid fa-circle-check"></i>
+                        {% elif 'error' in message.tags %}
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                        {% elif 'warning' in message.tags %}
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        {% else %}
+                            <i class="fa-solid fa-circle-info"></i>
+                        {% endif %}
+
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="POST" class="announcement-form">
+            {% csrf_token %}
+
+            <!-- Title -->
+            <div class="form-group full">
+                <label for="title">
+                    Announcement Title <span>*</span>
+                </label>
+
+                <input
+                    type="text"
+                    id="title"
+                    name="title"
+                    placeholder="Enter announcement title"
+                    value="{{ form_data.title|default:'' }}"
+                    maxlength="255"
+                    required
+                >
+            </div>
+
+            <!-- Message -->
+            <div class="form-group full">
+                <label for="message">
+                    Announcement Message <span>*</span>
+                </label>
+
+                <textarea
+                    id="message"
+                    name="message"
+                    rows="6"
+                    placeholder="Enter announcement message"
+                    required
+                >{{ form_data.message|default:'' }}</textarea>
+            </div>
+
+            <div class="form-grid">
+
+                <!-- Priority -->
+                <div class="form-group">
+                    <label for="priority">Priority</label>
+
+                    <select id="priority" name="priority">
+                        <option value="normal"
+                            {% if form_data.priority == "normal" or not form_data.priority %}selected{% endif %}>
+                            Normal
+                        </option>
+
+                        <option value="important"
+                            {% if form_data.priority == "important" %}selected{% endif %}>
+                            Important
+                        </option>
+
+                        <option value="urgent"
+                            {% if form_data.priority == "urgent" %}selected{% endif %}>
+                            Urgent
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Audience -->
+                <div class="form-group">
+                    <label for="audience">Audience</label>
+
+                    <select id="audience" name="audience">
+                        <option value="all"
+                            {% if form_data.audience == "all" or not form_data.audience %}selected{% endif %}>
+                            Everyone
+                        </option>
+
+                        <option value="staff"
+                            {% if form_data.audience == "staff" %}selected{% endif %}>
+                            Staff
+                        </option>
+
+                        <option value="students"
+                            {% if form_data.audience == "students" %}selected{% endif %}>
+                            Students
+                        </option>
+
+                        <option value="parents"
+                            {% if form_data.audience == "parents" %}selected{% endif %}>
+                            Parents
+                        </option>
+
+                        <option value="teachers"
+                            {% if form_data.audience == "teachers" %}selected{% endif %}>
+                            Teachers
+                        </option>
+
+                        <option value="management"
+                            {% if form_data.audience == "management" %}selected{% endif %}>
+                            Management
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Expiry Date -->
+                <div class="form-group">
+                    <label for="expiry_date">Expiry Date</label>
+
+                    <input
+                        type="datetime-local"
+                        id="expiry_date"
+                        name="expiry_date"
+                        value="{{ form_data.expiry_date|default:'' }}"
+                    >
+
+                    <small>
+                        Leave empty if the announcement should not expire.
+                    </small>
+                </div>
+
+            </div>
+
+            <!-- Form Buttons -->
+            <div class="form-actions">
+
+                <a href="{% url 'announcements:list' %}" class="cancel-btn">
+                    Cancel
+                </a>
+
+                <button type="submit" class="primary-btn">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    Publish Announcement
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

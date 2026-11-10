@@ -1,0 +1,889 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+Bus Routes
+{% endblock %}
+
+{% block content %}
+
+
+<style>
+:root {
+    --deep-blue: #123B63;
+    --deep-blue-dark: #0B2945;
+    --deep-blue-light: #EAF2F8;
+    --orange: #F28C28;
+    --orange-hover: #D97706;
+    --orange-light: #FFF4E6;
+    --border: #D9E2EC;
+    --text: #243B53;
+    --muted: #627D98;
+    --white: #ffffff;
+    --danger: #dc3545;
+}
+
+/* ================= PAGE ================= */
+
+.routes-page {
+    padding: 18px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ================= HEADER ================= */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    gap: 14px;
+}
+
+.page-title-area {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.page-icon {
+    width: 52px;
+    height: 52px;
+    background: var(--deep-blue-light);
+    color: var(--deep-blue);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.page-title {
+    margin: 0;
+    color: var(--deep-blue-dark);
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.page-subtitle {
+    margin: 3px 0 0;
+    color: var(--muted);
+    font-size: 18px;
+    line-height: 1.4;
+}
+
+/* ================= CARD ================= */
+
+.card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(18, 59, 99, 0.06);
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.card-header h2 {
+    margin: 0;
+    color: var(--deep-blue-dark);
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.card-header i {
+    color: var(--orange);
+    font-size: 20px;
+}
+
+/* ================= FORM ================= */
+
+.form-body {
+    padding: 14px 18px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 14px;
+    row-gap: 8px;
+    align-items: center;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 18px;
+    line-height: 1.3;
+    margin: 0;
+}
+
+.form-control {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 7px 11px;
+    min-height: 40px;
+    font-size: 18px;
+    line-height: 1.4;
+    color: var(--text);
+    background: white;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-control::placeholder {
+    color: var(--muted);
+    opacity: 1;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--orange);
+    box-shadow: 0 0 0 3px rgba(242, 140, 40, 0.12);
+}
+
+/* ================= CHECKBOX ================= */
+
+.checkbox-row {
+    display: flex;
+    align-items: center;
+    align-self: center;
+    gap: 8px;
+    margin: 0;
+    min-height: 40px;
+}
+
+.checkbox-row input {
+    width: 19px;
+    height: 19px;
+    accent-color: var(--orange);
+    cursor: pointer;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.checkbox-row label {
+    margin: 0;
+    color: var(--text);
+    font-size: 18px;
+    line-height: 1.3;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* ================= FORM ACTIONS ================= */
+
+.form-actions {
+    margin-top: 12px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* ================= BUTTONS ================= */
+
+.btn {
+    border: none;
+    border-radius: 8px;
+    padding: 9px 18px;
+    min-height: 42px;
+    font-size: 18px;
+    line-height: 1.4;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.btn-primary {
+    background: var(--orange);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--orange-hover);
+}
+
+.btn-danger {
+    background: #fff0f0;
+    color: var(--danger);
+}
+
+.btn-danger:hover {
+    background: #ffe0e0;
+}
+
+.btn-secondary {
+    background: var(--deep-blue-light);
+    color: var(--deep-blue);
+}
+
+.btn-secondary:hover {
+    background: #dceaf5;
+}
+
+/* ================= TABLE ================= */
+
+.table-wrapper {
+    overflow-x: auto;
+    width: 100%;
+}
+
+.routes-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.routes-table th {
+    background: var(--deep-blue);
+    color: white;
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+.routes-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    font-size: 18px;
+    line-height: 1.4;
+    vertical-align: middle;
+}
+
+.routes-table tbody tr {
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.routes-table tbody tr:hover {
+    background: var(--orange-light);
+}
+
+.route-code {
+    display: inline-block;
+    background: var(--deep-blue-light);
+    color: var(--deep-blue);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 18px;
+    white-space: nowrap;
+}
+
+.route-name {
+    font-weight: 700;
+    color: var(--deep-blue-dark);
+}
+
+.bus-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--orange-light);
+    color: var(--orange-hover);
+    padding: 5px 8px;
+    border-radius: 7px;
+    font-size: 18px;
+    line-height: 1.4;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.no-bus {
+    color: var(--muted);
+    font-size: 18px;
+}
+
+.stop-count {
+    font-weight: 700;
+    color: var(--deep-blue);
+}
+
+.status-active {
+    color: #198754;
+    background: #eaf7ef;
+    padding: 5px 8px;
+    border-radius: 6px;
+    font-size: 18px;
+    line-height: 1.4;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.status-inactive {
+    color: var(--danger);
+    background: #fff0f0;
+    padding: 5px 8px;
+    border-radius: 6px;
+    font-size: 18px;
+    line-height: 1.4;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.action-btn {
+    color: var(--deep-blue);
+    text-decoration: none;
+    font-size: 18px;
+    line-height: 1.4;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.action-btn:hover {
+    color: var(--orange-hover);
+}
+
+/* ================= EMPTY STATE ================= */
+
+.empty-state {
+    text-align: center;
+    padding: 35px 18px;
+    color: var(--muted);
+}
+
+.empty-state i {
+    font-size: 46px;
+    margin-bottom: 10px;
+    color: var(--deep-blue-light);
+}
+
+.empty-state h3 {
+    color: var(--deep-blue-dark);
+    margin: 5px 0;
+    font-size: 22px;
+}
+
+.empty-state p {
+    font-size: 18px;
+    line-height: 1.5;
+    margin: 6px 0 0;
+}
+
+/* ================= MESSAGES ================= */
+
+.message-box {
+    margin-bottom: 14px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--orange-light);
+    color: var(--deep-blue-dark);
+    border-left: 4px solid var(--orange);
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+/* ================= TABLET ================= */
+
+@media (max-width: 1000px) {
+    .routes-page {
+        padding: 16px;
+    }
+
+    .form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: 12px;
+        row-gap: 8px;
+    }
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 650px) {
+    .routes-page {
+        padding: 12px;
+    }
+
+    .page-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    .page-title-area {
+        gap: 10px;
+    }
+
+    .page-icon {
+        width: 46px;
+        height: 46px;
+        font-size: 22px;
+    }
+
+    .page-title {
+        font-size: 28px;
+    }
+
+    .page-subtitle {
+        font-size: 18px;
+    }
+
+    .card {
+        margin-bottom: 14px;
+        border-radius: 10px;
+    }
+
+    .card-header {
+        padding: 11px 14px;
+    }
+
+    .card-header h2 {
+        font-size: 21px;
+    }
+
+    .form-body {
+        padding: 12px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        row-gap: 8px;
+    }
+
+    .form-group {
+        gap: 3px;
+    }
+
+    .form-control {
+        min-height: 40px;
+    }
+
+    .checkbox-row {
+        min-height: 36px;
+    }
+
+    .form-actions {
+        margin-top: 12px;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+    }
+
+    .routes-table th,
+    .routes-table td {
+        padding: 9px 10px;
+    }
+
+    .empty-state {
+        padding: 28px 14px;
+    }
+}
+</style>
+
+
+<div class="routes-page">
+
+    <!-- HEADER -->
+
+    <div class="page-header">
+
+        <div class="page-title-area">
+
+            <div class="page-icon">
+                <i class="fa-solid fa-route"></i>
+            </div>
+
+            <div>
+
+                <h1 class="page-title">
+                    Bus Routes
+                </h1>
+
+                <p class="page-subtitle">
+                    Create routes, assign buses and manage route stops.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MESSAGES -->
+
+    {% if messages %}
+
+        {% for message in messages %}
+
+            <div class="message-box">
+                <i class="fa-solid fa-circle-check"></i>
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+
+    <!-- CREATE ROUTE -->
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <i class="fa-solid fa-plus-circle"></i>
+
+            <h2>
+                Add New Bus Route
+            </h2>
+
+        </div>
+
+
+        <div class="form-body">
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <input
+                    type="hidden"
+                    name="action"
+                    value="create_route"
+                >
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label>
+                            Route Name
+                        </label>
+
+                        {{ route_form.route_name }}
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Route Code
+                        </label>
+
+                        {{ route_form.route_code }}
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Assigned Bus
+                        </label>
+
+                        {{ route_form.assigned_bus }}
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Start Location
+                        </label>
+
+                        {{ route_form.start_location }}
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            End Location
+                        </label>
+
+                        {{ route_form.end_location }}
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Distance (KM)
+                        </label>
+
+                        {{ route_form.total_distance_km }}
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Duration (Minutes)
+                        </label>
+
+                        {{ route_form.estimated_duration_minutes }}
+
+                    </div>
+
+
+                    <div class="checkbox-row">
+
+                        {{ route_form.is_active }}
+
+                        <label>
+                            Active Route
+                        </label>
+
+                    </div>
+                    <div class="form-actions">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+
+                        <i class="fa-solid fa-plus"></i>
+
+                        Save Route
+
+                    </button>
+
+                </div>
+
+                </div>
+
+
+                
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- ALL ROUTES -->
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <i class="fa-solid fa-list"></i>
+
+            <h2>
+                All Bus Routes
+            </h2>
+
+        </div>
+
+
+        {% if routes %}
+
+        <div class="table-wrapper">
+
+            <table class="routes-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Route Code
+                        </th>
+
+                        <th>
+                            Route Name
+                        </th>
+
+                        <th>
+                            Start Location
+                        </th>
+
+                        <th>
+                            End Location
+                        </th>
+
+                        <th>
+                            Assigned Bus
+                        </th>
+
+                        <th>
+                            Stops
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for route in routes %}
+
+                    <tr
+                        onclick="window.location.href='{% url 'transport:vp_route_detail' route.id %}'"
+                    >
+
+                        <td>
+
+                            <span class="route-code">
+                                {{ route.route_code }}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="route-name">
+                                {{ route.route_name }}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+                            {{ route.start_location }}
+                        </td>
+
+
+                        <td>
+                            {{ route.end_location }}
+                        </td>
+
+
+                        <td>
+
+                            {% with bus=route.buses.all|first %}
+
+                                {% if bus %}
+
+                                    <span class="bus-badge">
+
+                                        <i class="fa-solid fa-bus"></i>
+
+                                        {{ bus.bus_number }}
+
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="no-bus">
+                                        No bus assigned
+                                    </span>
+
+                                {% endif %}
+
+                            {% endwith %}
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="stop-count">
+                                {{ route.stops.count }}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            {% if route.is_active %}
+
+                                <span class="status-active">
+                                    Active
+                                </span>
+
+                            {% else %}
+
+                                <span class="status-inactive">
+                                    Inactive
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            <a
+                                href="{% url 'transport:vp_route_detail' route.id %}"
+                                class="action-btn"
+                                onclick="event.stopPropagation();"
+                            >
+
+                                View
+                                <i class="fa-solid fa-arrow-right"></i>
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <i class="fa-solid fa-route"></i>
+
+                <h3>
+                    No Routes Added
+                </h3>
+
+                <p>
+                    Create your first bus route using the form above.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

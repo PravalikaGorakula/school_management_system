@@ -1,0 +1,740 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}
+My Bus & Route
+{% endblock %}
+
+{% block extra_css %}
+<link
+    rel="stylesheet"
+    href="{% static 'transport/css/driver.css' %}"
+>
+{% endblock %}
+
+{% block content %}
+
+<div class="transport-page">
+
+    <!-- =====================================================
+         PAGE HEADER
+    ====================================================== -->
+
+    <div class="transport-page-header">
+
+        <div class="page-heading">
+
+            <div class="page-icon">
+                <i class="fa-solid fa-bus"></i>
+            </div>
+
+            <div>
+                <h1>My Bus & Route</h1>
+
+                <p>
+                    View your assigned bus, route and bus stops
+                </p>
+            </div>
+
+        </div>
+
+        <div class="header-status">
+
+            {% if bus and bus.is_active %}
+
+                <span class="status-badge active">
+                    <span class="status-dot"></span>
+                    Bus Active
+                </span>
+
+            {% else %}
+
+                <span class="status-badge inactive">
+                    <span class="status-dot"></span>
+                    Bus Inactive
+                </span>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    {% if bus %}
+
+    <!-- =====================================================
+         BUS SUMMARY
+    ====================================================== -->
+
+    <div class="bus-summary-card">
+
+        <div class="bus-main-info">
+
+            <div class="bus-icon">
+                <i class="fa-solid fa-bus-simple"></i>
+            </div>
+
+            <div>
+
+                <span class="section-label">
+                    Assigned Bus
+                </span>
+
+                <h2>
+                    {{ bus.bus_number }}
+                </h2>
+
+                <p>
+                    Registration:
+                    <strong>
+                        {{ bus.registration_number }}
+                    </strong>
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="bus-summary-status">
+
+            <span class="summary-label">
+                Status
+            </span>
+
+            {% if bus.status == "active" %}
+
+                <span class="status-badge active">
+                    <span class="status-dot"></span>
+                    Active
+                </span>
+
+            {% elif bus.status == "maintenance" %}
+
+                <span class="status-badge warning">
+                    <span class="status-dot"></span>
+                    Maintenance
+                </span>
+
+            {% else %}
+
+                <span class="status-badge inactive">
+                    <span class="status-dot"></span>
+                    Inactive
+                </span>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         BUS DETAILS
+    ====================================================== -->
+
+    <div class="content-grid">
+
+        <div class="dashboard-card">
+
+            <div class="card-header">
+
+                <div class="card-title">
+
+                    <div class="card-title-icon blue">
+                        <i class="fa-solid fa-bus"></i>
+                    </div>
+
+                    <div>
+                        <h3>Bus Details</h3>
+
+                        <p>
+                            Assigned vehicle information
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="card-body">
+
+                <div class="details-grid">
+
+                    <div class="detail-item">
+
+                        <span>Bus Number</span>
+
+                        <strong>
+                            {{ bus.bus_number|default:"—" }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>Registration Number</span>
+
+                        <strong>
+                            {{ bus.registration_number|default:"—" }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>Manufacturer</span>
+
+                        <strong>
+                            {{ bus.manufacturer|default:"—" }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>Model</span>
+
+                        <strong>
+                            {{ bus.model_name|default:"—" }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>Manufacture Year</span>
+
+                        <strong>
+                            {{ bus.manufacture_year|default:"—" }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>Capacity</span>
+
+                        <strong>
+                            {{ bus.capacity|default:"—" }}
+                            Students
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>Fuel Type</span>
+
+                        <strong>
+                            {{ bus.get_fuel_type_display|default:"—" }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>Driver</span>
+
+                        <strong>
+                            {{ bus.driver|default:"Assigned Driver" }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             GPS STATUS
+        ================================================== -->
+
+        <div class="dashboard-card">
+
+            <div class="card-header">
+
+                <div class="card-title">
+
+                    <div class="card-title-icon orange">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </div>
+
+                    <div>
+                        <h3>GPS Tracker</h3>
+
+                        <p>
+                            Current tracker status
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="card-body">
+
+                <div class="gps-status-box">
+
+                    <div class="gps-status-icon">
+
+                        <i class="fa-solid fa-satellite-dish"></i>
+
+                    </div>
+
+                    <div>
+
+                        {% if bus.tracker_is_active %}
+
+                            <strong>
+                                GPS Tracker Active
+                            </strong>
+
+                            <span>
+                                Tracker is connected
+                            </span>
+
+                        {% else %}
+
+                            <strong>
+                                GPS Tracker Offline
+                            </strong>
+
+                            <span>
+                                Tracker connection unavailable
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <div class="details-grid compact">
+
+                    <div class="detail-item">
+
+                        <span>Device ID</span>
+
+                        <strong>
+                            {{ bus.tracker_device_id|default:"Not assigned" }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>IMEI</span>
+
+                        <strong>
+                            {{ bus.tracker_imei|default:"Not assigned" }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>Provider</span>
+
+                        <strong>
+                            {{ bus.tracker_provider|default:"—" }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>Last Update</span>
+
+                        <strong>
+                            {{ bus.last_location_update|date:"d M Y, h:i A"|default:"No data" }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         ROUTE DETAILS
+    ====================================================== -->
+
+    <div class="dashboard-card route-card">
+
+        <div class="card-header">
+
+            <div class="card-title">
+
+                <div class="card-title-icon green">
+                    <i class="fa-solid fa-route"></i>
+                </div>
+
+                <div>
+
+                    <h3>Assigned Route</h3>
+
+                    <p>
+                        Route and stop information
+                    </p>
+
+                </div>
+
+            </div>
+
+            {% if route %}
+
+                <span class="route-code">
+                    {{ route.route_code }}
+                </span>
+
+            {% endif %}
+
+        </div>
+
+
+        {% if route %}
+
+        <div class="card-body">
+
+            <!-- Route overview -->
+
+            <div class="route-overview">
+
+                <div class="route-location">
+
+                    <div class="location-icon start">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Start Location
+                        </span>
+
+                        <strong>
+                            {{ route.start_location }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="route-line">
+
+                    <span></span>
+                    <i class="fa-solid fa-bus"></i>
+                    <span></span>
+
+                </div>
+
+
+                <div class="route-location">
+
+                    <div class="location-icon end">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </div>
+
+                    <div>
+
+                        <span>
+                            End Location
+                        </span>
+
+                        <strong>
+                            {{ route.end_location }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Route statistics -->
+
+            <div class="route-stats">
+
+                <div class="route-stat">
+
+                    <div class="route-stat-icon blue">
+                        <i class="fa-solid fa-road"></i>
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Distance
+                        </span>
+
+                        <strong>
+                            {{ route.total_distance_km|default:"0" }}
+                            km
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="route-stat">
+
+                    <div class="route-stat-icon orange">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Estimated Duration
+                        </span>
+
+                        <strong>
+                            {{ route.estimated_duration_minutes|default:"0" }}
+                            min
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="route-stat">
+
+                    <div class="route-stat-icon green">
+                        <i class="fa-solid fa-location-crosshairs"></i>
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Total Stops
+                        </span>
+
+                        <strong>
+                            {{ stops|length }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 BUS STOPS
+            ================================================== -->
+
+            <div class="stops-section">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <h4>
+                            Route Stops
+                        </h4>
+
+                        <p>
+                            Pickup and drop locations
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                {% if stops %}
+
+                <div class="route-stops">
+
+                    {% for stop in stops %}
+
+                    <div class="stop-item">
+
+                        <div class="stop-number">
+                            {{ stop.stop_order }}
+                        </div>
+
+
+                        <div class="stop-content">
+
+                            <div class="stop-main">
+
+                                <h5>
+                                    {{ stop.stop_name }}
+                                </h5>
+
+                                {% if stop.address %}
+
+                                    <p>
+                                        <i class="fa-solid fa-location-dot"></i>
+                                        {{ stop.address }}
+                                    </p>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <div class="stop-times">
+
+                                {% if stop.pickup_time %}
+
+                                    <div class="stop-time pickup">
+
+                                        <span>
+                                            Pickup
+                                        </span>
+
+                                        <strong>
+                                            {{ stop.pickup_time|time:"h:i A" }}
+                                        </strong>
+
+                                    </div>
+
+                                {% endif %}
+
+
+                                {% if stop.drop_time %}
+
+                                    <div class="stop-time drop">
+
+                                        <span>
+                                            Drop
+                                        </span>
+
+                                        <strong>
+                                            {{ stop.drop_time|time:"h:i A" }}
+                                        </strong>
+
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+                {% else %}
+
+                <div class="empty-state">
+
+                    <div class="empty-icon">
+                        <i class="fa-solid fa-route"></i>
+                    </div>
+
+                    <h4>
+                        No Route Stops Available
+                    </h4>
+
+                    <p>
+                        Stops have not been configured for this route yet.
+                    </p>
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        {% else %}
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                <i class="fa-solid fa-route"></i>
+            </div>
+
+            <h4>
+                No Route Assigned
+            </h4>
+
+            <p>
+                No route has been assigned to your bus yet.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+
+    {% else %}
+
+    <!-- =====================================================
+         NO BUS ASSIGNED
+    ====================================================== -->
+
+    <div class="no-bus-card">
+
+        <div class="no-bus-icon">
+            <i class="fa-solid fa-bus"></i>
+        </div>
+
+        <h2>
+            No Bus Assigned
+        </h2>
+
+        <p>
+            A bus has not been assigned to your account yet.
+            Please contact the transport administrator.
+        </p>
+
+        <div class="no-bus-info">
+
+            <div>
+                <i class="fa-solid fa-circle-info"></i>
+                Bus assignment required
+            </div>
+
+            <div>
+                <i class="fa-solid fa-user-shield"></i>
+                Contact Transport Administrator
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

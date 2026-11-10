@@ -1,0 +1,422 @@
+
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}
+Edit Document
+{% endblock %}
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'documents/css/documents.css' %}"
+>
+
+<style>
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --orange-light: #FFF4E6;
+        --text-color: #263445;
+        --muted-color: #64748B;
+        --border-color: #D8E1EA;
+        --white: #FFFFFF;
+        --danger: #B42318;
+        --danger-light: #FEF3F2;
+    }
+
+    .edit-document-page,
+    .edit-document-page * {
+        box-sizing: border-box;
+    }
+
+    .edit-document-page {
+        width: 100%;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 28px 24px;
+        color: var(--text-color);
+        font-size: 18px;
+    }
+
+    .edit-document-page .edit-card {
+        width: 100%;
+        max-width: 850px;
+        margin: 10px auto;
+        overflow: hidden;
+        background: var(--white);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        box-shadow: 0 5px 18px rgba(11, 41, 69, 0.08);
+    }
+
+    .edit-document-page .edit-header {
+        padding: 26px 32px;
+        background: var(--deep-blue);
+        border-bottom: 4px solid var(--orange);
+    }
+
+    .edit-document-page .edit-header h2 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0;
+        color: var(--white);
+        font-size: 28px;
+        font-weight: 700;
+        line-height: 1.4;
+    }
+
+    .edit-document-page .edit-header h2 i {
+        color: var(--orange);
+    }
+
+    .edit-document-page .error-message {
+        margin: 24px 32px 0;
+        padding: 16px 18px;
+        color: var(--danger);
+        background: var(--danger-light);
+        border: 1px solid #FDA29B;
+        border-left: 5px solid var(--danger);
+        border-radius: 8px;
+        font-size: 17px;
+        font-weight: 600;
+        line-height: 1.6;
+        overflow-wrap: anywhere;
+    }
+
+    .edit-document-page .document-info {
+        margin: 28px 32px;
+        padding: 22px;
+        color: var(--text-color);
+        background: var(--deep-blue-light);
+        border: 1px solid #C9D9E8;
+        border-left: 5px solid var(--orange);
+        border-radius: 10px;
+        font-size: 18px;
+        line-height: 1.8;
+        overflow-wrap: anywhere;
+    }
+
+    .edit-document-page .document-info strong {
+        color: var(--deep-blue-dark);
+        font-weight: 700;
+    }
+
+    .edit-document-page form {
+        padding: 0 32px 32px;
+    }
+
+    .edit-document-page form > label {
+        display: block;
+        margin-bottom: 12px;
+        color: var(--deep-blue-dark);
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .edit-document-page .file-input {
+        display: block;
+        width: 100%;
+        min-height: 58px;
+        padding: 10px;
+        color: var(--text-color);
+        background: var(--white);
+        border: 1.5px solid var(--border-color);
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 17px;
+        cursor: pointer;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .edit-document-page .file-input:hover {
+        border-color: var(--deep-blue);
+    }
+
+    .edit-document-page .file-input:focus {
+        outline: none;
+        border-color: var(--orange);
+        box-shadow: 0 0 0 3px rgba(242, 140, 40, 0.18);
+    }
+
+    .edit-document-page .file-input::file-selector-button {
+        margin-right: 14px;
+        padding: 10px 16px;
+        color: var(--white);
+        background: var(--deep-blue);
+        border: none;
+        border-radius: 6px;
+        font-family: inherit;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .edit-document-page .file-input::file-selector-button:hover {
+        background: var(--deep-blue-dark);
+    }
+
+    .edit-document-page .buttons {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 30px;
+        padding-top: 24px;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .edit-document-page .save-btn,
+    .edit-document-page .cancel-btn {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        min-height: 48px;
+        padding: 12px 22px;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 17px;
+        font-weight: 700;
+        line-height: 1.4;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.2s, color 0.2s,
+                    border-color 0.2s, transform 0.2s;
+    }
+
+    .edit-document-page .save-btn {
+        color: var(--white);
+        background: var(--orange);
+        border: 1.5px solid var(--orange);
+    }
+
+    .edit-document-page .save-btn:hover {
+        background: var(--orange-hover);
+        border-color: var(--orange-hover);
+        transform: translateY(-1px);
+    }
+
+    .edit-document-page .cancel-btn {
+        color: var(--deep-blue);
+        background: var(--white);
+        border: 1.5px solid var(--deep-blue);
+    }
+
+    .edit-document-page .cancel-btn:hover {
+        color: var(--white);
+        background: var(--deep-blue);
+        text-decoration: none;
+    }
+
+    .edit-document-page .save-btn:focus-visible,
+    .edit-document-page .cancel-btn:focus-visible {
+        outline: 3px solid rgba(242, 140, 40, 0.35);
+        outline-offset: 3px;
+    }
+
+    @media (max-width: 768px) {
+        .edit-document-page {
+            padding: 18px 14px;
+        }
+
+        .edit-document-page .edit-header {
+            padding: 24px 22px;
+        }
+
+        .edit-document-page .edit-header h2 {
+            font-size: 24px;
+        }
+
+        .edit-document-page .document-info {
+            margin: 24px 22px;
+            padding: 18px;
+            font-size: 17px;
+        }
+
+        .edit-document-page form {
+            padding: 0 22px 24px;
+        }
+
+        .edit-document-page .error-message {
+            margin-right: 22px;
+            margin-left: 22px;
+        }
+
+        .edit-document-page .buttons {
+            justify-content: stretch;
+        }
+
+        .edit-document-page .save-btn,
+        .edit-document-page .cancel-btn {
+            flex: 1 1 180px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .edit-document-page {
+            padding: 12px 8px;
+            font-size: 16px;
+        }
+
+        .edit-document-page .edit-header {
+            padding: 20px 16px;
+        }
+
+        .edit-document-page .edit-header h2 {
+            font-size: 22px;
+        }
+
+        .edit-document-page .document-info {
+            margin: 18px 16px;
+            padding: 16px;
+            font-size: 16px;
+        }
+
+        .edit-document-page form {
+            padding: 0 16px 22px;
+        }
+
+        .edit-document-page form > label {
+            font-size: 17px;
+        }
+
+        .edit-document-page .file-input {
+            font-size: 15px;
+        }
+
+        .edit-document-page .error-message {
+            margin: 18px 16px 0;
+            padding: 14px;
+            font-size: 16px;
+        }
+
+        .edit-document-page .buttons {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+        }
+
+        .edit-document-page .save-btn,
+        .edit-document-page .cancel-btn {
+            width: 100%;
+            flex: auto;
+        }
+    }
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="edit-document-page">
+
+    <div class="edit-card">
+
+        <div class="edit-header">
+            <h2>
+                <i class="fa-solid fa-pen"></i>
+                Edit Document
+            </h2>
+        </div>
+
+        {% if error %}
+            <div class="error-message" role="alert">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <div class="document-info">
+
+            <strong>
+                <i class="fa-solid fa-file-lines"></i>
+                Document:
+            </strong>
+
+            {{ field.verbose_name|title }}
+
+            <br><br>
+
+            <strong>
+                <i class="fa-solid fa-folder-open"></i>
+                Current File:
+            </strong>
+
+            {% if current_file %}
+                {{ current_file.name }}
+            {% else %}
+                No file
+            {% endif %}
+
+        </div>
+
+        <form
+            method="post"
+            enctype="multipart/form-data"
+        >
+
+            {% csrf_token %}
+
+            <label for="new_document_file">
+                Select New File
+            </label>
+
+            <input
+                type="file"
+                id="new_document_file"
+                name="{{ field.name }}"
+                class="file-input"
+                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
+                required
+            >
+
+            <div class="buttons">
+
+                <button
+                    type="submit"
+                    class="save-btn"
+                >
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Replace Document
+                </button>
+
+                {% if application_type == "student" %}
+
+                    <a
+                        href="{% url 'documents:student_document_details' application.application_id %}"
+                        class="cancel-btn"
+                    >
+                        <i class="fa-solid fa-arrow-left"></i>
+                        Cancel
+                    </a>
+
+                {% else %}
+
+                    <a
+                        href="{% url 'documents:employee_document_details' application.application_id %}"
+                        class="cancel-btn"
+                    >
+                        <i class="fa-solid fa-arrow-left"></i>
+                        Cancel
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

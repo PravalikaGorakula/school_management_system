@@ -1,0 +1,1379 @@
+{% extends "dashboard/base.html" %}
+
+{% block content %}
+
+<div class="vp-detail-page">
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <div class="detail-header">
+
+        <div>
+
+            <a href="{% url 'admissions:vp_student_approvals' %}"
+               class="back-link">
+
+                <i class="fa-solid fa-arrow-left"></i>
+                Back to Student Approvals
+
+            </a>
+
+            <h1>
+                Student Application Review
+            </h1>
+
+            <p>
+                Review the complete student application and uploaded documents
+                before making a decision.
+            </p>
+
+        </div>
+
+        <div class="application-id-box">
+
+            <span>Application ID</span>
+
+            <strong>
+                {{ application.application_id }}
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         APPLICATION STATUS
+    ====================================================== -->
+
+    <div class="status-card">
+
+        <div class="status-icon">
+            <i class="fa-solid fa-clock"></i>
+        </div>
+
+        <div>
+
+            <span>Current Status</span>
+
+            <strong>
+                Pending VP Approval
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         PERSONAL INFORMATION
+    ====================================================== -->
+
+    <div class="detail-card">
+
+        <div class="card-title">
+
+            <div class="title-icon">
+                <i class="fa-solid fa-user"></i>
+            </div>
+
+            <div>
+                <h2>Personal Information</h2>
+                <p>Student basic details</p>
+            </div>
+
+        </div>
+
+
+        <div class="details-grid">
+
+            <div class="detail-item">
+                <span>First Name</span>
+                <strong>{{ application.first_name|default:"—" }}</strong>
+            </div>
+
+            <div class="detail-item">
+                <span>Last Name</span>
+                <strong>{{ application.last_name|default:"—" }}</strong>
+            </div>
+
+            <div class="detail-item">
+                <span>Date of Birth</span>
+                <strong>
+                    {{ application.date_of_birth|date:"d M Y"|default:"—" }}
+                </strong>
+            </div>
+
+            <div class="detail-item">
+                <span>Gender</span>
+                <strong>{{ application.get_gender_display|default:"—" }}</strong>
+            </div>
+
+            <div class="detail-item">
+                <span>Phone</span>
+                <strong>{{ application.phone|default:"—" }}</strong>
+            </div>
+
+            <div class="detail-item">
+                <span>Email</span>
+                <strong>{{ application.email|default:"—" }}</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         ACADEMIC INFORMATION
+    ====================================================== -->
+
+    <div class="detail-card">
+
+        <div class="card-title">
+
+            <div class="title-icon academic-icon">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+
+            <div>
+                <h2>Academic Information</h2>
+                <p>Admission and previous school details</p>
+            </div>
+
+        </div>
+
+
+        <div class="details-grid">
+
+            <div class="detail-item">
+                <span>Applying Class</span>
+                <strong>
+                    {{ application.applying_class|default:"—" }}
+                </strong>
+            </div>
+
+            <div class="detail-item">
+                <span>Previous School</span>
+                <strong>
+                    {{ application.previous_school|default:"—" }}
+                </strong>
+            </div>
+
+            <div class="detail-item">
+                <span>Previous Percentage</span>
+                <strong>
+                    {% if application.previous_percentage %}
+                        {{ application.previous_percentage }}%
+                    {% else %}
+                        —
+                    {% endif %}
+                </strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         ADDRESS
+    ====================================================== -->
+
+    <div class="detail-card">
+
+        <div class="card-title">
+
+            <div class="title-icon address-icon">
+                <i class="fa-solid fa-location-dot"></i>
+            </div>
+
+            <div>
+                <h2>Address</h2>
+                <p>Student residential information</p>
+            </div>
+
+        </div>
+
+
+        <div class="address-box">
+
+            {{ application.address|default:"No address provided."|linebreaksbr }}
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         PARENT INFORMATION
+    ====================================================== -->
+
+    <div class="detail-card">
+
+        <div class="card-title">
+
+            <div class="title-icon parent-icon">
+                <i class="fa-solid fa-people-roof"></i>
+            </div>
+
+            <div>
+                <h2>Parent / Guardian Information</h2>
+                <p>Parent contact details</p>
+            </div>
+
+        </div>
+
+
+        <div class="details-grid">
+
+            <div class="detail-item">
+
+                <span>Father Name</span>
+
+                <strong>
+                    {{ application.father_name|default:"—" }}
+                </strong>
+
+            </div>
+
+            <div class="detail-item">
+
+                <span>Mother Name</span>
+
+                <strong>
+                    {{ application.mother_name|default:"—" }}
+                </strong>
+
+            </div>
+
+            <div class="detail-item">
+
+                <span>Parent Phone</span>
+
+                <strong>
+                    {{ application.parent_phone|default:"—" }}
+                </strong>
+
+            </div>
+
+            <div class="detail-item">
+
+                <span>Parent Email</span>
+
+                <strong>
+                    {{ application.parent_email|default:"—" }}
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         DOCUMENTS
+    ====================================================== -->
+
+    <div class="detail-card">
+
+        <div class="card-title">
+
+            <div class="title-icon document-icon">
+                <i class="fa-solid fa-folder-open"></i>
+            </div>
+
+            <div>
+                <h2>Uploaded Documents</h2>
+                <p>Review all submitted student documents</p>
+            </div>
+
+        </div>
+
+
+        <div class="documents-grid">
+
+
+            <!-- Student Photo -->
+
+            <div class="document-box">
+
+                <div class="document-info">
+
+                    <div class="document-icon">
+                        <i class="fa-solid fa-image"></i>
+                    </div>
+
+                    <div>
+                        <strong>Student Photo</strong>
+
+                        {% if application.student_photo %}
+                            <span>Uploaded</span>
+                        {% else %}
+                            <span class="not-uploaded">
+                                Not uploaded
+                            </span>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                {% if application.student_photo %}
+
+                <a
+                    href="{{ application.student_photo.url }}"
+                    target="_blank"
+                    class="document-btn"
+                >
+                    <i class="fa-solid fa-eye"></i>
+                    View
+                </a>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- Birth Certificate -->
+
+            <div class="document-box">
+
+                <div class="document-info">
+
+                    <div class="document-icon">
+                        <i class="fa-solid fa-file-lines"></i>
+                    </div>
+
+                    <div>
+
+                        <strong>Birth Certificate</strong>
+
+                        {% if application.birth_certificate %}
+                            <span>Uploaded</span>
+                        {% else %}
+                            <span class="not-uploaded">
+                                Not uploaded
+                            </span>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                {% if application.birth_certificate %}
+
+                <a
+                    href="{{ application.birth_certificate.url }}"
+                    target="_blank"
+                    class="document-btn"
+                >
+                    <i class="fa-solid fa-eye"></i>
+                    View
+                </a>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- Aadhaar -->
+
+            <div class="document-box">
+
+                <div class="document-info">
+
+                    <div class="document-icon">
+                        <i class="fa-solid fa-id-card"></i>
+                    </div>
+
+                    <div>
+
+                        <strong>Aadhaar Card</strong>
+
+                        {% if application.aadhaar_card %}
+                            <span>Uploaded</span>
+                        {% else %}
+                            <span class="not-uploaded">
+                                Not uploaded
+                            </span>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                {% if application.aadhaar_card %}
+
+                <a
+                    href="{{ application.aadhaar_card.url }}"
+                    target="_blank"
+                    class="document-btn"
+                >
+                    <i class="fa-solid fa-eye"></i>
+                    View
+                </a>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- Previous School Certificate -->
+
+            <div class="document-box">
+
+                <div class="document-info">
+
+                    <div class="document-icon">
+                        <i class="fa-solid fa-school"></i>
+                    </div>
+
+                    <div>
+
+                        <strong>Previous School Certificate</strong>
+
+                        {% if application.previous_school_certificate %}
+                            <span>Uploaded</span>
+                        {% else %}
+                            <span class="not-uploaded">
+                                Not uploaded
+                            </span>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                {% if application.previous_school_certificate %}
+
+                <a
+                    href="{{ application.previous_school_certificate.url }}"
+                    target="_blank"
+                    class="document-btn"
+                >
+                    <i class="fa-solid fa-eye"></i>
+                    View
+                </a>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- Transfer Certificate -->
+
+            <div class="document-box">
+
+                <div class="document-info">
+
+                    <div class="document-icon">
+                        <i class="fa-solid fa-file-certificate"></i>
+                    </div>
+
+                    <div>
+
+                        <strong>Transfer Certificate</strong>
+
+                        {% if application.transfer_certificate %}
+                            <span>Uploaded</span>
+                        {% else %}
+                            <span class="not-uploaded">
+                                Not uploaded
+                            </span>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                {% if application.transfer_certificate %}
+
+                <a
+                    href="{{ application.transfer_certificate.url }}"
+                    target="_blank"
+                    class="document-btn"
+                >
+                    <i class="fa-solid fa-eye"></i>
+                    View
+                </a>
+
+                {% endif %}
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         SUBMISSION INFORMATION
+    ====================================================== -->
+
+    <div class="detail-card">
+
+        <div class="card-title">
+
+            <div class="title-icon">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
+
+            <div>
+                <h2>Application Information</h2>
+                <p>Submission and approval details</p>
+            </div>
+
+        </div>
+
+
+        <div class="details-grid">
+
+            <div class="detail-item">
+
+                <span>Application ID</span>
+
+                <strong>
+                    {{ application.application_id }}
+                </strong>
+
+            </div>
+
+            <div class="detail-item">
+
+                <span>Submitted By</span>
+
+                <strong>
+                    {{ application.submitted_by.username|default:"—" }}
+                </strong>
+
+            </div>
+
+            <div class="detail-item">
+
+                <span>Submitted At</span>
+
+                <strong>
+                    {{ application.submitted_at|date:"d M Y, h:i A" }}
+                </strong>
+
+            </div>
+
+            <div class="detail-item">
+
+                <span>Current Status</span>
+
+                <strong class="pending-text">
+                    VP Pending
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         APPROVAL ACTIONS
+    ====================================================== -->
+
+    <div class="action-card">
+
+        <div>
+
+            <h2>
+                <i class="fa-solid fa-shield-check"></i>
+                Final Review
+            </h2>
+
+            <p>
+                Please verify all student information and documents
+                before making your decision.
+            </p>
+
+        </div>
+
+
+        <div class="action-buttons">
+
+            <button
+                type="button"
+                class="reject-btn"
+                onclick="showRejectModal()"
+            >
+                <i class="fa-solid fa-xmark"></i>
+                Reject
+            </button>
+
+
+            <button
+                type="button"
+                class="approve-btn"
+                onclick="showApproveModal()"
+            >
+                <i class="fa-solid fa-check"></i>
+                Approve Student
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     APPROVE MODAL
+========================================================= -->
+
+<div id="approveModal" class="modal-overlay">
+
+    <div class="modal-box">
+
+        <div class="modal-icon approve-modal-icon">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+
+        <h3>Approve Student Application?</h3>
+
+        <p>
+            After approval, this application will move to the
+            account creation stage.
+        </p>
+
+        <div class="modal-actions">
+
+            <button
+                type="button"
+                class="cancel-btn"
+                onclick="closeApproveModal()"
+            >
+                Cancel
+            </button>
+
+            <form
+                method="post"
+                action="{% url 'admissions:vp_approve_student' approval.id %}"
+            >
+
+                {% csrf_token %}
+
+                <button
+                    type="submit"
+                    class="approve-btn"
+                >
+                    <i class="fa-solid fa-check"></i>
+                    Confirm Approval
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     REJECT MODAL
+========================================================= -->
+
+<div id="rejectModal" class="modal-overlay">
+
+    <div class="modal-box">
+
+        <div class="modal-icon reject-modal-icon">
+            <i class="fa-solid fa-circle-xmark"></i>
+        </div>
+
+        <h3>Reject Student Application?</h3>
+
+        <p>
+            Please provide a reason for rejecting this application.
+        </p>
+
+        <form
+            method="post"
+            action="{% url 'admissions:vp_reject_student' approval.id %}"
+        >
+
+            {% csrf_token %}
+
+            <textarea
+                name="review_comment"
+                placeholder="Enter rejection reason..."
+                required
+            ></textarea>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="cancel-btn"
+                    onclick="closeRejectModal()"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="reject-btn"
+                >
+                    <i class="fa-solid fa-xmark"></i>
+                    Confirm Rejection
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<style>
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+.vp-detail-page {
+    padding: 5px 0 35px;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 25px;
+    margin-bottom: 22px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    color: #64748B;
+    text-decoration: none;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    margin-bottom: 12px;
+}
+
+.back-link:hover {
+    color: #123B63;
+}
+
+.detail-header h1 {
+    margin: 0;
+    color: #123B63;
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.detail-header p {
+    margin: 8px 0 0;
+    color: #64748B;
+    font-size: 17px;
+}
+
+.application-id-box {
+    min-width: 210px;
+    padding: 15px 20px;
+
+    background: #EEF6FF;
+    border: 1px solid #D6E8F8;
+    border-radius: 12px;
+
+    text-align: center;
+}
+
+.application-id-box span {
+    display: block;
+    color: #64748B;
+    font-size: 13px;
+}
+
+.application-id-box strong {
+    display: block;
+    margin-top: 5px;
+
+    color: #123B63;
+    font-size: 18px;
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    padding: 17px 20px;
+    margin-bottom: 20px;
+
+    background: #FFF4E6;
+    border: 1px solid #FED7AA;
+    border-radius: 12px;
+}
+
+.status-icon {
+    width: 45px;
+    height: 45px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #FFFFFF;
+    color: #D97706;
+
+    border-radius: 10px;
+}
+
+.status-card span {
+    display: block;
+    color: #64748B;
+    font-size: 14px;
+}
+
+.status-card strong {
+    display: block;
+    margin-top: 3px;
+
+    color: #D97706;
+    font-size: 17px;
+}
+
+
+/* =========================================================
+   DETAIL CARD
+========================================================= */
+
+.detail-card {
+    margin-bottom: 20px;
+
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 15px;
+
+    box-shadow: 0 8px 28px rgba(15, 23, 42, 0.05);
+
+    padding: 23px;
+}
+
+.card-title {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    padding-bottom: 18px;
+    margin-bottom: 20px;
+
+    border-bottom: 1px solid #E2E8F0;
+}
+
+.title-icon {
+    width: 45px;
+    height: 45px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #EEF6FF;
+    color: #123B63;
+
+    border-radius: 10px;
+
+    font-size: 19px;
+}
+
+.academic-icon {
+    background: #ECFDF5;
+    color: #059669;
+}
+
+.address-icon {
+    background: #FFF4E6;
+    color: #D97706;
+}
+
+.parent-icon {
+    background: #F5F3FF;
+    color: #7C3AED;
+}
+
+.document-icon {
+    background: #ECFEFF;
+    color: #0891B2;
+}
+
+.card-title h2 {
+    margin: 0;
+    color: #123B63;
+    font-size: 21px;
+}
+
+.card-title p {
+    margin: 4px 0 0;
+    color: #64748B;
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   DETAILS GRID
+========================================================= */
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.detail-item {
+    min-width: 0;
+}
+
+.detail-item span {
+    display: block;
+    margin-bottom: 6px;
+
+    color: #64748B;
+    font-size: 14px;
+}
+
+.detail-item strong {
+    display: block;
+
+    color: #1F2937;
+    font-size: 16px;
+
+    word-break: break-word;
+}
+
+.pending-text {
+    color: #D97706 !important;
+}
+
+
+/* =========================================================
+   ADDRESS
+========================================================= */
+
+.address-box {
+    padding: 15px 17px;
+
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+
+    color: #334155;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   DOCUMENTS
+========================================================= */
+
+.documents-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.document-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    padding: 16px;
+
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 11px;
+}
+
+.document-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.document-info .document-icon {
+    width: 42px;
+    height: 42px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #FFFFFF;
+    color: #123B63;
+
+    border-radius: 9px;
+}
+
+.document-info strong {
+    display: block;
+
+    color: #1F2937;
+    font-size: 15px;
+}
+
+.document-info span {
+    display: block;
+    margin-top: 3px;
+
+    color: #059669;
+    font-size: 13px;
+}
+
+.document-info .not-uploaded {
+    color: #DC2626;
+}
+
+.document-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    flex-shrink: 0;
+
+    padding: 8px 12px;
+
+    background: #123B63;
+    color: #FFFFFF;
+
+    border-radius: 7px;
+
+    text-decoration: none;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.document-btn:hover {
+    background: #0B2945;
+    color: #FFFFFF;
+}
+
+
+/* =========================================================
+   ACTION CARD
+========================================================= */
+
+.action-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 25px;
+
+    padding: 22px 24px;
+
+    background: #FFFFFF;
+
+    border: 1px solid #E2E8F0;
+    border-radius: 15px;
+
+    box-shadow: 0 8px 28px rgba(15, 23, 42, 0.05);
+}
+
+.action-card h2 {
+    margin: 0;
+
+    color: #123B63;
+    font-size: 20px;
+}
+
+.action-card h2 i {
+    color: #F28C28;
+    margin-right: 6px;
+}
+
+.action-card p {
+    margin: 7px 0 0;
+
+    color: #64748B;
+    font-size: 15px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.approve-btn,
+.reject-btn,
+.cancel-btn {
+    border: none;
+    cursor: pointer;
+
+    padding: 11px 18px;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.approve-btn {
+    background: #123B63;
+    color: #FFFFFF;
+}
+
+.approve-btn:hover {
+    background: #0B2945;
+}
+
+.reject-btn {
+    background: #FEF2F2;
+    color: #DC2626;
+    border: 1px solid #FECACA;
+}
+
+.reject-btn:hover {
+    background: #FEE2E2;
+}
+
+.cancel-btn {
+    background: #F1F5F9;
+    color: #475569;
+}
+
+.cancel-btn:hover {
+    background: #E2E8F0;
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.modal-overlay {
+    display: none;
+
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(15, 23, 42, 0.55);
+}
+
+.modal-box {
+    width: 100%;
+    max-width: 470px;
+
+    padding: 28px;
+
+    background: #FFFFFF;
+    border-radius: 16px;
+
+    box-shadow: 0 25px 70px rgba(15, 23, 42, 0.2);
+
+    text-align: center;
+}
+
+.modal-icon {
+    width: 58px;
+    height: 58px;
+
+    margin: 0 auto 15px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    font-size: 26px;
+}
+
+.approve-modal-icon {
+    background: #ECFDF5;
+    color: #059669;
+}
+
+.reject-modal-icon {
+    background: #FEF2F2;
+    color: #DC2626;
+}
+
+.modal-box h3 {
+    margin: 0;
+
+    color: #123B63;
+    font-size: 21px;
+}
+
+.modal-box p {
+    margin: 9px 0 20px;
+
+    color: #64748B;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.modal-box textarea {
+    width: 100%;
+    min-height: 120px;
+
+    resize: vertical;
+
+    padding: 13px;
+
+    border: 1px solid #CBD5E1;
+    border-radius: 9px;
+
+    outline: none;
+
+    font-family: inherit;
+    font-size: 15px;
+}
+
+.modal-box textarea:focus {
+    border-color: #123B63;
+    box-shadow: 0 0 0 3px rgba(18, 59, 99, 0.08);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .details-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .documents-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .action-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+}
+
+@media (max-width: 650px) {
+
+    .detail-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .application-id-box {
+        width: 100%;
+    }
+
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .action-buttons {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .action-buttons button {
+        width: 100%;
+        justify-content: center;
+    }
+
+}
+
+
+/* =========================================================
+   JAVASCRIPT MODAL
+========================================================= */
+
+</style>
+
+
+<script>
+
+function showApproveModal() {
+    document.getElementById("approveModal").style.display = "flex";
+}
+
+function closeApproveModal() {
+    document.getElementById("approveModal").style.display = "none";
+}
+
+function showRejectModal() {
+    document.getElementById("rejectModal").style.display = "flex";
+}
+
+function closeRejectModal() {
+    document.getElementById("rejectModal").style.display = "none";
+}
+
+window.addEventListener("click", function(event) {
+
+    const approveModal = document.getElementById("approveModal");
+    const rejectModal = document.getElementById("rejectModal");
+
+    if (event.target === approveModal) {
+        closeApproveModal();
+    }
+
+    if (event.target === rejectModal) {
+        closeRejectModal();
+    }
+
+});
+
+</script>
+
+{% endblock %}

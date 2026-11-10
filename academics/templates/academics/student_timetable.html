@@ -1,0 +1,445 @@
+{% extends "dashboard/base.html" %}
+{% load timetable_filters %}
+
+{% block content %}
+
+<style>
+
+    .timetable-page {
+        padding: 24px;
+        font-size: 18px;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .page-title {
+        margin: 0;
+        font-size: 30px;
+        font-weight: 700;
+        color: #123B63;
+    }
+
+    .page-subtitle {
+        margin-top: 6px;
+        color: #64748B;
+        font-size: 18px;
+    }
+
+    .class-card {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+    }
+
+    .class-info {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+    }
+
+    .info-box {
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        border-radius: 10px;
+        padding: 15px;
+    }
+
+    .info-label {
+        display: block;
+        font-size: 15px;
+        color: #64748B;
+        margin-bottom: 5px;
+    }
+
+    .info-value {
+        font-size: 19px;
+        font-weight: 700;
+        color: #123B63;
+    }
+
+    .timetable-card {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+        overflow-x: auto;
+    }
+
+    .section-title {
+        color: #123B63;
+        font-size: 23px;
+        font-weight: 700;
+        margin: 0 0 20px;
+    }
+
+    .timetable-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1000px;
+    }
+
+    .timetable-table th {
+        background: #123B63;
+        color: #FFFFFF;
+        padding: 16px;
+        text-align: center;
+        font-size: 18px;
+        border: 1px solid #E2E8F0;
+        white-space: nowrap;
+    }
+
+    .timetable-table td {
+        border: 1px solid #E2E8F0;
+        padding: 10px;
+        text-align: center;
+        vertical-align: middle;
+        font-size: 17px;
+    }
+
+    .day-cell {
+        background: #F8FAFC;
+        color: #123B63;
+        font-weight: 700;
+        min-width: 120px;
+    }
+
+    .period-cell {
+        background: #FFF7ED;
+        color: #123B63;
+        font-weight: 700;
+        min-width: 80px;
+    }
+
+    .subject-box {
+        background: #F8FAFC;
+        border-left: 4px solid #F28C28;
+        border-radius: 8px;
+        padding: 10px;
+        min-height: 85px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .subject-name {
+        color: #123B63;
+        font-weight: 700;
+        font-size: 18px;
+    }
+
+    .teacher-name {
+        color: #475569;
+        font-size: 16px;
+    }
+
+    .room-name {
+        color: #64748B;
+        font-size: 15px;
+    }
+
+    .empty-period {
+        color: #94A3B8;
+        font-size: 16px;
+    }
+
+    .alert-box {
+        background: #FFF7ED;
+        border: 1px solid #F28C28;
+        color: #123B63;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        font-size: 18px;
+    }
+
+    .no-data {
+        text-align: center;
+        padding: 50px 20px;
+        color: #64748B;
+    }
+
+    .no-data i {
+        font-size: 45px;
+        color: #F28C28;
+        margin-bottom: 15px;
+    }
+
+    .no-data h3 {
+        color: #123B63;
+        font-size: 23px;
+        margin-bottom: 8px;
+    }
+
+    @media (max-width: 900px) {
+
+        .class-info {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+    }
+
+    @media (max-width: 600px) {
+
+        .timetable-page {
+            padding: 15px;
+        }
+
+        .class-info {
+            grid-template-columns: 1fr;
+        }
+
+        .page-title {
+            font-size: 25px;
+        }
+
+    }
+
+</style>
+
+
+<div class="timetable-page">
+
+    <!-- Page Header -->
+    <div class="page-header">
+
+        <div>
+            <h1 class="page-title">
+                <i class="fa-solid fa-calendar-days"></i>
+                My Timetable
+            </h1>
+
+            <p class="page-subtitle">
+                Your class timetable based on your assigned Class & Section
+            </p>
+        </div>
+
+    </div>
+
+
+    <!-- Error / Information -->
+    {% if error_message %}
+
+        <div class="alert-box">
+            <i class="fa-solid fa-circle-info"></i>
+            {{ error_message }}
+        </div>
+
+    {% endif %}
+
+
+    {% if class_section %}
+
+        <!-- Class Information -->
+        <div class="class-card">
+
+            <div class="class-info">
+
+                <div class="info-box">
+                    <span class="info-label">
+                        Student
+                    </span>
+
+                    <span class="info-value">
+                        {{ student.first_name }} {{ student.last_name }}
+                    </span>
+                </div>
+
+
+                <div class="info-box">
+                    <span class="info-label">
+                        Class
+                    </span>
+
+                    <span class="info-value">
+                        {{ class_section.grade }}
+                    </span>
+                </div>
+
+
+                <div class="info-box">
+                    <span class="info-label">
+                        Section
+                    </span>
+
+                    <span class="info-value">
+                        {{ class_section.section }}
+                    </span>
+                </div>
+
+
+                <div class="info-box">
+                    <span class="info-label">
+                        Academic Year
+                    </span>
+
+                    <span class="info-value">
+                        {{ academic_year }}
+                    </span>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Timetable -->
+        <div class="timetable-card">
+
+            <h2 class="section-title">
+                <i class="fa-solid fa-table"></i>
+                Weekly Timetable
+            </h2>
+
+
+            {% if timetable_entries %}
+
+                <table class="timetable-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Day
+                            </th>
+
+                            {% for period in periods %}
+
+                                <th>
+                                    Period {{ period }}
+                                </th>
+
+                            {% endfor %}
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for day in days %}
+
+                            <tr>
+
+                                <td class="day-cell">
+                                    {{ day }}
+                                </td>
+
+
+                                {% for period in periods %}
+
+                                    <td>
+
+                                        {% with entry=timetable_grid|get_item:day|default_if_none:"" %}
+
+                                            {% if entry %}
+
+                                                {% with period_entry=entry|get_item:period %}
+
+                                                    {% if period_entry %}
+
+                                                        <div class="subject-box">
+
+                                                            <div class="subject-name">
+                                                                {{ period_entry.subject.subject_name }}
+                                                            </div>
+
+
+                                                            <div class="teacher-name">
+
+                                                                <i class="fa-solid fa-user"></i>
+
+                                                                {% if period_entry.employee.get_full_name %}
+                                                                    {{ period_entry.employee.get_full_name }}
+                                                                {% else %}
+                                                                    {{ period_entry.employee.username }}
+                                                                {% endif %}
+
+                                                            </div>
+
+
+                                                            {% if period_entry.room %}
+
+                                                                <div class="room-name">
+
+                                                                    <i class="fa-solid fa-location-dot"></i>
+
+                                                                    Room:
+                                                                    {{ period_entry.room }}
+
+                                                                </div>
+
+                                                            {% endif %}
+
+                                                        </div>
+
+                                                    {% else %}
+
+                                                        <span class="empty-period">
+                                                            Free
+                                                        </span>
+
+                                                    {% endif %}
+
+                                                {% endwith %}
+
+                                            {% else %}
+
+                                                <span class="empty-period">
+                                                    Free
+                                                </span>
+
+                                            {% endif %}
+
+                                        {% endwith %}
+
+                                    </td>
+
+                                {% endfor %}
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            {% else %}
+
+                <div class="no-data">
+
+                    <i class="fa-solid fa-calendar-xmark"></i>
+
+                    <h3>
+                        No Timetable Available
+                    </h3>
+
+                    <p>
+                        Timetable has not been created for your class and section yet.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

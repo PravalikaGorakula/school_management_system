@@ -1,0 +1,701 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}
+Live Bus
+{% endblock %}
+
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+
+<link
+    rel="stylesheet"
+    href="{% static 'transport/css/student_live_bus.css' %}"
+>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="live-bus-page">
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <div class="live-bus-header">
+
+        <div>
+
+            <div class="page-breadcrumb">
+                Student / Transport / Live Bus
+            </div>
+
+            <h1>
+                <i class="fa-solid fa-bus"></i>
+                Live Bus
+            </h1>
+
+            <p>
+                Track your school bus and view live journey information.
+            </p>
+
+        </div>
+
+
+        <div
+            class="live-status"
+            id="connectionStatus"
+        >
+
+            <span class="status-dot"></span>
+
+            <span id="connectionText">
+                Connecting...
+            </span>
+
+        </div>
+
+    </div>
+
+
+    {% if error_message %}
+
+    <!-- =====================================================
+         NO BUS
+    ====================================================== -->
+
+    <div class="empty-state">
+
+        <div class="empty-icon">
+            <i class="fa-solid fa-bus-simple"></i>
+        </div>
+
+        <h2>
+            Bus Not Assigned
+        </h2>
+
+        <p>
+            {{ error_message }}
+        </p>
+
+    </div>
+
+    {% else %}
+
+
+    <!-- =====================================================
+         BUS SUMMARY
+    ====================================================== -->
+
+    <div class="bus-summary-card">
+
+        <div class="bus-main-info">
+
+            <div class="bus-icon-box">
+                <i class="fa-solid fa-bus"></i>
+            </div>
+
+            <div>
+
+                <span class="small-label">
+                    MY SCHOOL BUS
+                </span>
+
+                <h2>
+                    {{ bus.bus_number }}
+                </h2>
+
+                <p>
+                    {{ bus.registration_number }}
+
+                    {% if bus.bus_name %}
+                        • {{ bus.bus_name }}
+                    {% endif %}
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="route-summary">
+
+            <div>
+                <span>Route</span>
+                <strong>
+                    {{ route.route_name }}
+                </strong>
+            </div>
+
+            <div>
+                <span>Driver</span>
+                <strong>
+                    {% if trip and trip.driver %}
+                        {{ trip.driver.first_name }}
+                        {{ trip.driver.last_name }}
+                    {% elif bus.driver %}
+                        {{ bus.driver.first_name }}
+                        {{ bus.driver.last_name }}
+                    {% else %}
+                        Assigned Driver
+                    {% endif %}
+                </strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         LIVE AREA
+    ====================================================== -->
+
+    <div class="live-grid">
+
+
+        <!-- =================================================
+             MAP
+        ================================================== -->
+
+        <div class="map-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <h3>
+                        <i class="fa-solid fa-location-dot"></i>
+                        Live Location
+                    </h3>
+
+                    <span>
+                        GPS tracker location
+                    </span>
+
+                </div>
+
+                <span
+                    class="map-live-badge"
+                    id="mapLiveBadge"
+                >
+                    LIVE
+                </span>
+
+            </div>
+
+
+            <div
+                id="studentBusMap"
+                class="student-bus-map"
+            ></div>
+
+
+            <div class="coordinates">
+
+                <div>
+
+                    <span>
+                        Latitude
+                    </span>
+
+                    <strong id="latitude">
+                        --
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        Longitude
+                    </span>
+
+                    <strong id="longitude">
+                        --
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             LIVE DETAILS
+        ================================================== -->
+
+        <div class="details-column">
+
+
+            <!-- SPEED -->
+
+            <div class="live-info-card speed-card">
+
+                <div class="info-icon">
+                    <i class="fa-solid fa-gauge-high"></i>
+                </div>
+
+                <div>
+
+                    <span>
+                        Current Speed
+                    </span>
+
+                    <strong>
+                        <span id="speed">
+                            --
+                        </span>
+                        <small>km/h</small>
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- IGNITION -->
+
+            <div class="live-info-card">
+
+                <div class="info-icon">
+                    <i class="fa-solid fa-key"></i>
+                </div>
+
+                <div>
+
+                    <span>
+                        Ignition
+                    </span>
+
+                    <strong id="ignition">
+                        --
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- TRIP STATUS -->
+
+            <div class="live-info-card">
+
+                <div class="info-icon">
+                    <i class="fa-solid fa-route"></i>
+                </div>
+
+                <div>
+
+                    <span>
+                        Trip Status
+                    </span>
+
+                    <strong id="tripStatus">
+                        --
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- LAST UPDATE -->
+
+            <div class="live-info-card">
+
+                <div class="info-icon">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+
+                <div>
+
+                    <span>
+                        Last GPS Update
+                    </span>
+
+                    <strong id="lastUpdate">
+                        --
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         JOURNEY INFORMATION
+    ====================================================== -->
+
+    <div class="section-card">
+
+        <div class="section-title">
+
+            <div>
+
+                <h3>
+                    <i class="fa-solid fa-route"></i>
+                    Journey Information
+                </h3>
+
+                <span>
+                    Current trip and stop information
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="journey-grid">
+
+
+            <div class="journey-item">
+
+                <span>
+                    Current Stop
+                </span>
+
+                <strong id="currentStop">
+                    {% if current_stop %}
+                        {{ current_stop.stop_name }}
+                    {% else %}
+                        Not available
+                    {% endif %}
+                </strong>
+
+            </div>
+
+
+            <div class="journey-item">
+
+                <span>
+                    Next Stop
+                </span>
+
+                <strong id="nextStop">
+                    {% if next_stop %}
+                        {{ next_stop.stop_name }}
+                    {% else %}
+                        --
+                    {% endif %}
+                </strong>
+
+            </div>
+
+
+            <div class="journey-item student-stop">
+
+                <span>
+                    My Stop
+                </span>
+
+                <strong>
+                    {% if student_stop %}
+                        {{ student_stop.stop_name }}
+                    {% else %}
+                        Not assigned
+                    {% endif %}
+                </strong>
+
+            </div>
+
+
+            <div class="journey-item">
+
+                <span>
+                    Trip
+                </span>
+
+                <strong>
+                    {% if trip %}
+                        {{ trip.get_trip_type_display }}
+                    {% else %}
+                        No active trip
+                    {% endif %}
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         ROUTE STOPS
+    ====================================================== -->
+
+    <div class="section-card">
+
+        <div class="section-title">
+
+            <div>
+
+                <h3>
+                    <i class="fa-solid fa-road"></i>
+                    Route
+                </h3>
+
+                <span>
+                    Bus stops on your assigned route
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="route-timeline">
+
+            {% for stop in stops %}
+
+            <div
+                class="route-stop
+                {% if current_stop and stop.id == current_stop.id %}
+                    current
+                {% endif %}
+                {% if student_stop and stop.id == student_stop.id %}
+                    student
+                {% endif %}"
+            >
+
+                <div class="stop-marker">
+
+                    {% if current_stop and stop.id == current_stop.id %}
+
+                        <i class="fa-solid fa-bus"></i>
+
+                    {% elif student_stop and stop.id == student_stop.id %}
+
+                        <i class="fa-solid fa-user"></i>
+
+                    {% else %}
+
+                        <span></span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="stop-content">
+
+                    <strong>
+                        {{ stop.stop_name }}
+                    </strong>
+
+                    <span>
+                        Stop {{ stop.stop_order }}
+
+                        {% if stop.pickup_time %}
+                            • Pickup {{ stop.pickup_time|time:"h:i A" }}
+                        {% endif %}
+                    </span>
+
+                </div>
+
+
+                {% if current_stop and stop.id == current_stop.id %}
+
+                    <span class="stop-badge current-badge">
+                        CURRENT
+                    </span>
+
+                {% elif student_stop and stop.id == student_stop.id %}
+
+                    <span class="stop-badge student-badge">
+                        MY STOP
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+            {% empty %}
+
+            <div class="no-data">
+                No route stops available.
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         ALERTS
+    ====================================================== -->
+
+    <div class="section-card alerts-card">
+
+        <div class="section-title">
+
+            <div>
+
+                <h3>
+                    <i class="fa-solid fa-bell"></i>
+                    Bus Alerts
+                </h3>
+
+                <span>
+                    Important updates about your bus
+                </span>
+
+            </div>
+
+            <span
+                class="alert-count"
+                id="alertCount"
+            >
+                {{ alerts|length }}
+            </span>
+
+        </div>
+
+
+        <div
+            class="alerts-list"
+            id="alertsList"
+        >
+
+            {% for alert in alerts %}
+
+            <div class="alert-item">
+
+                <div class="alert-icon
+                    {% if alert.severity == 'critical' %}
+                        critical
+                    {% elif alert.severity == 'high' %}
+                        high
+                    {% else %}
+                        normal
+                    {% endif %}
+                ">
+
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+
+                </div>
+
+
+                <div class="alert-content">
+
+                    <strong>
+                        {{ alert.title }}
+                    </strong>
+
+                    <p>
+                        {{ alert.message }}
+                    </p>
+
+                    <span>
+                        {{ alert.created_at|date:"d M Y, h:i A" }}
+                    </span>
+
+                </div>
+
+            </div>
+
+            {% empty %}
+
+            <div class="no-alerts">
+
+                <i class="fa-solid fa-circle-check"></i>
+
+                <div>
+
+                    <strong>
+                        No active alerts
+                    </strong>
+
+                    <p>
+                        Your bus currently has no important alerts.
+                    </p>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         TRACKER INFORMATION
+    ====================================================== -->
+
+    <div class="tracker-footer">
+
+        <div>
+
+            <span>
+                Tracker Provider
+            </span>
+
+            <strong>
+                {{ bus.tracker_provider|default:"GPS Tracker" }}
+            </strong>
+
+        </div>
+
+
+        <div>
+
+            <span>
+                Device
+            </span>
+
+            <strong>
+                {{ bus.tracker_device_id|default:"Connected Tracker" }}
+            </strong>
+
+        </div>
+
+
+        <div>
+
+            <span>
+                GPS Status
+            </span>
+
+            <strong id="trackerStatus">
+                Checking...
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script src="{% static 'transport/js/student_live_bus.js' %}"></script>
+
+{% endblock %}

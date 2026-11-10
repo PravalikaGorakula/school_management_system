@@ -1,0 +1,777 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Employee Overview{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --orange-light: #FFF4E6;
+        --green: #25845A;
+        --green-light: #EAF7F0;
+        --purple: #7654A8;
+        --purple-light: #F2EDFA;
+        --teal: #168A91;
+        --red: #C74747;
+        --text-primary: #243447;
+        --text-secondary: #5F6F80;
+        --border-color: #E0E7EF;
+        --page-background: #F5F7FA;
+        --card-background: #FFFFFF;
+        --radius-small: 10px;
+        --radius-medium: 14px;
+        --radius-large: 18px;
+        --shadow-card: 0 4px 16px rgba(18, 59, 99, 0.07);
+        --shadow-hover: 0 10px 25px rgba(18, 59, 99, 0.13);
+    }
+
+    .employee-dashboard {
+        width: 100%;
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 28px;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Arial, sans-serif;
+        font-size: 18px;
+        line-height: 1.6;
+        color: var(--text-primary);
+    }
+
+    /* PAGE HEADER */
+
+    .employee-header {
+        background: linear-gradient(
+            135deg,
+            var(--deep-blue-dark),
+            var(--deep-blue)
+        );
+        color: #FFFFFF;
+        padding: 28px 32px;
+        border-radius: var(--radius-large);
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 20px;
+        box-shadow: var(--shadow-card);
+    }
+
+    .employee-header h1 {
+        margin: 0 0 8px;
+        font-size: 30px;
+        font-weight: 700;
+        line-height: 1.3;
+        color: #FFFFFF;
+    }
+
+    .employee-header p {
+        margin: 0;
+        font-size: 18px;
+        color: #EAF2F8;
+    }
+
+    .employee-header-icon {
+        width: 66px;
+        height: 66px;
+        min-width: 66px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.13);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        color: #FFFFFF;
+    }
+
+    /* SECTION TITLE */
+
+    .employee-section {
+        margin-bottom: 32px;
+    }
+
+    .employee-section-title {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin: 0 0 22px;
+        font-size: 23px;
+        font-weight: 700;
+        color: var(--deep-blue);
+    }
+
+    .employee-section-title .title-icon {
+        width: 43px;
+        height: 43px;
+        min-width: 43px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: var(--orange-light);
+        color: var(--orange);
+        font-size: 21px;
+    }
+
+    /* STATISTICS GRID */
+
+    .employee-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 22px;
+    }
+
+    .employee-stat-card {
+        min-width: 0;
+        min-height: 140px;
+        padding: 24px;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        background: var(--card-background);
+        border: 1px solid var(--border-color);
+        border-left: 5px solid var(--deep-blue);
+        border-radius: var(--radius-medium);
+        box-shadow: var(--shadow-card);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        overflow: hidden;
+    }
+
+    .employee-stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .employee-stat-card.orange {
+        border-left-color: var(--orange);
+    }
+
+    .employee-stat-card.green {
+        border-left-color: var(--green);
+    }
+
+    .employee-stat-card.purple {
+        border-left-color: var(--purple);
+    }
+
+    .employee-stat-icon {
+        width: 60px;
+        height: 60px;
+        min-width: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 15px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        font-size: 25px;
+    }
+
+    .employee-stat-card.orange .employee-stat-icon {
+        background: var(--orange-light);
+        color: var(--orange);
+    }
+
+    .employee-stat-card.green .employee-stat-icon {
+        background: var(--green-light);
+        color: var(--green);
+    }
+
+    .employee-stat-card.purple .employee-stat-icon {
+        background: var(--purple-light);
+        color: var(--purple);
+    }
+
+    .employee-stat-info {
+        min-width: 0;
+        flex: 1;
+    }
+
+    .employee-stat-label {
+        margin: 0 0 7px;
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 1.4;
+        color: var(--text-secondary);
+    }
+
+    .employee-stat-value {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 750;
+        line-height: 1.3;
+        color: var(--deep-blue);
+        overflow-wrap: anywhere;
+    }
+
+    .employee-stat-card.orange .employee-stat-value {
+        color: var(--orange-hover);
+    }
+
+    .employee-stat-card.green .employee-stat-value {
+        color: var(--green);
+    }
+
+    .employee-stat-card.purple .employee-stat-value {
+        color: var(--purple);
+    }
+
+    /* CHART GRID */
+
+    .employee-charts-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 24px;
+    }
+
+    .employee-chart-card {
+        min-width: 0;
+        padding: 26px;
+        background: var(--card-background);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-medium);
+        box-shadow: var(--shadow-card);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .employee-chart-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .employee-chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 22px;
+    }
+
+    .employee-chart-header h3 {
+        margin: 0 0 6px;
+        color: var(--deep-blue);
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .employee-chart-header p {
+        margin: 0;
+        color: var(--text-secondary);
+        font-size: 15px;
+    }
+
+    .employee-chart-icon {
+        width: 46px;
+        height: 46px;
+        min-width: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        font-size: 21px;
+    }
+
+    .employee-chart-icon.orange {
+        background: var(--orange-light);
+        color: var(--orange);
+    }
+
+    .employee-chart-container {
+        position: relative;
+        width: 100%;
+        height: 320px;
+    }
+
+    /* STAFF SUMMARY */
+
+    .employee-info-card {
+        padding: 26px;
+        background: var(--card-background);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-medium);
+        box-shadow: var(--shadow-card);
+    }
+
+    .employee-info-card h3 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0 0 14px;
+        color: var(--deep-blue);
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .employee-info-card h3 i {
+        color: var(--orange);
+    }
+
+    .employee-info-card p {
+        margin: 0;
+        font-size: 17px;
+        color: var(--text-secondary);
+    }
+
+    /* RESPONSIVE DESIGN */
+
+    @media (max-width: 1200px) {
+        .employee-stats-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 1000px) {
+        .employee-charts-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .employee-dashboard {
+            padding: 18px;
+        }
+
+        .employee-header {
+            padding: 22px;
+        }
+
+        .employee-header h1 {
+            font-size: 26px;
+        }
+
+        .employee-header p {
+            font-size: 16px;
+        }
+
+        .employee-section-title {
+            font-size: 21px;
+        }
+
+        .employee-stat-card {
+            padding: 18px;
+            gap: 12px;
+        }
+
+        .employee-stat-icon {
+            width: 50px;
+            height: 50px;
+            min-width: 50px;
+            font-size: 21px;
+        }
+
+        .employee-stat-label {
+            font-size: 16px;
+        }
+
+        .employee-stat-value {
+            font-size: 24px;
+        }
+
+        .employee-chart-card {
+            padding: 18px;
+        }
+
+        .employee-chart-container {
+            height: 280px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .employee-stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .employee-header-icon {
+            display: none;
+        }
+
+        .employee-dashboard {
+            padding: 12px;
+        }
+    }
+</style>
+
+<div class="employee-dashboard">
+
+    <!-- PAGE HEADER -->
+
+    <div class="employee-header">
+        <div>
+            <h1>Employee Overview</h1>
+            <p>Teaching and non-teaching employee information.</p>
+        </div>
+
+        <div class="employee-header-icon">
+            <i class="fa-solid fa-users"></i>
+        </div>
+    </div>
+
+    <!-- EMPLOYEE STATISTICS -->
+
+    <div class="employee-section">
+
+        <h2 class="employee-section-title">
+            <span class="title-icon">
+                <i class="fa-solid fa-chart-column"></i>
+            </span>
+            Employee Statistics
+        </h2>
+
+        <div class="employee-stats-grid">
+
+            <!-- TOTAL EMPLOYEES -->
+
+            <div class="employee-stat-card">
+                <div class="employee-stat-icon">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+
+                <div class="employee-stat-info">
+                    <p class="employee-stat-label">Total Employees</p>
+                    <h3 class="employee-stat-value">
+                        {{ employee_count|default:"0" }}
+                    </h3>
+                </div>
+            </div>
+
+            <!-- TEACHING STAFF -->
+
+            <div class="employee-stat-card orange">
+                <div class="employee-stat-icon">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                </div>
+
+                <div class="employee-stat-info">
+                    <p class="employee-stat-label">Teaching Staff</p>
+                    <h3 class="employee-stat-value">
+                        {{ teaching_staff_count|default:"0" }}
+                    </h3>
+                </div>
+            </div>
+
+            <!-- NON-TEACHING STAFF -->
+
+            <div class="employee-stat-card green">
+                <div class="employee-stat-icon">
+                    <i class="fa-solid fa-user-tie"></i>
+                </div>
+
+                <div class="employee-stat-info">
+                    <p class="employee-stat-label">Non-Teaching Staff</p>
+                    <h3 class="employee-stat-value">
+                        {{ non_teaching_staff_count|default:"0" }}
+                    </h3>
+                </div>
+            </div>
+
+            <!-- TOTAL SALARY -->
+
+            <div class="employee-stat-card purple">
+                <div class="employee-stat-icon">
+                    <i class="fa-solid fa-indian-rupee-sign"></i>
+                </div>
+
+                <div class="employee-stat-info">
+                    <p class="employee-stat-label">Total Salary</p>
+                    <h3 class="employee-stat-value">
+                        ₹{{ salary_total|default:"0" }}
+                    </h3>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- EMPLOYEE ANALYTICS -->
+
+    <div class="employee-section">
+
+        <h2 class="employee-section-title">
+            <span class="title-icon">
+                <i class="fa-solid fa-chart-pie"></i>
+            </span>
+            Employee Analytics
+        </h2>
+
+        <div class="employee-charts-grid">
+
+            <!-- BAR CHART -->
+
+            <div class="employee-chart-card">
+
+                <div class="employee-chart-header">
+                    <div>
+                        <h3>Employee Statistics</h3>
+                        <p>Staff categories and salary overview</p>
+                    </div>
+
+                    <span class="employee-chart-icon">
+                        <i class="fa-solid fa-chart-column"></i>
+                    </span>
+                </div>
+
+                <div class="employee-chart-container">
+                    <canvas id="employeeBarChart"></canvas>
+                </div>
+
+            </div>
+
+            <!-- PIE CHART -->
+
+            <div class="employee-chart-card">
+
+                <div class="employee-chart-header">
+                    <div>
+                        <h3>Staff Distribution</h3>
+                        <p>Teaching and non-teaching staff ratio</p>
+                    </div>
+
+                    <span class="employee-chart-icon orange">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </span>
+                </div>
+
+                <div class="employee-chart-container">
+                    <canvas id="employeePieChart"></canvas>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- EMPLOYEE INFORMATION -->
+
+    <div class="employee-section">
+
+        <h2 class="employee-section-title">
+            <span class="title-icon">
+                <i class="fa-solid fa-circle-info"></i>
+            </span>
+            Employee Information
+        </h2>
+
+        <div class="employee-info-card">
+            <h3>
+                <i class="fa-solid fa-building"></i>
+                Staff Summary
+            </h3>
+
+            <p>
+                This section displays the teaching staff, non-teaching staff,
+                total employee count, and salary information available from
+                your School Management System.
+            </p>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- CHART.JS -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const totalEmployees = Number(
+        "{{ employee_count|default:'0' }}"
+    );
+
+    const teachingStaff = Number(
+        "{{ teaching_staff_count|default:'0' }}"
+    );
+
+    const nonTeachingStaff = Number(
+        "{{ non_teaching_staff_count|default:'0' }}"
+    );
+
+    const totalSalary = Number(
+        "{{ salary_total|default:'0' }}"
+    );
+
+    /* BAR CHART */
+
+    const barCanvas = document.getElementById("employeeBarChart");
+
+    if (barCanvas && typeof Chart !== "undefined") {
+
+        new Chart(barCanvas, {
+            type: "bar",
+
+            data: {
+                labels: [
+                    "Total Employees",
+                    "Teaching Staff",
+                    "Non-Teaching Staff",
+                    "Total Salary (₹)"
+                ],
+
+                datasets: [{
+                    label: "Employee Statistics",
+
+                    data: [
+                        totalEmployees,
+                        teachingStaff,
+                        nonTeachingStaff,
+                        totalSalary
+                    ],
+
+                    backgroundColor: [
+                        "#123B63",
+                        "#F28C28",
+                        "#25845A",
+                        "#7654A8"
+                    ],
+
+                    borderRadius: 8,
+                    borderSkipped: false,
+                    maxBarThickness: 55
+                }]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || "";
+                                const value = Number(context.raw);
+
+                                if (label === "Total Salary (₹)") {
+                                    return "₹" +
+                                        value.toLocaleString("en-IN");
+                                }
+
+                                return value.toLocaleString("en-IN");
+                            }
+                        }
+                    }
+                },
+
+                scales: {
+                    y: {
+                        beginAtZero: true,
+
+                        ticks: {
+                            precision: 0,
+                            color: "#5F6F80"
+                        },
+
+                        grid: {
+                            color: "#E0E7EF"
+                        }
+                    },
+
+                    x: {
+                        ticks: {
+                            color: "#5F6F80",
+                            maxRotation: 25,
+                            minRotation: 0
+                        },
+
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    /* PIE CHART */
+
+    const pieCanvas = document.getElementById("employeePieChart");
+
+    if (pieCanvas && typeof Chart !== "undefined") {
+
+        new Chart(pieCanvas, {
+            type: "pie",
+
+            data: {
+                labels: [
+                    "Teaching Staff",
+                    "Non-Teaching Staff"
+                ],
+
+                datasets: [{
+                    data: [
+                        teachingStaff,
+                        nonTeachingStaff
+                    ],
+
+                    backgroundColor: [
+                        "#F28C28",
+                        "#123B63"
+                    ],
+
+                    borderColor: "#FFFFFF",
+                    borderWidth: 4,
+                    hoverOffset: 10
+                }]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                plugins: {
+                    legend: {
+                        position: "bottom",
+
+                        labels: {
+                            padding: 22,
+                            color: "#243447",
+                            font: {
+                                size: 14
+                            }
+                        }
+                    },
+
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const value = Number(context.raw);
+
+                                const total = context.dataset.data.reduce(
+                                    (sum, item) => sum + Number(item),
+                                    0
+                                );
+
+                                const percentage = total > 0
+                                    ? ((value / total) * 100).toFixed(1)
+                                    : "0.0";
+
+                                return context.label + ": " +
+                                    value.toLocaleString("en-IN") +
+                                    " (" + percentage + "%)";
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+});
+</script>
+
+{% endblock %}

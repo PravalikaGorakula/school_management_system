@@ -1,0 +1,520 @@
+
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}
+Employee Applications
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'admissions/css/admissions.css' %}">
+
+<style>
+    /* =====================================================
+       EMPLOYEE APPLICATIONS - THEME
+    ===================================================== */
+
+    .employee-applications-page {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --orange-light: #FFF4E6;
+        --text-dark: #263445;
+        --text-muted: #64748B;
+        --border-color: #DCE5EE;
+        --surface: #FFFFFF;
+        --page-bg: #F5F8FC;
+
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        padding: 24px;
+        color: var(--text-dark);
+        font-size: 18px;
+    }
+
+    .employee-applications-page *,
+    .employee-applications-page *::before,
+    .employee-applications-page *::after {
+        box-sizing: border-box;
+    }
+
+    /* =====================================================
+       PAGE HEADER
+    ===================================================== */
+
+    .employee-applications-page .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin: 0 0 28px;
+        padding: 24px 26px;
+        background: var(--surface);
+        border: 1px solid var(--border-color);
+        border-left: 5px solid var(--orange);
+        border-radius: 12px;
+        box-shadow: 0 4px 14px rgba(18, 59, 99, 0.06);
+    }
+
+    .employee-applications-page .header-text {
+        flex: 1 1 300px;
+        min-width: 0;
+    }
+
+    .employee-applications-page .page-header h1 {
+        margin: 0 0 10px;
+        color: var(--deep-blue);
+        font-size: 28px;
+        font-weight: 750;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+    }
+
+    .employee-applications-page .page-header p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 18px;
+        line-height: 1.6;
+    }
+
+    /* =====================================================
+       PRIMARY BUTTON
+    ===================================================== */
+
+    .employee-applications-page .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 48px;
+        padding: 12px 20px;
+        background: var(--orange);
+        color: #FFFFFF;
+        border: 1px solid var(--orange);
+        border-radius: 8px;
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1.4;
+        text-decoration: none;
+        text-align: center;
+        white-space: normal;
+        transition:
+            background 0.2s ease,
+            border-color 0.2s ease,
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+
+    .employee-applications-page .btn-primary:hover {
+        background: var(--orange-hover);
+        border-color: var(--orange-hover);
+        color: #FFFFFF;
+        transform: translateY(-1px);
+        box-shadow: 0 5px 12px rgba(242, 140, 40, 0.22);
+    }
+
+    .employee-applications-page .btn-primary:focus-visible,
+    .employee-applications-page .action-btn:focus-visible {
+        outline: 3px solid rgba(242, 140, 40, 0.4);
+        outline-offset: 3px;
+    }
+
+    /* =====================================================
+       APPLICATION TABLE CARD
+    ===================================================== */
+
+    .employee-applications-page .application-card {
+        width: 100%;
+        min-width: 0;
+        margin: 0;
+        padding: 22px;
+        background: var(--surface);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(18, 59, 99, 0.06);
+    }
+
+    .employee-applications-page .table-wrapper {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        border: 1px solid var(--border-color);
+        border-radius: 9px;
+        scrollbar-width: thin;
+        scrollbar-color: var(--deep-blue) #EAF0F6;
+    }
+
+    .employee-applications-page .application-table {
+        width: 100%;
+        min-width: 1120px;
+        margin: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+        background: #FFFFFF;
+        font-size: 18px;
+    }
+
+    /* =====================================================
+       TABLE HEADER
+    ===================================================== */
+
+    .employee-applications-page .application-table thead th {
+        padding: 17px 16px;
+        background: var(--deep-blue);
+        color: #FFFFFF;
+        border: none;
+        border-bottom: 3px solid var(--orange);
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1.5;
+        text-align: left;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+
+    .employee-applications-page .application-table thead th:first-child {
+        padding-left: 20px;
+    }
+
+    /* =====================================================
+       TABLE BODY
+    ===================================================== */
+
+    .employee-applications-page .application-table tbody td {
+        padding: 17px 16px;
+        color: var(--text-dark);
+        border: none;
+        border-bottom: 1px solid #E8EEF4;
+        font-size: 18px;
+        line-height: 1.6;
+        vertical-align: middle;
+        overflow-wrap: anywhere;
+    }
+
+    .employee-applications-page .application-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .employee-applications-page .application-table tbody tr {
+        transition: background 0.2s ease;
+    }
+
+    .employee-applications-page .application-table tbody tr:hover {
+        background: #F5F9FD;
+    }
+
+    .employee-applications-page .application-table tbody td strong {
+        color: var(--deep-blue);
+        font-size: 18px;
+        font-weight: 750;
+    }
+
+    /* =====================================================
+       STATUS BADGES
+    ===================================================== */
+
+    .employee-applications-page .status-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        max-width: 100%;
+        padding: 7px 12px;
+        border-radius: 20px;
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 1.4;
+        text-align: center;
+        overflow-wrap: anywhere;
+    }
+
+    .employee-applications-page .status-pending {
+        background: #FFF4E6;
+        color: #9A5200;
+        border: 1px solid #F8D7A8;
+    }
+
+    .employee-applications-page .status-approved,
+    .employee-applications-page .status-accepted {
+        background: #E7F6EC;
+        color: #176534;
+        border: 1px solid #B7E4C7;
+    }
+
+    .employee-applications-page .status-rejected {
+        background: #FDECEC;
+        color: #A61B1B;
+        border: 1px solid #F5C2C2;
+    }
+
+    .employee-applications-page .status-under_review,
+    .employee-applications-page .status-under-review,
+    .employee-applications-page .status-verified {
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        border: 1px solid #C7DCEC;
+    }
+
+    /* =====================================================
+       VIEW ACTION BUTTON
+    ===================================================== */
+
+    .employee-applications-page .action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 42px;
+        padding: 9px 15px;
+        background: var(--deep-blue);
+        color: #FFFFFF;
+        border: 1px solid var(--deep-blue);
+        border-radius: 7px;
+        font-size: 18px;
+        font-weight: 650;
+        line-height: 1.4;
+        text-decoration: none;
+        white-space: nowrap;
+        transition:
+            background 0.2s ease,
+            border-color 0.2s ease,
+            transform 0.2s ease;
+    }
+
+    .employee-applications-page .action-btn:hover {
+        background: var(--deep-blue-dark);
+        border-color: var(--deep-blue-dark);
+        color: #FFFFFF;
+        transform: translateY(-1px);
+    }
+
+    .employee-applications-page .action-btn i,
+    .employee-applications-page .btn-primary i {
+        font-size: 18px;
+    }
+
+    /* =====================================================
+       EMPTY STATE
+    ===================================================== */
+
+    .employee-applications-page .empty-state {
+        padding: 48px 24px !important;
+        text-align: center !important;
+        background: #FFFFFF;
+        white-space: normal;
+    }
+
+    .employee-applications-page .empty-state > i {
+        display: inline-block;
+        margin-bottom: 16px;
+        color: var(--orange);
+        font-size: 42px;
+    }
+
+    .employee-applications-page .empty-state h3 {
+        margin: 0 0 12px;
+        color: var(--deep-blue);
+        font-size: 23px;
+        font-weight: 750;
+        line-height: 1.4;
+    }
+
+    .employee-applications-page .empty-state p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 18px;
+        line-height: 1.7;
+    }
+
+    /* =====================================================
+       RESPONSIVE DESIGN
+    ===================================================== */
+
+    @media (max-width: 992px) {
+        .employee-applications-page {
+            padding: 18px;
+        }
+
+        .employee-applications-page .page-header {
+            padding: 21px;
+            gap: 16px;
+        }
+
+        .employee-applications-page .application-card {
+            padding: 16px;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .employee-applications-page {
+            padding: 12px;
+        }
+
+        .employee-applications-page .page-header {
+            align-items: stretch;
+            flex-direction: column;
+            margin-bottom: 20px;
+            padding: 18px;
+        }
+
+        .employee-applications-page .page-header h1 {
+            font-size: 24px;
+        }
+
+        .employee-applications-page .page-header p {
+            font-size: 18px;
+        }
+
+        .employee-applications-page .btn-primary {
+            width: 100%;
+        }
+
+        .employee-applications-page .application-card {
+            padding: 10px;
+            border-radius: 9px;
+        }
+
+        .employee-applications-page .application-table {
+            min-width: 1050px;
+        }
+
+        .employee-applications-page .application-table thead th,
+        .employee-applications-page .application-table tbody td {
+            padding: 14px 12px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="employee-applications-page">
+
+    <!-- PAGE HEADER -->
+
+    <div class="page-header">
+
+        <div class="header-text">
+            <h1>
+                <i class="fas fa-user-tie"></i>
+                Employee Applications
+            </h1>
+
+            <p>
+                View and manage employee admission applications.
+            </p>
+        </div>
+
+        <a
+            href="{% url 'admissions:create_employee_application' %}"
+            class="btn-primary"
+        >
+            <i class="fas fa-plus"></i>
+            New Employee Application
+        </a>
+
+    </div>
+
+    <!-- APPLICATION TABLE -->
+
+    <div class="application-card">
+
+        <div class="table-wrapper">
+
+            <table class="application-table">
+
+                <thead>
+                    <tr>
+                        <th>Application ID</th>
+                        <th>Employee Name</th>
+                        <th>Designation</th>
+                        <th>Department</th>
+                        <th>Phone</th>
+                        <th>Status</th>
+                        <th>Submitted Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for application in applications %}
+
+                    <tr>
+
+                        <td>
+                            <strong>
+                                {{ application.application_id|default:"Not Generated" }}
+                            </strong>
+                        </td>
+
+                        <td>
+                            {{ application.first_name }}
+                            {{ application.last_name }}
+                        </td>
+
+                        <td>
+                            {{ application.designation }}
+                        </td>
+
+                        <td>
+                            {{ application.department|default:"-" }}
+                        </td>
+
+                        <td>
+                            {{ application.phone }}
+                        </td>
+
+                        <td>
+                            <span class="status-badge status-{{ application.status }}">
+                                {{ application.get_status_display }}
+                            </span>
+                        </td>
+
+                        <td>
+                            {{ application.submitted_at|date:"d M Y, h:i A" }}
+                        </td>
+
+                        <td>
+                            <a
+                                href="{% url 'admissions:employee_application_detail' application.id %}"
+                                class="action-btn"
+                            >
+                                <i class="fas fa-eye"></i>
+                                View
+                            </a>
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="8" class="empty-state">
+                            <i class="fas fa-folder-open"></i>
+
+                            <h3>No Employee Applications</h3>
+
+                            <p>
+                                No employee admission applications have been
+                                submitted yet.
+                            </p>
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

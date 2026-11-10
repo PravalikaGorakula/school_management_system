@@ -1,0 +1,918 @@
+
+{% extends "dashboard/base.html" %}
+
+{% block title %}Leave Management{% endblock %}
+
+{% block extra_css %}
+<style>
+/* =====================================================
+   SMS THEME
+===================================================== */
+.leave-page {
+    --deep-blue: #123B63;
+    --deep-blue-dark: #0B2945;
+    --deep-blue-light: #EAF2F8;
+    --orange: #F28C28;
+    --orange-hover: #D97706;
+    --orange-light: #FFF4E6;
+    --text-color: #243447;
+    --muted-color: #64748B;
+    --border-color: #D8E1EA;
+    --white: #FFFFFF;
+    --danger: #B42318;
+    --success: #047857;
+    --warning: #B45309;
+
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 12px 16px;
+    color: var(--text-color);
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 18px;
+    line-height: 1.45;
+}
+
+.leave-page,
+.leave-page * {
+    box-sizing: border-box;
+}
+
+/* PAGE HEADER */
+.leave-page .leave-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 18px 22px;
+    margin-bottom: 14px;
+    color: #FFFFFF;
+    background: linear-gradient(120deg, var(--deep-blue-dark), var(--deep-blue));
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(11, 41, 69, 0.08);
+}
+
+.leave-page .leave-page-header h1 {
+    margin: 0 0 4px;
+    color: #FFFFFF;
+    font-size: 28px;
+    font-weight: 750;
+    line-height: 1.3;
+}
+
+.leave-page .leave-page-header p {
+    margin: 0;
+    color: #E5EDF5;
+    font-size: 18px;
+    line-height: 1.4;
+}
+
+.leave-page .header-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 650;
+    white-space: nowrap;
+}
+
+.leave-page .header-date i {
+    color: #FFD19A;
+    font-size: 19px;
+}
+
+/* MAIN GRID */
+.leave-page .leave-main-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    align-items: start;
+    gap: 16px;
+}
+
+.leave-page .leave-right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+}
+
+/* CARDS */
+.leave-page .leave-card {
+    width: 100%;
+    min-width: 0;
+    padding: 18px;
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 11px;
+    box-shadow: 0 3px 12px rgba(11, 41, 69, 0.06);
+    transition: box-shadow 0.2s ease;
+}
+
+.leave-page .leave-card:hover {
+    box-shadow: 0 5px 16px rgba(11, 41, 69, 0.09);
+}
+
+.leave-page .apply-card {
+    border-top: 3px solid var(--orange);
+}
+
+.leave-page .history-card {
+    border-top: 3px solid var(--deep-blue);
+}
+
+.leave-page .approvals-card {
+    border-top: 3px solid var(--orange);
+}
+
+/* CARD HEADERS */
+.leave-page .card-header {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    margin-bottom: 15px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #E8EDF3;
+}
+
+.leave-page .card-header-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    border-radius: 9px;
+    font-size: 20px;
+}
+
+.leave-page .card-header-icon.orange {
+    color: var(--orange-hover);
+    background: var(--orange-light);
+}
+
+.leave-page .card-header-icon.blue {
+    color: var(--deep-blue);
+    background: var(--deep-blue-light);
+}
+
+.leave-page .card-header h2 {
+    margin: 0;
+    color: var(--deep-blue);
+    font-size: 23px;
+    font-weight: 750;
+    line-height: 1.35;
+}
+
+.leave-page .card-header p {
+    margin: 3px 0 0;
+    color: var(--muted-color);
+    font-size: 18px;
+    line-height: 1.4;
+}
+
+/* FORM GRID */
+.leave-page .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 12px;
+}
+
+.leave-page .form-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.leave-page .form-group.full {
+    grid-column: 1 / -1;
+}
+
+.leave-page .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--deep-blue-dark);
+    font-size: 18px;
+    font-weight: 650;
+    line-height: 1.4;
+}
+
+/* INPUTS */
+.leave-page .form-group input,
+.leave-page .form-group select,
+.leave-page .form-group textarea {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    padding: 8px 11px;
+    color: var(--text-color);
+    background: var(--white);
+    border: 1px solid #CBD5E1;
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 18px;
+    line-height: 1.4;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.leave-page .form-group input,
+.leave-page .form-group select {
+    min-height: 43px;
+}
+
+.leave-page .form-group textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+.leave-page .form-group input::placeholder,
+.leave-page .form-group textarea::placeholder {
+    color: #94A3B8;
+    opacity: 1;
+}
+
+.leave-page .form-group input:focus,
+.leave-page .form-group select:focus,
+.leave-page .form-group textarea:focus {
+    outline: none;
+    border-color: var(--orange);
+    box-shadow: 0 0 0 2px rgba(242, 140, 40, 0.15);
+}
+
+/* VALIDATION */
+.leave-page .field-error {
+    display: block;
+    margin-top: 4px;
+    color: var(--danger);
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.leave-page .error-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    color: var(--danger);
+    background: #FEF3F2;
+    border: 1px solid #FECDCA;
+    border-left: 4px solid var(--danger);
+    border-radius: 7px;
+    font-size: 18px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.leave-page .error-box i {
+    margin-top: 3px;
+    font-size: 19px;
+}
+
+/* BUTTONS */
+.leave-page .form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-top: 16px;
+    padding-top: 13px;
+    border-top: 1px solid #E8EDF3;
+}
+
+.leave-page .btn-primary,
+.leave-page .btn-secondary,
+.leave-page .approval-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 42px;
+    padding: 8px 14px;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.4;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s,
+                border-color 0.2s, transform 0.2s;
+}
+
+.leave-page .btn-primary {
+    color: var(--white);
+    background: var(--orange);
+    border-color: var(--orange);
+}
+
+.leave-page .btn-primary:hover {
+    color: var(--white);
+    background: var(--orange-hover);
+    border-color: var(--orange-hover);
+    transform: translateY(-1px);
+}
+
+.leave-page .btn-secondary {
+    color: var(--deep-blue);
+    background: var(--white);
+    border-color: var(--deep-blue);
+}
+
+.leave-page .btn-secondary:hover {
+    color: var(--white);
+    background: var(--deep-blue);
+    transform: translateY(-1px);
+}
+
+.leave-page .approval-btn {
+    color: var(--white);
+    background: var(--orange);
+    border-color: var(--orange);
+    white-space: nowrap;
+}
+
+.leave-page .approval-btn:hover {
+    color: var(--white);
+    background: var(--orange-hover);
+    border-color: var(--orange-hover);
+    transform: translateY(-1px);
+}
+
+.leave-page .btn-primary:focus-visible,
+.leave-page .btn-secondary:focus-visible,
+.leave-page .approval-btn:focus-visible {
+    outline: 3px solid rgba(242, 140, 40, 0.35);
+    outline-offset: 2px;
+}
+
+/* APPROVAL CARD */
+.leave-page .approval-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.leave-page .approval-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    color: var(--orange-hover);
+    background: var(--orange-light);
+    border-radius: 9px;
+    font-size: 22px;
+}
+
+.leave-page .approval-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.leave-page .approval-info h3 {
+    margin: 0 0 3px;
+    color: var(--deep-blue);
+    font-size: 21px;
+    font-weight: 750;
+    line-height: 1.4;
+}
+
+.leave-page .approval-info p {
+    margin: 0;
+    color: var(--muted-color);
+    font-size: 18px;
+    line-height: 1.4;
+}
+
+/* HISTORY TABLE */
+.leave-page .history-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.leave-page .history-table {
+    width: 100%;
+    min-width: 590px;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.leave-page .history-table th {
+    padding: 10px 9px;
+    color: var(--white);
+    background: var(--deep-blue);
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+.leave-page .history-table td {
+    padding: 10px 9px;
+    color: #475569;
+    border-bottom: 1px solid #E8EDF3;
+    font-size: 18px;
+    line-height: 1.4;
+    vertical-align: middle;
+}
+
+.leave-page .history-table tbody tr {
+    transition: background 0.2s;
+}
+
+.leave-page .history-table tbody tr:hover {
+    background: var(--orange-light);
+}
+
+.leave-page .history-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.leave-page .leave-type {
+    color: var(--deep-blue);
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.leave-page .date-range {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+    font-size: 18px;
+}
+
+.leave-page .date-arrow {
+    color: var(--orange-hover);
+    font-size: 19px;
+}
+
+.leave-page .days-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    min-height: 30px;
+    padding: 3px 7px;
+    color: var(--deep-blue);
+    background: var(--deep-blue-light);
+    border-radius: 6px;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+/* STATUS */
+.leave-page .status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 30px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.35;
+    white-space: nowrap;
+}
+
+.leave-page .status.pending {
+    color: var(--warning);
+    background: #FFFBEB;
+}
+
+.leave-page .status.approved {
+    color: var(--success);
+    background: #ECFDF3;
+}
+
+.leave-page .status.rejected {
+    color: var(--danger);
+    background: #FEF3F2;
+}
+
+.leave-page .status.cancelled {
+    color: #475569;
+    background: #F1F5F9;
+}
+
+/* EMPTY HISTORY */
+.leave-page .empty-history {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 190px;
+    padding: 20px 12px;
+    text-align: center;
+}
+
+.leave-page .empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 55px;
+    height: 55px;
+    margin-bottom: 10px;
+    color: var(--deep-blue);
+    background: var(--deep-blue-light);
+    border-radius: 50%;
+    font-size: 25px;
+}
+
+.leave-page .empty-history h3 {
+    margin: 0 0 5px;
+    color: var(--deep-blue);
+    font-size: 21px;
+    font-weight: 750;
+    line-height: 1.4;
+}
+
+.leave-page .empty-history p {
+    max-width: 440px;
+    margin: 0;
+    color: var(--muted-color);
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1100px) {
+    .leave-page .leave-main-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .leave-page .leave-right-column {
+        width: 100%;
+    }
+}
+
+@media (max-width: 800px) {
+    .leave-page {
+        padding: 10px;
+    }
+
+    .leave-page .leave-page-header {
+        padding: 16px;
+    }
+
+    .leave-page .leave-card {
+        padding: 15px;
+    }
+
+    .leave-page .form-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+    }
+
+    .leave-page .form-group.full {
+        grid-column: auto;
+    }
+
+    .leave-page .approval-content {
+        flex-wrap: wrap;
+    }
+
+    .leave-page .approval-info {
+        flex-basis: calc(100% - 65px);
+    }
+
+    .leave-page .approval-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 520px) {
+    .leave-page .leave-page-header {
+        padding: 14px;
+    }
+
+    .leave-page .leave-page-header h1 {
+        font-size: 25px;
+    }
+
+    .leave-page .leave-card {
+        padding: 12px;
+        border-radius: 9px;
+    }
+
+    .leave-page .leave-main-grid,
+    .leave-page .leave-right-column {
+        gap: 12px;
+    }
+
+    .leave-page .card-header {
+        gap: 9px;
+        margin-bottom: 12px;
+        padding-bottom: 10px;
+    }
+
+    .leave-page .card-header-icon {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        font-size: 19px;
+    }
+
+    .leave-page .card-header h2 {
+        font-size: 21px;
+    }
+
+    .leave-page .form-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .leave-page .btn-primary,
+    .leave-page .btn-secondary {
+        width: 100%;
+    }
+
+    .leave-page .approval-content {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+
+    .leave-page .approval-icon {
+        margin: 0 auto;
+    }
+
+    .leave-page .approval-info {
+        flex: auto;
+    }
+
+    .leave-page .history-table {
+        min-width: 590px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="leave-page">
+
+    <!-- PAGE HEADER -->
+    <div class="leave-page-header">
+        <div>
+            <h1>
+                <i class="fa-solid fa-calendar-days"></i>
+                Leave Management
+            </h1>
+
+            <p>
+                Apply for leave, track your applications,
+                and review your leave history.
+            </p>
+        </div>
+
+        <div class="header-date">
+            <i class="fa-regular fa-calendar"></i>
+            {% now "d M Y" %}
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="leave-main-grid">
+
+        <!-- APPLY LEAVE -->
+        <div class="leave-card apply-card">
+
+            <div class="card-header">
+                <div class="card-header-icon orange">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </div>
+
+                <div>
+                    <h2>Apply Leave</h2>
+                    <p>Submit your leave request.</p>
+                </div>
+            </div>
+
+            {% if form.non_field_errors %}
+                <div class="error-box" role="alert">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+
+                    <div>
+                        {% for error in form.non_field_errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="form-grid">
+
+                    <!-- LEAVE TYPE -->
+                    <div class="form-group">
+                        <label for="{{ form.leave_type.id_for_label }}">
+                            Leave Type
+                        </label>
+
+                        {{ form.leave_type }}
+
+                        {% for error in form.leave_type.errors %}
+                            <span class="field-error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+
+                    <!-- FROM DATE -->
+                    <div class="form-group">
+                        <label for="{{ form.from_date.id_for_label }}">
+                            From Date
+                        </label>
+
+                        {{ form.from_date }}
+
+                        {% for error in form.from_date.errors %}
+                            <span class="field-error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+
+                    <!-- TO DATE -->
+                    <div class="form-group">
+                        <label for="{{ form.to_date.id_for_label }}">
+                            To Date
+                        </label>
+
+                        {{ form.to_date }}
+
+                        {% for error in form.to_date.errors %}
+                            <span class="field-error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+
+                    <!-- REASON -->
+                    <div class="form-group full">
+                        <label for="{{ form.reason.id_for_label }}">
+                            Reason
+                        </label>
+
+                        {{ form.reason }}
+
+                        {% for error in form.reason.errors %}
+                            <span class="field-error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+
+                </div>
+
+                <div class="form-actions">
+                    <a
+                        href="{% url 'leave_management:home' %}"
+                        class="btn-secondary"
+                    >
+                        <i class="fa-solid fa-arrow-left"></i>
+                        Cancel
+                    </a>
+
+                    <button type="submit" class="btn-primary">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        Submit Leave
+                    </button>
+                </div>
+            </form>
+
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="leave-right-column">
+
+            <!-- APPROVAL REQUESTS -->
+            {% if can_approve_leave %}
+                <div class="leave-card approvals-card">
+
+                    <div class="approval-content">
+                        <div class="approval-icon">
+                            <i class="fa-solid fa-clipboard-check"></i>
+                        </div>
+
+                        <div class="approval-info">
+                            <h3>Leave Approval Requests</h3>
+
+                            <p>
+                                Review pending leave applications
+                                assigned to you.
+                            </p>
+                        </div>
+
+                        <a
+                            href="{% url 'leave_management:leave_approvals' %}"
+                            class="approval-btn"
+                        >
+                            <i class="fa-solid fa-arrow-right"></i>
+                            View Approvals
+                        </a>
+                    </div>
+
+                </div>
+            {% endif %}
+
+            <!-- LEAVE HISTORY -->
+            <div class="leave-card history-card">
+
+                <div class="card-header">
+                    <div class="card-header-icon blue">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </div>
+
+                    <div>
+                        <h2>Leave History</h2>
+                        <p>Your recent leave applications.</p>
+                    </div>
+                </div>
+
+                {% if leaves %}
+                    <div class="history-table-wrapper">
+
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Dates</th>
+                                    <th>Days</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for leave in leaves %}
+                                    <tr>
+                                        <td>
+                                            <span class="leave-type">
+                                                {{ leave.leave_type }}
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <div class="date-range">
+                                                <span>
+                                                    {{ leave.from_date|date:"d M Y" }}
+                                                </span>
+
+                                                <span class="date-arrow">→</span>
+
+                                                <span>
+                                                    {{ leave.to_date|date:"d M Y" }}
+                                                </span>
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            <span class="days-badge">
+                                                {{ leave.total_days }}
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <span class="status {{ leave.status|lower }}">
+                                                {{ leave.get_status_display }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                    </div>
+                {% else %}
+                    <div class="empty-history">
+                        <div class="empty-icon">
+                            <i class="fa-regular fa-calendar-xmark"></i>
+                        </div>
+
+                        <h3>No Leave Applications</h3>
+
+                        <p>
+                            You have not submitted any leave applications yet.
+                            Submit a leave request using the form.
+                        </p>
+                    </div>
+                {% endif %}
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% block title %}{{ page_title }} | SMS{% endblock %}
+{% block page_title %}{{ page_title }}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'finance/css/finance.css' %}">{% endblock %}
+{% block content %}
+<div class="finance-page"><header class="finance-hero"><div><h2>{{ page_title }}</h2><p>Complete the form using the school's actual records. Required fields are validated before saving.</p></div></header>
+<section class="finance-panel"><form method="post" {% if multipart %}enctype="multipart/form-data"{% endif %} novalidate>{% csrf_token %}{% if form.non_field_errors %}<div class="finance-note">{{ form.non_field_errors }}</div>{% endif %}
+<div class="finance-form-grid">{% for field in form %}<div class="finance-field {% if field.name in 'notes description' %}finance-field-full{% endif %}"><label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span style="color:#b91c1c">*</span>{% endif %}</label>{{ field }}{% if field.help_text %}<div class="finance-help">{{ field.help_text }}</div>{% endif %}{% if field.errors %}<ul class="finance-errorlist">{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}</div>{% endfor %}</div>
+<div class="finance-actions" style="margin-top:24px"><button class="finance-btn finance-primary" type="submit">{{ submit_label|default:"Save" }}</button><a class="finance-btn finance-secondary" href="{% url cancel_url %}">Cancel</a></div></form></section></div>
+{% endblock %}

@@ -1,0 +1,213 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Child Messages{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+    }
+
+    .messages-page {
+        padding: 24px;
+    }
+
+    .messages-header {
+        background: var(--deep-blue);
+        color: white;
+        padding: 22px;
+        border-radius: 12px;
+        margin-bottom: 22px;
+    }
+
+    .messages-header h2 {
+        margin: 0 0 8px;
+        font-size: 25px;
+    }
+
+    .messages-header p {
+        margin: 0;
+        font-size: 16px;
+    }
+
+    .child-selector,
+    .message-card,
+    .empty-state {
+        background: white;
+        border: 1px solid #dce4ec;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 18px;
+    }
+
+    .child-selector label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 9px;
+        color: var(--deep-blue-dark);
+    }
+
+    .child-selector select {
+        width: 100%;
+        max-width: 500px;
+        padding: 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font-size: 16px;
+        background: white;
+    }
+
+    .message-card {
+        border-left: 5px solid var(--orange);
+    }
+
+    .message-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+    }
+
+    .message-subject {
+        color: var(--deep-blue);
+        font-size: 19px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .message-date {
+        color: #64748b;
+        font-size: 14px;
+    }
+
+    .message-teacher {
+        color: #475569;
+        margin-bottom: 12px;
+    }
+
+    .message-content {
+        background: #f8fafc;
+        padding: 15px;
+        border-radius: 8px;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        line-height: 1.7;
+    }
+
+    .empty-state {
+        text-align: center;
+        color: #64748b;
+        padding: 35px 20px;
+    }
+
+    .empty-state h3 {
+        color: var(--deep-blue);
+    }
+
+    .error-message {
+        padding: 14px;
+        background: #fff4e6;
+        border-left: 4px solid var(--orange);
+        border-radius: 8px;
+        margin-bottom: 18px;
+    }
+
+    @media (max-width: 600px) {
+        .messages-page {
+            padding: 12px;
+        }
+
+        .messages-header h2 {
+            font-size: 21px;
+        }
+    }
+</style>
+
+<div class="messages-page">
+
+    <div class="messages-header">
+        <h2>Child Messages</h2>
+        <p>View messages sent by your child's teachers.</p>
+    </div>
+
+    {% if parent_children %}
+        <div class="child-selector">
+            <form method="get">
+                <label for="student_id">Select Your Child</label>
+
+                <select
+                    name="student_id"
+                    id="student_id"
+                    onchange="this.form.submit()"
+                >
+                    {% for child in parent_children %}
+                        <option
+                            value="{{ child.id }}"
+                            {% if selected_student_id|stringformat:"s" == child.id|stringformat:"s" %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ child.first_name }} {{ child.last_name }}
+                            {% if child.application_id %}
+                                — {{ child.application_id }}
+                            {% endif %}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+    {% endif %}
+
+    {% if error_message %}
+        <div class="error-message">
+            {{ error_message }}
+        </div>
+    {% elif student %}
+
+        <h3>
+            Messages for {{ student.first_name }} {{ student.last_name }}
+        </h3>
+
+        {% for item in message_history %}
+            <div class="message-card">
+
+                <div class="message-top">
+                    <h3 class="message-subject">
+                        {{ item.subject|default:"Message from Teacher" }}
+                    </h3>
+
+                    <span class="message-date">
+                        {{ item.created_at|date:"d M Y, h:i A" }}
+                    </span>
+                </div>
+
+                <div class="message-teacher">
+                    <strong>From:</strong>
+                    {% if item.teacher.get_full_name %}
+                        {{ item.teacher.get_full_name }}
+                    {% else %}
+                        {{ item.teacher.username }}
+                    {% endif %}
+                </div>
+
+                <div class="message-content">{{ item.message }}</div>
+
+            </div>
+        {% empty %}
+            <div class="empty-state">
+                <h3>No Messages Yet</h3>
+                <p>There are no teacher messages for this child yet.</p>
+            </div>
+        {% endfor %}
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

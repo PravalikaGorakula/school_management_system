@@ -1,0 +1,570 @@
+
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}
+Student Applications
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* =====================================================
+       SCHOOL MANAGEMENT SYSTEM - STUDENT APPLICATIONS
+       Theme: Navy Blue + Soft Orange
+    ===================================================== */
+
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --orange-light: #FFF4E6;
+
+        --green: #21865A;
+        --green-light: #E8F5EE;
+
+        --red: #C0392B;
+        --red-light: #FCEBE9;
+
+        --yellow: #946200;
+        --yellow-light: #FFF4D6;
+
+        --white: #FFFFFF;
+        --page-bg: #F5F8FC;
+        --border-color: #DCE5EF;
+        --text-color: #243447;
+        --muted-color: #536579;
+
+        --card-radius: 14px;
+        --small-radius: 9px;
+        --card-shadow: 0 4px 16px rgba(18, 59, 99, 0.08);
+    }
+
+    /* =====================================================
+       PAGE LAYOUT
+    ===================================================== */
+
+    .student-applications-page {
+        width: 100%;
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 28px;
+        box-sizing: border-box;
+        color: var(--text-color);
+        font-size: 18px;
+    }
+
+    .student-applications-page * {
+        box-sizing: border-box;
+    }
+
+    .student-applications-page p,
+    .student-applications-page a,
+    .student-applications-page td,
+    .student-applications-page th,
+    .student-applications-page span {
+        font-size: 18px;
+    }
+
+    /* =====================================================
+       PAGE HEADER
+    ===================================================== */
+
+    .student-applications-page .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 28px;
+        padding: 25px 28px;
+        background: var(--white);
+        border: 1px solid var(--border-color);
+        border-left: 6px solid var(--orange);
+        border-radius: var(--card-radius);
+        box-shadow: var(--card-shadow);
+    }
+
+    .student-applications-page .page-header h1 {
+        margin: 0 0 10px;
+        color: var(--deep-blue);
+        font-size: 30px;
+        font-weight: 750;
+        line-height: 1.35;
+    }
+
+    .student-applications-page .page-header p {
+        margin: 0;
+        color: var(--muted-color);
+        font-size: 18px;
+        line-height: 1.6;
+    }
+
+    /* =====================================================
+       PRIMARY BUTTON
+    ===================================================== */
+
+    .student-applications-page .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 50px;
+        padding: 13px 20px;
+        color: var(--white);
+        background: var(--deep-blue);
+        border: 2px solid var(--deep-blue);
+        border-radius: var(--small-radius);
+        font-size: 18px;
+        font-weight: 650;
+        line-height: 1.4;
+        text-align: center;
+        text-decoration: none;
+        white-space: normal;
+        flex-shrink: 0;
+        box-shadow: 0 3px 8px rgba(18, 59, 99, 0.12);
+        transition:
+            background 0.2s ease,
+            border-color 0.2s ease,
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+
+    .student-applications-page .btn-primary i {
+        font-size: 19px;
+    }
+
+    .student-applications-page .btn-primary:hover {
+        color: var(--white);
+        background: var(--orange);
+        border-color: var(--orange);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 12px rgba(242, 140, 40, 0.22);
+    }
+
+    .student-applications-page .btn-primary:focus-visible,
+    .student-applications-page .action-btn:focus-visible {
+        outline: 3px solid var(--orange);
+        outline-offset: 4px;
+    }
+
+    /* =====================================================
+       APPLICATION TABLE CARD
+    ===================================================== */
+
+    .student-applications-page .application-card {
+        width: 100%;
+        margin-bottom: 28px;
+        overflow: hidden;
+        background: var(--white);
+        border: 1px solid var(--border-color);
+        border-radius: var(--card-radius);
+        box-shadow: var(--card-shadow);
+    }
+
+    .student-applications-page .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .student-applications-page .application-table {
+        width: 100%;
+        min-width: 1050px;
+        margin: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+        background: var(--white);
+        font-size: 18px;
+    }
+
+    /* TABLE HEADER */
+
+    .student-applications-page .application-table thead {
+        background: var(--deep-blue);
+    }
+
+    .student-applications-page .application-table thead th {
+        padding: 19px 18px;
+        color: var(--white);
+        background: var(--deep-blue);
+        border: none;
+        border-bottom: 3px solid var(--orange);
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1.5;
+        text-align: left;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    /* TABLE BODY */
+
+    .student-applications-page .application-table tbody td {
+        padding: 19px 18px;
+        color: var(--text-color);
+        background: var(--white);
+        border: none;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 18px;
+        font-weight: 400;
+        line-height: 1.6;
+        vertical-align: middle;
+    }
+
+    .student-applications-page .application-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .student-applications-page .application-table tbody tr {
+        transition: background 0.2s ease;
+    }
+
+    .student-applications-page .application-table tbody tr:hover td {
+        background: #F8FAFD;
+    }
+
+    .student-applications-page .application-table td strong {
+        color: var(--deep-blue);
+        font-size: 18px;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+    }
+
+    /* =====================================================
+       STATUS BADGES
+    ===================================================== */
+
+    .student-applications-page .status-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 36px;
+        padding: 7px 13px;
+        border: 1px solid transparent;
+        border-radius: 20px;
+        font-size: 18px;
+        font-weight: 650;
+        line-height: 1.3;
+        white-space: normal;
+        text-align: center;
+    }
+
+    .student-applications-page .status-pending,
+    .student-applications-page .status-submitted,
+    .student-applications-page .status-under_review,
+    .student-applications-page .status-under-review {
+        color: var(--yellow);
+        background: var(--yellow-light);
+        border-color: #F0D98D;
+    }
+
+    .student-applications-page .status-approved,
+    .student-applications-page .status-accepted {
+        color: var(--green);
+        background: var(--green-light);
+        border-color: #B7E2C9;
+    }
+
+    .student-applications-page .status-rejected,
+    .student-applications-page .status-declined {
+        color: var(--red);
+        background: var(--red-light);
+        border-color: #F1C5C0;
+    }
+
+    .student-applications-page .status-verified {
+        color: var(--deep-blue);
+        background: var(--deep-blue-light);
+        border-color: #C8DDED;
+    }
+
+    /* =====================================================
+       VIEW ACTION BUTTON
+    ===================================================== */
+
+    .student-applications-page .action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        min-height: 44px;
+        padding: 10px 16px;
+        color: var(--deep-blue);
+        background: var(--deep-blue-light);
+        border: 1px solid #C8DDED;
+        border-radius: 8px;
+        font-size: 18px;
+        font-weight: 650;
+        line-height: 1.4;
+        text-decoration: none;
+        white-space: nowrap;
+        transition:
+            color 0.2s ease,
+            background 0.2s ease,
+            border-color 0.2s ease,
+            transform 0.2s ease;
+    }
+
+    .student-applications-page .action-btn i {
+        font-size: 18px;
+    }
+
+    .student-applications-page .action-btn:hover {
+        color: var(--white);
+        background: var(--orange);
+        border-color: var(--orange);
+        transform: translateY(-1px);
+    }
+
+    /* =====================================================
+       EMPTY STATE
+    ===================================================== */
+
+    .student-applications-page .empty-state {
+        padding: 55px 24px !important;
+        text-align: center;
+        vertical-align: middle;
+        background: #FCFDFE !important;
+    }
+
+    .student-applications-page .empty-state > i {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 76px;
+        height: 76px;
+        margin-bottom: 18px;
+        color: var(--deep-blue);
+        background: var(--deep-blue-light);
+        border-radius: 50%;
+        font-size: 32px;
+    }
+
+    .student-applications-page .empty-state h3 {
+        margin: 0 0 12px;
+        color: var(--deep-blue);
+        font-size: 23px;
+        font-weight: 750;
+        line-height: 1.4;
+    }
+
+    .student-applications-page .empty-state p {
+        margin: 0;
+        color: var(--muted-color);
+        font-size: 18px;
+        line-height: 1.7;
+    }
+
+    /* =====================================================
+       RESPONSIVE DESIGN
+    ===================================================== */
+
+    @media (max-width: 1000px) {
+        .student-applications-page {
+            padding: 22px;
+        }
+
+        .student-applications-page .page-header {
+            align-items: flex-start;
+            flex-direction: column;
+            padding: 23px;
+        }
+
+        .student-applications-page .btn-primary {
+            align-self: flex-start;
+        }
+
+        .student-applications-page .application-table thead th,
+        .student-applications-page .application-table tbody td {
+            padding: 16px;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .student-applications-page {
+            padding: 14px;
+        }
+
+        .student-applications-page .page-header {
+            gap: 20px;
+            margin-bottom: 20px;
+            padding: 19px;
+        }
+
+        .student-applications-page .page-header h1 {
+            font-size: 26px;
+        }
+
+        .student-applications-page .page-header p {
+            font-size: 18px;
+        }
+
+        .student-applications-page .btn-primary {
+            width: 100%;
+            align-self: stretch;
+            padding: 13px 14px;
+        }
+
+        .student-applications-page .application-card {
+            border-radius: 10px;
+        }
+
+        .student-applications-page .application-table {
+            min-width: 1000px;
+        }
+
+        .student-applications-page .application-table thead th,
+        .student-applications-page .application-table tbody td {
+            padding: 15px 14px;
+        }
+
+        .student-applications-page .empty-state {
+            padding: 38px 20px !important;
+        }
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="student-applications-page">
+
+    <!-- ================================================
+         PAGE HEADER
+    ================================================= -->
+
+    <div class="page-header">
+
+        <div>
+            <h1>
+                <i class="fas fa-user-graduate"></i>
+                Student Applications
+            </h1>
+
+            <p>
+                View and manage student admission applications.
+            </p>
+        </div>
+
+        <a
+            href="{% url 'admissions:create_student_application' %}"
+            class="btn-primary"
+        >
+            <i class="fas fa-plus"></i>
+            New Student Application
+        </a>
+
+    </div>
+
+
+    <!-- ================================================
+         APPLICATIONS TABLE
+    ================================================= -->
+
+    <div class="application-card">
+
+        <div class="table-wrapper">
+
+            <table class="application-table">
+
+                <thead>
+                    <tr>
+                        <th>Application ID</th>
+                        <th>Student Name</th>
+                        <th>Class</th>
+                        <th>Phone</th>
+                        <th>Status</th>
+                        <th>Submitted Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for application in applications %}
+
+                    <tr>
+
+                        <!-- APPLICATION ID -->
+                        <td>
+                            <strong>
+                                {{ application.application_id|default:"Not Generated" }}
+                            </strong>
+                        </td>
+
+                        <!-- STUDENT NAME -->
+                        <td>
+                            {{ application.first_name }}
+                            {{ application.last_name }}
+                        </td>
+
+                        <!-- APPLYING CLASS -->
+                        <td>
+                            {{ application.applying_class }}
+                        </td>
+
+                        <!-- PHONE -->
+                        <td>
+                            {{ application.phone }}
+                        </td>
+
+                        <!-- STATUS -->
+                        <td>
+                            <span class="status-badge status-{{ application.status }}">
+                                {{ application.get_status_display }}
+                            </span>
+                        </td>
+
+                        <!-- SUBMITTED DATE -->
+                        <td>
+                            {{ application.submitted_at|date:"d M Y, h:i A" }}
+                        </td>
+
+                        <!-- VIEW ACTION -->
+                        <td>
+                            <a
+                                href="{% url 'admissions:student_application_detail' application.id %}"
+                                class="action-btn"
+                            >
+                                <i class="fas fa-eye"></i>
+                                View
+                            </a>
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <!-- EMPTY STATE -->
+                    <tr>
+                        <td colspan="7" class="empty-state">
+
+                            <i class="fas fa-folder-open"></i>
+
+                            <h3>No Student Applications</h3>
+
+                            <p>
+                                No student admission applications have been
+                                submitted yet.
+                            </p>
+
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

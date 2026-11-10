@@ -1,0 +1,1094 @@
+
+{% extends "dashboard/base.html" %}
+
+{% block title %}System Logs{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --orange-light: #FFF4E6;
+        --green: #25845A;
+        --green-light: #EAF7F0;
+        --purple: #7654A8;
+        --purple-light: #F2EDFA;
+        --red: #C74747;
+        --text-primary: #243447;
+        --text-secondary: #5F6F80;
+        --border-color: #E0E7EF;
+        --page-background: #F5F7FA;
+        --card-background: #FFFFFF;
+        --radius-small: 10px;
+        --radius-medium: 14px;
+        --radius-large: 18px;
+        --shadow-card: 0 4px 16px rgba(18, 59, 99, 0.07);
+        --shadow-hover: 0 10px 25px rgba(18, 59, 99, 0.13);
+    }
+
+    .system-logs {
+        width: 100%;
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 28px;
+        box-sizing: border-box;
+        color: var(--text-primary);
+        font-family: "Segoe UI", Arial, sans-serif;
+        font-size: 18px;
+        line-height: 1.6;
+    }
+
+    .system-logs *,
+    .system-logs *::before,
+    .system-logs *::after {
+        box-sizing: border-box;
+    }
+
+    /* PAGE HEADER */
+
+    .system-logs .logs-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 24px;
+        padding: 32px;
+        margin-bottom: 34px;
+        border-radius: var(--radius-large);
+        color: #FFFFFF;
+        background: linear-gradient(
+            120deg,
+            var(--deep-blue-dark),
+            var(--deep-blue)
+        );
+        box-shadow: var(--shadow-card);
+    }
+
+    .system-logs .logs-header h1 {
+        margin: 0 0 8px;
+        font-size: 30px;
+        font-weight: 700;
+        line-height: 1.35;
+    }
+
+    .system-logs .logs-header p {
+        margin: 0;
+        color: #E5EDF5;
+        font-size: 18px;
+        line-height: 1.6;
+    }
+
+    .system-logs .header-date {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 18px;
+        border-radius: var(--radius-small);
+        background: rgba(255, 255, 255, 0.12);
+        color: #FFFFFF;
+        font-size: 17px;
+        font-weight: 600;
+    }
+
+    .system-logs .header-date i {
+        color: #FFD19A;
+        font-size: 21px;
+    }
+
+    /* SECTION HEADING */
+
+    .system-logs .logs-section {
+        margin-bottom: 38px;
+    }
+
+    .system-logs .section-title {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        margin: 0 0 24px;
+        padding: 0 0 14px;
+        color: var(--deep-blue-dark);
+        font-size: 23px;
+        font-weight: 700;
+        line-height: 1.5;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    .system-logs .section-title i {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 43px;
+        height: 43px;
+        flex-shrink: 0;
+        background: var(--orange-light);
+        color: var(--orange-hover);
+        border-radius: 12px;
+        font-size: 20px;
+    }
+
+    /* STATISTICS */
+
+    .system-logs .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 24px;
+    }
+
+    .system-logs .stat-card {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        min-width: 0;
+        min-height: 140px;
+        padding: 26px 24px;
+        background: var(--card-background);
+        border: 1px solid var(--border-color);
+        border-left: 5px solid var(--deep-blue);
+        border-radius: var(--radius-medium);
+        box-shadow: var(--shadow-card);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .system-logs .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .system-logs .stat-card.orange {
+        background: linear-gradient(135deg, #FFFFFF, #FFF8EF);
+        border-left-color: var(--orange);
+    }
+
+    .system-logs .stat-card.green {
+        background: linear-gradient(135deg, #FFFFFF, #F0FAF4);
+        border-left-color: var(--green);
+    }
+
+    .system-logs .stat-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        min-width: 60px;
+        border-radius: 15px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        font-size: 25px;
+    }
+
+    .system-logs .stat-card.orange .stat-icon {
+        background: var(--orange-light);
+        color: var(--orange-hover);
+    }
+
+    .system-logs .stat-card.green .stat-icon {
+        background: var(--green-light);
+        color: var(--green);
+    }
+
+    .system-logs .stat-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .system-logs .stat-label {
+        margin-bottom: 8px;
+        color: var(--text-secondary);
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+    }
+
+    .system-logs .stat-value {
+        color: var(--deep-blue-dark);
+        font-size: 30px;
+        font-weight: 750;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+    }
+
+    /* FILTER CARD */
+
+    .system-logs .filter-card,
+    .system-logs .table-card {
+        min-width: 0;
+        padding: 26px;
+        background: var(--card-background);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-medium);
+        box-shadow: var(--shadow-card);
+        transition: box-shadow 0.2s ease;
+    }
+
+    .system-logs .filter-card:hover,
+    .system-logs .table-card:hover {
+        box-shadow: var(--shadow-hover);
+    }
+
+    .system-logs .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 22px;
+    }
+
+    .system-logs .form-group {
+        min-width: 0;
+    }
+
+    .system-logs .form-group label {
+        display: block;
+        margin-bottom: 9px;
+        color: var(--deep-blue-dark);
+        font-size: 17px;
+        font-weight: 650;
+    }
+
+    .system-logs input,
+    .system-logs select {
+        display: block;
+        width: 100%;
+        min-width: 0;
+        min-height: 48px;
+        padding: 11px 13px;
+        border: 1px solid #CBD5E1;
+        border-radius: var(--radius-small);
+        outline: none;
+        color: var(--text-primary);
+        background: #FFFFFF;
+        font-family: inherit;
+        font-size: 16px;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .system-logs input:focus,
+    .system-logs select:focus {
+        border-color: var(--orange);
+        box-shadow: 0 0 0 3px rgba(242, 140, 40, 0.14);
+    }
+
+    .system-logs input::placeholder {
+        color: #94A3B8;
+    }
+
+    .system-logs .filter-actions {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 24px;
+    }
+
+    .system-logs .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        min-height: 46px;
+        padding: 11px 20px;
+        border: 1px solid transparent;
+        border-radius: var(--radius-small);
+        text-decoration: none;
+        font-family: inherit;
+        font-size: 16px;
+        font-weight: 650;
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .system-logs .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .system-logs .btn-primary {
+        color: #FFFFFF;
+        background: var(--orange);
+    }
+
+    .system-logs .btn-primary:hover {
+        background: var(--orange-hover);
+    }
+
+    .system-logs .btn-secondary {
+        color: var(--deep-blue);
+        background: var(--deep-blue-light);
+        border-color: #D7E4EF;
+    }
+
+    .system-logs .btn-secondary:hover {
+        background: #D9E8F4;
+    }
+
+    /* TABLE */
+
+    .system-logs .table-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-bottom: 22px;
+    }
+
+    .system-logs .table-heading h2 {
+        margin: 0;
+        color: var(--deep-blue-dark);
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+    .system-logs .record-count {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 13px;
+        border-radius: var(--radius-small);
+        background: var(--orange-light);
+        color: var(--orange-hover);
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+    .system-logs .table-wrap {
+        width: 100%;
+        overflow-x: auto;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-small);
+    }
+
+    .system-logs table {
+        width: 100%;
+        min-width: 1050px;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .system-logs thead th {
+        padding: 16px 14px;
+        text-align: left;
+        color: #FFFFFF;
+        background: var(--deep-blue);
+        font-size: 15px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .system-logs tbody td {
+        padding: 16px 14px;
+        color: var(--text-primary);
+        border-bottom: 1px solid var(--border-color);
+        vertical-align: top;
+        font-size: 15px;
+        line-height: 1.6;
+    }
+
+    .system-logs tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .system-logs tbody tr {
+        transition: background 0.2s ease;
+    }
+
+    .system-logs tbody tr:hover {
+        background: var(--orange-light);
+    }
+
+    .system-logs .log-user {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 130px;
+        font-weight: 650;
+    }
+
+    .system-logs .user-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        border-radius: 10px;
+        color: var(--deep-blue);
+        background: var(--deep-blue-light);
+        font-size: 15px;
+    }
+
+    .system-logs .module-tag {
+        display: inline-block;
+        padding: 6px 10px;
+        border: 1px solid #D7E4EF;
+        border-radius: 8px;
+        color: var(--deep-blue);
+        background: var(--deep-blue-light);
+        font-size: 14px;
+        font-weight: 650;
+        white-space: nowrap;
+    }
+
+    .system-logs .action-tag {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 11px;
+        border-radius: 8px;
+        background: var(--orange-light);
+        color: var(--orange-hover);
+        font-size: 14px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .system-logs .action-tag.login,
+    .system-logs .action-tag.approve,
+    .system-logs .action-tag.verify {
+        background: var(--green-light);
+        color: var(--green);
+    }
+
+    .system-logs .action-tag.delete,
+    .system-logs .action-tag.reject {
+        background: #FDECEC;
+        color: var(--red);
+    }
+
+    .system-logs .action-tag.logout,
+    .system-logs .action-tag.download {
+        background: var(--purple-light);
+        color: var(--purple);
+    }
+
+    .system-logs .description {
+        min-width: 240px;
+        max-width: 400px;
+        overflow-wrap: anywhere;
+    }
+
+    .system-logs .ip-address {
+        color: var(--text-secondary);
+        font-family: Consolas, monospace;
+        font-size: 14px;
+        white-space: nowrap;
+    }
+
+    .system-logs .date-cell {
+        min-width: 155px;
+        white-space: nowrap;
+    }
+
+    .system-logs .empty-state {
+        padding: 42px 20px;
+        text-align: center;
+        color: var(--text-secondary);
+    }
+
+    .system-logs .empty-state i {
+        display: block;
+        margin-bottom: 12px;
+        color: #94A3B8;
+        font-size: 35px;
+    }
+
+    /* PAGINATION */
+
+    .system-logs .pagination {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-top: 24px;
+    }
+
+    .system-logs .pagination-info {
+        color: var(--text-secondary);
+        font-size: 16px;
+    }
+
+    .system-logs .pagination-links {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .system-logs .pagination-links a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 42px;
+        padding: 9px 15px;
+        border-radius: var(--radius-small);
+        color: var(--deep-blue);
+        background: var(--deep-blue-light);
+        text-decoration: none;
+        font-size: 15px;
+        font-weight: 650;
+        transition: background 0.2s ease;
+    }
+
+    .system-logs .pagination-links a:hover {
+        color: #FFFFFF;
+        background: var(--deep-blue);
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 1200px) {
+        .system-logs .stats-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .system-logs .filter-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 768px) {
+        .system-logs {
+            padding: 18px;
+        }
+
+        .system-logs .logs-header {
+            padding: 24px;
+            margin-bottom: 28px;
+        }
+
+        .system-logs .logs-header h1 {
+            font-size: 26px;
+        }
+
+        .system-logs .section-title {
+            font-size: 21px;
+            margin-bottom: 20px;
+        }
+
+        .system-logs .stats-grid,
+        .system-logs .filter-grid {
+            grid-template-columns: 1fr;
+            gap: 18px;
+        }
+
+        .system-logs .stat-card {
+            min-height: 120px;
+            padding: 22px;
+        }
+
+        .system-logs .filter-card,
+        .system-logs .table-card {
+            padding: 20px;
+        }
+
+        .system-logs .logs-section {
+            margin-bottom: 30px;
+        }
+
+        .system-logs .pagination {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+
+    @media (max-width: 420px) {
+        .system-logs {
+            padding: 12px;
+        }
+
+        .system-logs .logs-header {
+            padding: 20px;
+        }
+
+        .system-logs .stat-card {
+            gap: 14px;
+            padding: 18px;
+        }
+
+        .system-logs .stat-icon {
+            width: 52px;
+            height: 52px;
+            min-width: 52px;
+            font-size: 22px;
+        }
+
+        .system-logs .stat-value {
+            font-size: 25px;
+        }
+
+        .system-logs .filter-card,
+        .system-logs .table-card {
+            padding: 15px;
+        }
+
+        .system-logs .filter-actions .btn {
+            flex: 1;
+        }
+    }
+    
+/* =========================================
+   MINIMUM FONT SIZE: 18px
+   SYSTEM LOGS PAGE
+========================================= */
+
+.system-logs {
+    font-size: 18px;
+}
+
+/* Header */
+
+.system-logs .logs-header h1 {
+    font-size: 30px;
+}
+
+.system-logs .logs-header p {
+    font-size: 18px;
+}
+
+.system-logs .header-date {
+    font-size: 18px;
+}
+
+/* Section headings */
+
+.system-logs .section-title {
+    font-size: 23px;
+}
+
+.system-logs .table-heading h2 {
+    font-size: 22px;
+}
+
+/* Statistics */
+
+.system-logs .stat-label {
+    font-size: 18px;
+}
+
+.system-logs .stat-value {
+    font-size: 30px;
+}
+
+/* Form labels and inputs */
+
+.system-logs .form-group label {
+    font-size: 18px;
+}
+
+.system-logs input,
+.system-logs select {
+    font-size: 18px;
+}
+
+/* Buttons and record count */
+
+.system-logs .btn {
+    font-size: 18px;
+}
+
+.system-logs .record-count {
+    font-size: 18px;
+}
+
+/* Table */
+
+.system-logs thead th {
+    font-size: 18px;
+}
+
+.system-logs tbody td {
+    font-size: 18px;
+}
+
+.system-logs .module-tag,
+.system-logs .action-tag {
+    font-size: 18px;
+}
+
+.system-logs .ip-address {
+    font-size: 18px;
+    font-family: Consolas, monospace;
+}
+
+.system-logs .pagination-info {
+    font-size: 18px;
+}
+
+.system-logs .pagination-links a {
+    font-size: 18px;
+}
+
+/* Responsive heading sizes */
+
+@media (max-width: 768px) {
+    .system-logs .logs-header h1 {
+        font-size: 26px;
+    }
+
+    .system-logs .section-title {
+        font-size: 21px;
+    }
+}
+
+@media (max-width: 420px) {
+    .system-logs .stat-value {
+        font-size: 25px;
+    }
+}
+
+</style>
+
+<div class="system-logs">
+
+    <!-- PAGE HEADER -->
+
+    <div class="logs-header">
+        <div>
+            <h1>System Activity Logs</h1>
+            <p>
+                Monitor user activities and important operations
+                across the school management system.
+            </p>
+        </div>
+
+        <div class="header-date">
+            <i class="fa-regular fa-calendar"></i>
+            <span>{% now "d M Y" %}</span>
+        </div>
+    </div>
+
+    <!-- STATISTICS -->
+
+    <div class="logs-section">
+
+        <h2 class="section-title">
+            <i class="fa-solid fa-chart-simple"></i>
+            Activity Statistics
+        </h2>
+
+        <div class="stats-grid">
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fa-solid fa-list-check"></i>
+                </div>
+
+                <div class="stat-info">
+                    <div class="stat-label">Total Activities</div>
+                    <div class="stat-value">
+                        {{ total_logs|default:0 }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card orange">
+                <div class="stat-icon">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                </div>
+
+                <div class="stat-info">
+                    <div class="stat-label">Login Events</div>
+                    <div class="stat-value">
+                        {{ login_count|default:0 }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card green">
+                <div class="stat-icon">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                </div>
+
+                <div class="stat-info">
+                    <div class="stat-label">Rejected Actions</div>
+                    <div class="stat-value">
+                        {{ failed_or_security_count|default:0 }}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- FILTER ACTIVITIES -->
+
+    <div class="logs-section">
+
+        <h2 class="section-title">
+            <i class="fa-solid fa-filter"></i>
+            Filter Activities
+        </h2>
+
+        <div class="filter-card">
+
+            <form method="get">
+
+                <div class="filter-grid">
+
+                    <div class="form-group">
+                        <label for="search">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            Search Activities
+                        </label>
+
+                        <input
+                            type="text"
+                            id="search"
+                            name="search"
+                            value="{{ search }}"
+                            placeholder="Username, module, IP or details"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="module">
+                            <i class="fa-solid fa-layer-group"></i>
+                            Module
+                        </label>
+
+                        <select id="module" name="module">
+                            <option value="">All Modules</option>
+
+                            {% for item in modules %}
+                                <option
+                                    value="{{ item }}"
+                                    {% if selected_module == item %}selected{% endif %}
+                                >
+                                    {{ item }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="action">
+                            <i class="fa-solid fa-bolt"></i>
+                            Action
+                        </label>
+
+                        <select id="action" name="action">
+                            <option value="">All Actions</option>
+
+                            {% for value, label in action_choices %}
+                                <option
+                                    value="{{ value }}"
+                                    {% if selected_action == value %}selected{% endif %}
+                                >
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="start_date">
+                            <i class="fa-regular fa-calendar"></i>
+                            From Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="start_date"
+                            name="start_date"
+                            value="{{ start_date }}"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="end_date">
+                            <i class="fa-regular fa-calendar-check"></i>
+                            To Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="end_date"
+                            name="end_date"
+                            value="{{ end_date }}"
+                        >
+                    </div>
+
+                </div>
+
+                <div class="filter-actions">
+
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fa-solid fa-filter"></i>
+                        Apply Filters
+                    </button>
+
+                    <a
+                        class="btn btn-secondary"
+                        href="{% url 'accounts:system_logs' %}"
+                    >
+                        <i class="fa-solid fa-rotate-left"></i>
+                        Clear Filters
+                    </a>
+
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- ACTIVITY HISTORY -->
+
+    <div class="logs-section">
+
+        <h2 class="section-title">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            Activity History
+        </h2>
+
+        <div class="table-card">
+
+            <div class="table-heading">
+                <h2>System Audit Trail</h2>
+
+                <span class="record-count">
+                    <i class="fa-solid fa-database"></i>
+                    {{ page_obj.paginator.count }} Records
+                </span>
+            </div>
+
+            <div class="table-wrap">
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date &amp; Time</th>
+                            <th>User</th>
+                            <th>Module</th>
+                            <th>Action</th>
+                            <th>Description</th>
+                            <th>IP Address</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for log in page_obj %}
+
+                            <tr>
+                                <td class="date-cell">
+                                    <i class="fa-regular fa-clock"></i>
+                                    {{ log.timestamp|date:"d M Y, h:i A" }}
+                                </td>
+
+                                <td>
+                                    <div class="log-user">
+                                        <span class="user-icon">
+                                            <i class="fa-solid fa-user"></i>
+                                        </span>
+
+                                        <span>
+                                            {% if log.user %}
+                                                {{ log.user.username }}
+                                            {% else %}
+                                                System
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="module-tag">
+                                        {{ log.module }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="action-tag {{ log.action }}">
+                                        {{ log.get_action_display }}
+                                    </span>
+                                </td>
+
+                                <td class="description">
+                                    {{ log.description }}
+                                </td>
+
+                                <td>
+                                    <span class="ip-address">
+                                        {{ log.ip_address|default:"—" }}
+                                    </span>
+                                </td>
+                            </tr>
+
+                        {% empty %}
+
+                            <tr>
+                                <td colspan="6" class="empty-state">
+                                    <i class="fa-solid fa-folder-open"></i>
+
+                                    <strong>No activity logs found.</strong>
+
+                                    <div>
+                                        Try changing your search or filter criteria.
+                                    </div>
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+
+            </div>
+
+            <!-- PAGINATION -->
+
+            <div class="pagination">
+
+                <div class="pagination-info">
+                    Page {{ page_obj.number }}
+                    of {{ page_obj.paginator.num_pages }}
+                    &nbsp;|&nbsp;
+                    {{ page_obj.paginator.count }} matching records
+                </div>
+
+                <div class="pagination-links">
+
+                    {% if page_obj.has_previous %}
+
+                        <a href="?search={{ search|urlencode }}&module={{ selected_module|urlencode }}&action={{ selected_action|urlencode }}&start_date={{ start_date|urlencode }}&end_date={{ end_date|urlencode }}&page=1">
+                            <i class="fa-solid fa-angles-left"></i>
+                            First
+                        </a>
+
+                        <a href="?search={{ search|urlencode }}&module={{ selected_module|urlencode }}&action={{ selected_action|urlencode }}&start_date={{ start_date|urlencode }}&end_date={{ end_date|urlencode }}&page={{ page_obj.previous_page_number }}">
+                            <i class="fa-solid fa-chevron-left"></i>
+                            Previous
+                        </a>
+
+                    {% endif %}
+
+                    {% if page_obj.has_next %}
+
+                        <a href="?search={{ search|urlencode }}&module={{ selected_module|urlencode }}&action={{ selected_action|urlencode }}&start_date={{ start_date|urlencode }}&end_date={{ end_date|urlencode }}&page={{ page_obj.next_page_number }}">
+                            Next
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </a>
+
+                        <a href="?search={{ search|urlencode }}&module={{ selected_module|urlencode }}&action={{ selected_action|urlencode }}&start_date={{ start_date|urlencode }}&end_date={{ end_date|urlencode }}&page={{ page_obj.paginator.num_pages }}">
+                            Last
+                            <i class="fa-solid fa-angles-right"></i>
+                        </a>
+
+                    {% endif %}
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,934 @@
+/* =========================================================
+   SMS DASHBOARD - GLOBAL THEME
+   ========================================================= */
+
+
+/* =========================================================
+   1. ROOT VARIABLES
+   ========================================================= */
+
+:root {
+
+    /* -------------------------------
+       Main Colors
+       ------------------------------- */
+
+    --deep-blue: #123B63;
+    --deep-blue-dark: #0B2945;
+    --deep-blue-light: #EAF2F8;
+
+    --orange: #F28C28;
+    --orange-hover: #D97706;
+    --orange-light: #FFF4E6;
+
+
+    /* -------------------------------
+       Background Colors
+       ------------------------------- */
+
+    --body-bg: #F5F7FA;
+    --card-bg: #FFFFFF;
+    --white: #FFFFFF;
+
+
+    /* -------------------------------
+       Text Colors
+       ------------------------------- */
+
+    --text-dark: #1F2937;
+    --text-medium: #4B5563;
+    --text-light: #6B7280;
+
+
+    /* -------------------------------
+       Border
+       ------------------------------- */
+
+    --border-color: #E5E7EB;
+
+
+    /* -------------------------------
+       Sidebar
+       ------------------------------- */
+
+    --sidebar-width: 270px;
+
+
+    /* -------------------------------
+       Topbar
+       ------------------------------- */
+
+    --topbar-height: 70px;
+
+
+    /* -------------------------------
+       Radius
+       ------------------------------- */
+
+    --radius-small: 8px;
+    --radius-medium: 10px;
+    --radius-large: 14px;
+
+
+    /* -------------------------------
+       Shadow
+       ------------------------------- */
+
+    --shadow-small:
+        0 2px 8px rgba(15, 23, 42, 0.06);
+
+    --shadow-medium:
+        0 4px 16px rgba(15, 23, 42, 0.08);
+
+    --shadow-large:
+        0 8px 24px rgba(15, 23, 42, 0.10);
+
+
+    /* -------------------------------
+       Transition
+       ------------------------------- */
+
+    --transition:
+        all 0.3s ease;
+}
+
+
+/* =========================================================
+   2. GLOBAL RESET
+   ========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   3. HTML / BODY
+   ========================================================= */
+
+html {
+    width: 100%;
+    min-height: 100%;
+    scroll-behavior: smooth;
+}
+
+
+body {
+    width: 100%;
+    min-height: 100vh;
+
+    margin: 0;
+    padding: 0;
+
+    background: var(--body-bg);
+
+    color: var(--text-dark);
+
+    font-family:
+        "Segoe UI",
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    font-size: 18px;
+
+    line-height: 1.5;
+
+    overflow-x: hidden;
+}
+
+
+/* =========================================================
+   4. LINKS
+   ========================================================= */
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+
+a:hover {
+    text-decoration: none;
+}
+
+
+/* =========================================================
+   5. BUTTONS
+   ========================================================= */
+
+button,
+input,
+select,
+textarea {
+    font-family: inherit;
+}
+
+
+button {
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   6. IMAGES
+   ========================================================= */
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+
+/* =========================================================
+   7. MAIN APPLICATION AREA
+   ========================================================= */
+
+.main-area {
+
+    /*
+       Desktop:
+       Sidebar width = 270px
+    */
+
+    margin-left: var(--sidebar-width);
+
+    min-height: 100vh;
+
+    width: calc(100% - var(--sidebar-width));
+
+    transition:
+        margin-left 0.3s ease,
+        width 0.3s ease;
+}
+
+
+/* =========================================================
+   8. MAIN CONTENT
+   ========================================================= */
+
+.main-content {
+
+    width: 100%;
+
+    min-height:
+        calc(100vh - var(--topbar-height));
+
+    padding: 30px;
+}
+
+
+/* =========================================================
+   9. PAGE CONTAINER
+   ========================================================= */
+
+.page-container {
+
+    width: 100%;
+
+    max-width: 1600px;
+
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   10. PAGE TITLE
+   ========================================================= */
+
+.page-title {
+
+    color: var(--deep-blue);
+
+    font-size: 28px;
+
+    font-weight: 700;
+
+    margin-bottom: 8px;
+}
+
+
+.page-subtitle {
+
+    color: var(--text-medium);
+
+    font-size: 16px;
+
+    margin-bottom: 24px;
+}
+
+
+/* =========================================================
+   11. COMMON CARD
+   ========================================================= */
+
+.card {
+
+    background: var(--card-bg);
+
+    border: 1px solid var(--border-color);
+
+    border-radius: var(--radius-large);
+
+    box-shadow: var(--shadow-small);
+
+    padding: 24px;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.card:hover {
+
+    box-shadow: var(--shadow-medium);
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   12. CARD HEADER
+   ========================================================= */
+
+.card-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 20px;
+}
+
+
+.card-title {
+
+    color: var(--deep-blue);
+
+    font-size: 20px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   13. GRID
+   ========================================================= */
+
+.dashboard-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 20px;
+}
+
+
+.two-column-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 20px;
+}
+
+
+.three-column-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 20px;
+}
+
+
+/* =========================================================
+   14. FORM
+   ========================================================= */
+
+.form-group {
+
+    margin-bottom: 20px;
+}
+
+
+.form-label {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: var(--text-dark);
+
+    font-size: 16px;
+
+    font-weight: 600;
+}
+
+
+.form-control {
+
+    width: 100%;
+
+    min-height: 46px;
+
+    padding: 10px 14px;
+
+    background: var(--white);
+
+    border: 1px solid #D1D5DB;
+
+    border-radius: var(--radius-small);
+
+    color: var(--text-dark);
+
+    font-size: 16px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.form-control:focus {
+
+    border-color: var(--orange);
+
+    box-shadow:
+        0 0 0 3px rgba(242, 140, 40, 0.15);
+}
+
+
+/* =========================================================
+   15. BUTTON COMMON
+   ========================================================= */
+
+.btn {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    min-height: 44px;
+
+    padding: 10px 18px;
+
+    border: none;
+
+    border-radius: var(--radius-small);
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    transition: var(--transition);
+}
+
+
+/* Primary */
+
+.btn-primary {
+
+    background: var(--deep-blue);
+
+    color: var(--white);
+}
+
+
+.btn-primary:hover {
+
+    background: var(--deep-blue-dark);
+}
+
+
+/* Orange */
+
+.btn-orange {
+
+    background: var(--orange);
+
+    color: var(--white);
+}
+
+
+.btn-orange:hover {
+
+    background: var(--orange-hover);
+}
+
+
+/* Secondary */
+
+.btn-secondary {
+
+    background: #E5E7EB;
+
+    color: var(--text-dark);
+}
+
+
+.btn-secondary:hover {
+
+    background: #D1D5DB;
+}
+
+
+/* =========================================================
+   16. TABLE
+   ========================================================= */
+
+.table-container {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+    background: var(--white);
+
+    border-radius: var(--radius-large);
+
+    border: 1px solid var(--border-color);
+}
+
+
+table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    min-width: 700px;
+}
+
+
+thead {
+
+    background: var(--deep-blue);
+
+    color: var(--white);
+}
+
+
+th {
+
+    padding: 14px 16px;
+
+    text-align: left;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+
+td {
+
+    padding: 14px 16px;
+
+    border-bottom:
+        1px solid var(--border-color);
+
+    font-size: 15px;
+
+    color: var(--text-dark);
+}
+
+
+tbody tr {
+
+    transition:
+        background 0.2s ease;
+}
+
+
+tbody tr:hover {
+
+    background:
+        var(--orange-light);
+}
+
+
+tbody tr:last-child td {
+
+    border-bottom: none;
+}
+
+
+/* =========================================================
+   17. BADGES
+   ========================================================= */
+
+.badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 5px 10px;
+
+    border-radius: 20px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+
+.badge-success {
+
+    background: #DCFCE7;
+
+    color: #166534;
+}
+
+
+.badge-warning {
+
+    background: #FEF3C7;
+
+    color: #92400E;
+}
+
+
+.badge-danger {
+
+    background: #FEE2E2;
+
+    color: #991B1B;
+}
+
+
+.badge-info {
+
+    background: var(--deep-blue-light);
+
+    color: var(--deep-blue);
+}
+
+
+/* =========================================================
+   18. ALERTS
+   ========================================================= */
+
+.alert {
+
+    padding: 14px 18px;
+
+    border-radius: var(--radius-small);
+
+    margin-bottom: 20px;
+
+    font-size: 15px;
+}
+
+
+.alert-success {
+
+    background: #DCFCE7;
+
+    color: #166534;
+
+    border: 1px solid #BBF7D0;
+}
+
+
+.alert-danger {
+
+    background: #FEE2E2;
+
+    color: #991B1B;
+
+    border: 1px solid #FECACA;
+}
+
+
+.alert-warning {
+
+    background: #FEF3C7;
+
+    color: #92400E;
+
+    border: 1px solid #FDE68A;
+}
+
+
+.alert-info {
+
+    background: var(--deep-blue-light);
+
+    color: var(--deep-blue);
+
+    border: 1px solid #BFDBFE;
+}
+
+
+/* =========================================================
+   19. EMPTY STATE
+   ========================================================= */
+
+.empty-state {
+
+    padding: 50px 20px;
+
+    text-align: center;
+
+    color: var(--text-light);
+}
+
+
+.empty-state i {
+
+    font-size: 42px;
+
+    margin-bottom: 15px;
+
+    color: var(--deep-blue);
+}
+
+
+.empty-state h3 {
+
+    margin-bottom: 8px;
+
+    color: var(--text-dark);
+}
+
+
+/* =========================================================
+   20. SCROLLBAR
+   ========================================================= */
+
+::-webkit-scrollbar {
+
+    width: 8px;
+
+    height: 8px;
+}
+
+
+::-webkit-scrollbar-track {
+
+    background: #F1F5F9;
+}
+
+
+::-webkit-scrollbar-thumb {
+
+    background: #CBD5E1;
+
+    border-radius: 10px;
+}
+
+
+::-webkit-scrollbar-thumb:hover {
+
+    background: #94A3B8;
+}
+
+
+/* =========================================================
+   21. DESKTOP
+   Sidebar is OPEN
+   ========================================================= */
+
+@media screen and (min-width: 901px) {
+
+    .main-area {
+
+        margin-left: var(--sidebar-width);
+
+        width:
+            calc(100% - var(--sidebar-width));
+    }
+}
+
+
+/* =========================================================
+   22. TABLET + MOBILE
+   Sidebar is CLOSED by default
+   ========================================================= */
+
+@media screen and (max-width: 900px) {
+
+    .main-area {
+
+        margin-left: 0 !important;
+
+        width: 100% !important;
+
+        min-height: 100vh;
+    }
+
+
+    .main-content {
+
+        padding: 24px;
+    }
+
+
+    .dashboard-grid {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+
+    .three-column-grid {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+}
+
+
+/* =========================================================
+   23. SMALL TABLET
+   ========================================================= */
+
+@media screen and (max-width: 700px) {
+
+    .main-content {
+
+        padding: 20px;
+    }
+
+
+    .dashboard-grid {
+
+        grid-template-columns: 1fr;
+    }
+
+
+    .three-column-grid {
+
+        grid-template-columns: 1fr;
+    }
+
+
+    .two-column-grid {
+
+        grid-template-columns: 1fr;
+    }
+
+
+    .page-title {
+
+        font-size: 24px;
+    }
+}
+
+
+/* =========================================================
+   24. MOBILE
+   ========================================================= */
+
+@media screen and (max-width: 600px) {
+
+    body {
+
+        font-size: 16px;
+    }
+
+
+    .main-content {
+
+        padding: 16px;
+    }
+
+
+    .page-title {
+
+        font-size: 22px;
+    }
+
+
+    .page-subtitle {
+
+        font-size: 14px;
+    }
+
+
+    .card {
+
+        padding: 18px;
+    }
+
+
+    .card-title {
+
+        font-size: 18px;
+    }
+
+
+    .form-control {
+
+        min-height: 44px;
+
+        font-size: 15px;
+    }
+
+
+    .btn {
+
+        width: 100%;
+
+        font-size: 15px;
+    }
+
+
+    .card-header {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+}
+
+
+/* =========================================================
+   25. VERY SMALL MOBILE
+   ========================================================= */
+
+@media screen and (max-width: 400px) {
+
+    .main-content {
+
+        padding: 12px;
+    }
+
+
+    .card {
+
+        padding: 15px;
+    }
+
+
+    .page-title {
+
+        font-size: 20px;
+    }
+}

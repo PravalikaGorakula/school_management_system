@@ -1,0 +1,315 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+Message Teacher | SMS
+{% endblock %}
+
+{% block page_title %}
+Message Teacher
+{% endblock %}
+
+{% block extra_css %}
+
+<style>
+
+    .student-page {
+        padding: 25px;
+    }
+
+    .teacher-card,
+    .message-card,
+    .history-card {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 25px;
+    }
+
+    .teacher-card {
+        border-left: 5px solid #F28C28;
+    }
+
+    .teacher-card h3,
+    .card-title {
+        color: #123B63;
+        font-size: 23px;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .teacher-details p {
+        margin: 7px 0;
+        font-size: 18px;
+        color: #475569;
+    }
+
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+    .form-group label {
+        display: block;
+        color: #123B63;
+        font-weight: 600;
+        margin-bottom: 8px;
+        font-size: 18px;
+    }
+
+    .form-control {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 13px 15px;
+        border: 1px solid #CBD5E1;
+        border-radius: 7px;
+        font-size: 18px;
+    }
+
+    textarea.form-control {
+        min-height: 140px;
+        resize: vertical;
+    }
+
+    .send-btn {
+        background: #F28C28;
+        color: #FFFFFF;
+        border: none;
+        padding: 13px 22px;
+        border-radius: 7px;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .send-btn:hover {
+        background: #D97706;
+    }
+
+    .history-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .history-table th {
+        background: #123B63;
+        color: #FFFFFF;
+        padding: 14px;
+        text-align: left;
+    }
+
+    .history-table td {
+        padding: 14px;
+        border-bottom: 1px solid #E2E8F0;
+        font-size: 17px;
+        vertical-align: top;
+    }
+
+    .status {
+        background: #DCFCE7;
+        color: #166534;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="student-page">
+
+    <div class="teacher-card">
+
+        <h3>
+            <i class="fa-solid fa-user-tie"></i>
+            Teacher Information
+        </h3>
+
+        <div class="teacher-details">
+
+            <p>
+                <strong>Subject:</strong>
+                {{ subject.subject_name }}
+            </p>
+
+            <p>
+                <strong>Subject Code:</strong>
+                {{ subject.subject_code }}
+            </p>
+
+            <p>
+                <strong>Teacher:</strong>
+
+                {% if teacher.get_full_name %}
+                    {{ teacher.get_full_name }}
+                {% else %}
+                    {{ teacher.username }}
+                {% endif %}
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="message-card">
+
+        <div class="card-title">
+            <i class="fa-solid fa-paper-plane"></i>
+            Send Message
+        </div>
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <div class="form-group">
+
+                <label>
+                    Subject
+                </label>
+
+                <input
+                    type="text"
+                    name="message_subject"
+                    class="form-control"
+                    placeholder="Enter message subject"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Message
+                </label>
+
+                <textarea
+                    name="message"
+                    class="form-control"
+                    placeholder="Write your message to the teacher..."
+                    required
+                ></textarea>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="send-btn"
+            >
+
+                <i class="fa-solid fa-paper-plane"></i>
+
+                Send Message
+
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <div class="history-card">
+
+        <div class="card-title">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            Message History
+        </div>
+
+        {% if message_history %}
+
+        <div style="overflow-x:auto;">
+
+            <table class="history-table">
+
+                <thead>
+
+                    <tr>
+                        <th>#</th>
+                        <th>Subject</th>
+                        <th>Message</th>
+                        <th>Date & Time</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for msg in message_history %}
+
+                    <tr>
+
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+
+                        <td>
+                            {{ msg.message_subject }}
+                        </td>
+
+                        <td>
+                            {{ msg.message }}
+                        </td>
+
+                        <td>
+                            {{ msg.created_at|date:"d M Y" }}
+                            <br>
+                            {{ msg.created_at|date:"h:i A" }}
+                        </td>
+
+                        <td>
+
+                            {% if msg.is_read %}
+
+                                <span class="status">
+                                    Read
+                                </span>
+
+                            {% else %}
+
+                                <span class="status">
+                                    Sent
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div style="
+            text-align:center;
+            padding:35px;
+            color:#64748B;
+            font-size:18px;
+        ">
+
+            No messages sent to this teacher yet.
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

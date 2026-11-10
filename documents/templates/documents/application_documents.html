@@ -1,0 +1,1309 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}
+Application Documents
+{% endblock %}
+
+{% block extra_css %}
+
+<!-- Bootstrap CSS -->
+<link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+>
+
+<!-- Font Awesome -->
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+>
+
+<style>
+/* =========================================================
+   SMS APPLICATION DOCUMENTS
+   THEME: NAVY BLUE + SOFT ORANGE
+   NORMAL FONT SIZE: 18px
+========================================================= */
+
+:root {
+    --deep-blue: #123B63;
+    --deep-blue-dark: #0B2945;
+    --deep-blue-light: #EAF2F8;
+    --deep-blue-soft: #F5F8FB;
+
+    --orange: #F28C28;
+    --orange-hover: #D97706;
+    --orange-light: #FFF4E6;
+
+    --white: #FFFFFF;
+    --background: #F5F8FC;
+
+    --text-primary: #263746;
+    --text-secondary: #667585;
+    --text-light: #8493A3;
+
+    --border: #DFE6ED;
+    --border-dark: #C9D5E0;
+
+    --danger: #DC2626;
+    --danger-light: #FFF1F2;
+
+    --radius-sm: 8px;
+    --radius-md: 10px;
+    --radius-lg: 12px;
+
+    --shadow-sm: 0 2px 8px rgba(18, 59, 99, 0.05);
+    --shadow-md: 0 5px 16px rgba(18, 59, 99, 0.08);
+
+    --transition: all 0.2s ease-in-out;
+}
+
+/* =========================================================
+   MAIN PAGE
+========================================================= */
+
+.application-documents-page {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 22px;
+
+    background: var(--background);
+    color: var(--text-primary);
+
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 18px;
+    line-height: 1.5;
+
+    box-sizing: border-box;
+}
+
+.application-documents-page *,
+.application-documents-page *::before,
+.application-documents-page *::after {
+    box-sizing: border-box;
+}
+
+/* =========================================================
+   BACK LINK
+========================================================= */
+
+.back-link {
+    min-height: 46px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    margin-bottom: 20px;
+    padding: 10px 17px;
+
+    background: var(--white);
+
+    border: 1px solid var(--border-dark);
+    border-radius: var(--radius-sm);
+
+    color: var(--deep-blue);
+
+    font-size: 18px;
+    font-weight: 600;
+
+    text-decoration: none;
+    white-space: nowrap;
+
+    transition: var(--transition);
+}
+
+.back-link i {
+    color: var(--orange);
+    font-size: 18px;
+}
+
+.back-link:hover {
+    background: var(--deep-blue-light);
+    border-color: var(--deep-blue);
+    color: var(--deep-blue);
+
+    transform: translateX(-2px);
+}
+
+/* =========================================================
+   APPLICATION HEADER
+========================================================= */
+
+.application-header {
+    position: relative;
+
+    margin-bottom: 22px;
+    padding: 24px;
+
+    background: var(--white);
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+
+    overflow: hidden;
+
+    box-shadow: var(--shadow-sm);
+}
+
+.application-header::before {
+    content: "";
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 4px;
+
+    background: var(--orange);
+}
+
+/* Header title */
+
+.application-header h1 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin: 0;
+
+    color: var(--deep-blue);
+
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.application-header h1 i {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--deep-blue);
+
+    border: 1px solid var(--deep-blue);
+    border-radius: var(--radius-md);
+
+    color: var(--white);
+    font-size: 21px;
+}
+
+/* Header description */
+
+.application-header > p {
+    margin: 10px 0 22px 60px;
+
+    color: var(--text-secondary);
+
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+/* =========================================================
+   APPLICATION INFORMATION
+========================================================= */
+
+.application-info {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.application-info-item {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+
+    padding: 16px 18px;
+
+    background: var(--deep-blue-soft);
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+
+    transition: var(--transition);
+}
+
+.application-info-item:hover {
+    background: #FFFAF5;
+    border-color: #F4D3AD;
+}
+
+/* Information label */
+
+.application-info-item span {
+    display: block;
+
+    color: var(--text-secondary);
+
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+/* Information value */
+
+.application-info-item strong {
+    display: block;
+
+    color: var(--deep-blue);
+
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.5;
+
+    overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   DOCUMENTS CARD
+========================================================= */
+
+.documents-card {
+    width: 100%;
+
+    background: var(--white);
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+
+    overflow: hidden;
+}
+
+/* =========================================================
+   CARD HEADER
+========================================================= */
+
+.documents-card-header {
+    min-height: 82px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+
+    padding: 20px 24px;
+
+    background: linear-gradient(
+        100deg,
+        #FFFFFF 0%,
+        #F8FAFD 100%
+    );
+
+    border-bottom: 1px solid var(--border);
+    border-left: 4px solid var(--orange);
+}
+
+.documents-card-header h2 {
+    margin: 0;
+
+    color: var(--deep-blue);
+
+    font-size: 23px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+/* Document count */
+
+.documents-count {
+    min-height: 42px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    padding: 8px 15px;
+
+    background: var(--orange-light);
+
+    border: 1px solid #F4D3AD;
+    border-radius: 30px;
+
+    color: var(--orange-hover);
+
+    font-size: 18px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+.documents-count i {
+    color: var(--orange);
+    font-size: 18px;
+}
+
+/* =========================================================
+   TABLE RESPONSIVE WRAPPER
+========================================================= */
+
+.application-documents-page .table-responsive {
+    width: 100%;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    -webkit-overflow-scrolling: touch;
+}
+
+/* =========================================================
+   DOCUMENT TABLE
+========================================================= */
+
+.documents-table {
+    width: 100%;
+    min-width: 950px;
+
+    margin: 0 !important;
+
+    border-collapse: separate;
+    border-spacing: 0;
+
+    background: var(--white);
+
+    color: var(--text-primary);
+
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 18px;
+}
+
+/* Table header */
+
+.documents-table thead th {
+    padding: 17px 19px;
+
+    background: var(--deep-blue-light);
+
+    color: var(--deep-blue);
+
+    border: none;
+    border-bottom: 2px solid #D1E0EC;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    line-height: 1.5;
+    text-align: left;
+    vertical-align: middle;
+
+    white-space: nowrap;
+}
+
+.documents-table thead {
+    border-bottom: 3px solid var(--orange);
+}
+
+.documents-table thead th:first-child {
+    width: 75px;
+    text-align: center;
+}
+
+/* Table body */
+
+.documents-table tbody td {
+    padding: 18px 19px;
+
+    background: var(--white);
+
+    color: var(--text-primary);
+
+    border: none;
+    border-bottom: 1px solid #E7EDF3;
+
+    font-size: 18px;
+    font-weight: 400;
+
+    line-height: 1.5;
+    vertical-align: middle;
+}
+
+.documents-table tbody tr {
+    transition: var(--transition);
+}
+
+.documents-table tbody tr:hover td {
+    background: #FFF9F1;
+}
+
+.documents-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Serial number */
+
+.documents-table tbody td:first-child {
+    width: 75px;
+
+    color: var(--text-secondary);
+    font-weight: 600;
+
+    text-align: center;
+}
+
+/* =========================================================
+   DOCUMENT NAME AND ICON
+========================================================= */
+
+.document-details {
+    min-width: 220px;
+
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+/* Document icon */
+
+.document-icon {
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--deep-blue-light);
+
+    border: 1px solid #D5E3EE;
+    border-radius: var(--radius-md);
+
+    color: var(--deep-blue);
+
+    font-size: 20px;
+
+    transition: var(--transition);
+}
+
+.document-icon.document-pdf {
+    background: #FFF1F2;
+    border-color: #FECACA;
+    color: #DC2626;
+}
+
+.document-icon.document-image {
+    background: #EFF6FF;
+    border-color: #BFDBFE;
+    color: #2563EB;
+}
+
+.document-icon.document-word {
+    background: #EFF6FF;
+    border-color: #BFDBFE;
+    color: #1D4ED8;
+}
+
+.documents-table tbody tr:hover .document-icon {
+    border-color: #F4D3AD;
+    background: var(--orange-light);
+    color: var(--orange-hover);
+}
+
+/* Keep PDF / image / Word icons distinct on hover */
+
+.documents-table tbody tr:hover .document-icon.document-pdf {
+    background: #FFF1F2;
+    border-color: #FECACA;
+    color: #DC2626;
+}
+
+.documents-table tbody tr:hover .document-icon.document-image,
+.documents-table tbody tr:hover .document-icon.document-word {
+    background: #EFF6FF;
+    border-color: #BFDBFE;
+    color: #1D4ED8;
+}
+
+/* Document label */
+
+.document-name {
+    display: block;
+
+    color: var(--deep-blue);
+
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.5;
+
+    overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   FILE NAME
+========================================================= */
+
+.file-name {
+    display: inline-block;
+
+    max-width: 300px;
+    padding: 8px 11px;
+
+    background: var(--deep-blue-soft);
+
+    border: 1px solid var(--border);
+    border-radius: 7px;
+
+    color: var(--text-secondary);
+
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.5;
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+/* =========================================================
+   ACTION BUTTONS
+========================================================= */
+
+.action-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    gap: 8px;
+    flex-wrap: wrap;
+
+    min-width: 230px;
+}
+
+/* Common action button */
+
+.action-btn {
+    min-height: 42px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 9px 13px;
+
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.4;
+
+    text-decoration: none;
+    white-space: nowrap;
+
+    cursor: pointer;
+
+    transition: var(--transition);
+}
+
+.action-btn i {
+    font-size: 17px;
+}
+
+/* =========================================================
+   VIEW BUTTON
+========================================================= */
+
+.view-action {
+    background: var(--deep-blue);
+
+    border-color: var(--deep-blue);
+
+    color: var(--white);
+}
+
+.view-action:hover {
+    background: var(--deep-blue-dark);
+    border-color: var(--deep-blue-dark);
+    color: var(--white);
+
+    transform: translateY(-1px);
+}
+
+/* =========================================================
+   EDIT BUTTON
+========================================================= */
+
+.edit-action {
+    background: var(--orange-light);
+
+    border-color: #F4D3AD;
+
+    color: var(--orange-hover);
+}
+
+.edit-action:hover {
+    background: var(--orange);
+    border-color: var(--orange);
+    color: var(--white);
+
+    transform: translateY(-1px);
+}
+
+/* =========================================================
+   DELETE FORM AND BUTTON
+========================================================= */
+
+.delete-form {
+    display: inline-flex;
+    margin: 0;
+}
+
+.delete-action {
+    background: var(--danger-light);
+
+    border-color: #FECACA;
+
+    color: var(--danger);
+}
+
+.delete-action:hover {
+    background: var(--danger);
+    border-color: var(--danger);
+    color: var(--white);
+
+    transform: translateY(-1px);
+}
+
+/* =========================================================
+   EMPTY DOCUMENTS
+========================================================= */
+
+.empty-documents {
+    min-height: 330px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    padding: 42px 24px;
+
+    background: var(--white);
+
+    text-align: center;
+}
+
+/* Empty icon */
+
+.empty-documents > i {
+    width: 82px;
+    height: 82px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 20px;
+
+    background: var(--deep-blue-light);
+
+    border: 1px solid #D5E3EE;
+    border-radius: 50%;
+
+    color: var(--deep-blue);
+
+    font-size: 32px;
+
+    box-shadow: 0 3px 10px rgba(18, 59, 99, 0.05);
+}
+
+/* Empty heading */
+
+.empty-documents h3 {
+    margin: 0 0 10px;
+
+    color: var(--deep-blue);
+
+    font-size: 25px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+/* Empty description */
+
+.empty-documents p {
+    max-width: 580px;
+
+    margin: 0;
+
+    color: var(--text-secondary);
+
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.7;
+}
+
+/* =========================================================
+   KEYBOARD ACCESSIBILITY
+========================================================= */
+
+.back-link:focus-visible,
+.action-btn:focus-visible {
+    outline: 3px solid rgba(242, 140, 40, 0.45);
+    outline-offset: 3px;
+}
+
+/* =========================================================
+   TABLE SCROLLBAR
+========================================================= */
+
+.application-documents-page .table-responsive::-webkit-scrollbar {
+    height: 9px;
+}
+
+.application-documents-page .table-responsive::-webkit-scrollbar-track {
+    background: #EDF2F7;
+    border-radius: 10px;
+}
+
+.application-documents-page .table-responsive::-webkit-scrollbar-thumb {
+    background: #C5D2DE;
+    border-radius: 10px;
+}
+
+.application-documents-page .table-responsive::-webkit-scrollbar-thumb:hover {
+    background: var(--orange);
+}
+
+/* =========================================================
+   TABLET RESPONSIVE
+========================================================= */
+
+@media (max-width: 991px) {
+    .application-documents-page {
+        padding: 17px;
+    }
+
+    .application-header {
+        padding: 21px;
+    }
+
+    .application-header h1 {
+        font-size: 26px;
+    }
+
+    .application-header > p {
+        margin-left: 60px;
+    }
+
+    .application-info {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .documents-card-header {
+        padding: 18px 20px;
+    }
+
+    .documents-table {
+        min-width: 950px;
+    }
+}
+
+/* =========================================================
+   MOBILE RESPONSIVE
+========================================================= */
+
+@media (max-width: 767px) {
+    .application-documents-page {
+        padding: 12px;
+    }
+
+    .back-link {
+        margin-bottom: 16px;
+    }
+
+    .application-header {
+        padding: 18px;
+        margin-bottom: 17px;
+    }
+
+    .application-header h1 {
+        align-items: flex-start;
+        gap: 10px;
+
+        font-size: 23px;
+    }
+
+    .application-header h1 i {
+        width: 42px;
+        height: 42px;
+        min-width: 42px;
+
+        font-size: 19px;
+    }
+
+    .application-header > p {
+        margin: 12px 0 18px;
+
+        font-size: 18px;
+    }
+
+    .application-info {
+        grid-template-columns: 1fr;
+        gap: 11px;
+    }
+
+    .application-info-item {
+        padding: 13px 15px;
+    }
+
+    .application-info-item span {
+        font-size: 16px;
+    }
+
+    .application-info-item strong {
+        font-size: 18px;
+    }
+
+    .documents-card-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+
+        padding: 17px;
+
+        border-left-width: 4px;
+    }
+
+    .documents-card-header h2 {
+        font-size: 22px;
+    }
+
+    .documents-count {
+        align-self: flex-start;
+    }
+
+    .documents-table {
+        min-width: 950px;
+    }
+
+    .documents-table thead th {
+        padding: 15px 16px;
+    }
+
+    .documents-table tbody td {
+        padding: 16px;
+    }
+
+    .empty-documents {
+        min-height: 300px;
+        padding: 32px 18px;
+    }
+}
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+    .application-documents-page {
+        padding: 10px;
+    }
+
+    .back-link {
+        width: 100%;
+        justify-content: flex-start;
+
+        padding: 10px 13px;
+        font-size: 17px;
+    }
+
+    .application-header {
+        padding: 15px;
+    }
+
+    .application-header h1 {
+        font-size: 21px;
+    }
+
+    .application-header h1 i {
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+
+        font-size: 17px;
+    }
+
+    .application-header > p {
+        font-size: 17px;
+    }
+
+    .application-info-item strong {
+        font-size: 17px;
+    }
+
+    .documents-card-header h2 {
+        font-size: 21px;
+    }
+
+    .documents-count {
+        font-size: 17px;
+    }
+
+    .document-details {
+        min-width: 200px;
+    }
+
+    .document-icon {
+        width: 42px;
+        height: 42px;
+        min-width: 42px;
+
+        font-size: 18px;
+    }
+
+    .document-name {
+        font-size: 17px;
+    }
+
+    .file-name {
+        max-width: 250px;
+        font-size: 15px;
+    }
+
+    .action-buttons {
+        min-width: 220px;
+    }
+
+    .action-btn {
+        min-height: 40px;
+        padding: 8px 11px;
+        font-size: 16px;
+    }
+
+    .empty-documents > i {
+        width: 70px;
+        height: 70px;
+
+        font-size: 28px;
+    }
+
+    .empty-documents h3 {
+        font-size: 23px;
+    }
+
+    .empty-documents p {
+        font-size: 17px;
+    }
+}
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    .application-documents-page *,
+    .application-documents-page *::before,
+    .application-documents-page *::after {
+        transition: none !important;
+        animation: none !important;
+        scroll-behavior: auto !important;
+    }
+}
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="application-documents-page">
+
+    <!-- =====================================================
+         BACK LINK
+    ====================================================== -->
+
+    {% if application_type == "student" %}
+
+    <a
+        href="{% url 'documents:student_documents' %}"
+        class="back-link"
+    >
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Back to Students</span>
+    </a>
+
+    {% else %}
+
+    <a
+        href="{% url 'documents:employee_documents' %}"
+        class="back-link"
+    >
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Back to Employees</span>
+    </a>
+
+    {% endif %}
+
+
+    <!-- =====================================================
+         APPLICATION HEADER
+    ====================================================== -->
+
+    <div class="application-header">
+
+        <h1>
+            {% if application_type == "student" %}
+
+                <i class="fa-solid fa-user-graduate"></i>
+                <span>Student Documents</span>
+
+            {% else %}
+
+                <i class="fa-solid fa-user-tie"></i>
+                <span>Employee Documents</span>
+
+            {% endif %}
+        </h1>
+
+        <p>
+            All documents currently uploaded for this application.
+        </p>
+
+        <!-- APPLICATION INFORMATION -->
+
+        <div class="application-info">
+
+            <div class="application-info-item">
+                <span>Name</span>
+
+                <strong>
+                    {{ application.first_name }}
+                    {{ application.last_name }}
+                </strong>
+            </div>
+
+            <div class="application-info-item">
+                <span>Application ID</span>
+
+                <strong>
+                    {{ application.application_id }}
+                </strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         DOCUMENTS CARD
+    ====================================================== -->
+
+    <div class="documents-card">
+
+        <!-- CARD HEADER -->
+
+        <div class="documents-card-header">
+
+            <h2>
+                <i class="fa-solid fa-folder-open"></i>
+                Uploaded Documents
+            </h2>
+
+            <span class="documents-count">
+                <i class="fa-solid fa-file-lines"></i>
+                {{ documents|length }} Documents
+            </span>
+
+        </div>
+
+
+        <!-- =================================================
+             DOCUMENT TABLE
+        ================================================== -->
+
+        {% if documents %}
+
+        <div class="table-responsive">
+
+            <table class="documents-table">
+
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Document</th>
+                        <th>File Name</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for document in documents %}
+
+                    <tr>
+
+                        <!-- SERIAL NUMBER -->
+
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+
+
+                        <!-- DOCUMENT NAME -->
+
+                        <td>
+                            <div class="document-details">
+
+                                <span
+                                    class="document-icon
+                                    {% if document.file_name|lower|slice:'-4:' == '.pdf' %}
+                                        document-pdf
+                                    {% elif document.file_name|lower|slice:'-4:' == '.jpg' or document.file_name|lower|slice:'-5:' == '.jpeg' or document.file_name|lower|slice:'-4:' == '.png' %}
+                                        document-image
+                                    {% elif document.file_name|lower|slice:'-5:' == '.docx' or document.file_name|lower|slice:'-4:' == '.doc' %}
+                                        document-word
+                                    {% endif %}"
+                                >
+
+                                    {% if document.file_name|lower|slice:'-4:' == ".pdf" %}
+
+                                        <i class="fa-solid fa-file-pdf"></i>
+
+                                    {% elif document.file_name|lower|slice:'-4:' == ".jpg" or document.file_name|lower|slice:'-5:' == ".jpeg" or document.file_name|lower|slice:'-4:' == ".png" %}
+
+                                        <i class="fa-solid fa-file-image"></i>
+
+                                    {% elif document.file_name|lower|slice:'-5:' == ".docx" or document.file_name|lower|slice:'-4:' == ".doc" %}
+
+                                        <i class="fa-solid fa-file-word"></i>
+
+                                    {% else %}
+
+                                        <i class="fa-solid fa-file-lines"></i>
+
+                                    {% endif %}
+
+                                </span>
+
+                                <span class="document-name">
+                                    {{ document.label }}
+                                </span>
+
+                            </div>
+                        </td>
+
+
+                        <!-- FILE NAME -->
+
+                        <td>
+                            <div class="file-name">
+                                {{ document.file_name }}
+                            </div>
+                        </td>
+
+
+                        <!-- ACTION BUTTONS -->
+
+                        <td>
+
+                            <div class="action-buttons">
+
+                                <!-- VIEW DOCUMENT -->
+
+                                <a
+                                    href="{% url 'documents:view_application_document' application_type application.application_id document.field_name %}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="action-btn view-action"
+                                >
+                                    <i class="fa-solid fa-eye"></i>
+                                    <span>View</span>
+                                </a>
+
+
+                                {% if can_manage %}
+
+                                <!-- EDIT DOCUMENT -->
+
+                                <a
+                                    href="{% url 'documents:edit_application_document' application_type application.application_id document.field_name %}"
+                                    class="action-btn edit-action"
+                                >
+                                    <i class="fa-solid fa-pen"></i>
+                                    <span>Edit</span>
+                                </a>
+
+
+                                <!-- DELETE DOCUMENT -->
+
+                                <form
+                                    method="post"
+                                    action="{% url 'documents:delete_application_document' application_type application.application_id document.field_name %}"
+                                    class="delete-form"
+                                    onsubmit="return confirm('Are you sure you want to delete this document?');"
+                                >
+                                    {% csrf_token %}
+
+                                    <button
+                                        type="submit"
+                                        class="action-btn delete-action"
+                                    >
+                                        <i class="fa-solid fa-trash"></i>
+                                        <span>Delete</span>
+                                    </button>
+
+                                </form>
+
+                                {% endif %}
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <!-- =================================================
+             EMPTY DOCUMENTS
+        ================================================== -->
+
+        <div class="empty-documents">
+
+            <i class="fa-solid fa-folder-open"></i>
+
+            <h3>No Documents Uploaded</h3>
+
+            <p>
+                There are currently no uploaded documents
+                for this application.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,2043 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}
+Trip History
+{% endblock %}
+
+{% block extra_css %}
+<style>
+
+:root {
+    --deep-blue: #123B63;
+    --deep-blue-dark: #0B2945;
+    --deep-blue-light: #EAF2F8;
+
+    --orange: #F28C28;
+    --orange-hover: #D97706;
+    --orange-light: #FFF4E6;
+
+    --light-blue: #EEF6FF;
+    --light-green: #ECFDF5;
+    --light-purple: #F5F3FF;
+    --light-yellow: #FFFBEB;
+    --light-red: #FEF2F2;
+
+    --white: #FFFFFF;
+    --light-gray: #F8FAFC;
+
+    --text-primary: #1F2937;
+    --text-secondary: #64748B;
+    --text-light: #94A3B8;
+
+    --border: #E2E8F0;
+
+    --radius-sm: 8px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+
+    --shadow-card:
+        0 10px 35px rgba(15, 23, 42, 0.08);
+}
+
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+.trip-history-page {
+    width: 100%;
+    max-width: 1550px;
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    padding: 24px 28px;
+    margin-bottom: 24px;
+
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+
+    box-shadow: var(--shadow-card);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 17px;
+}
+
+.header-icon {
+    width: 58px;
+    height: 58px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--deep-blue-light);
+    color: var(--deep-blue);
+
+    border-radius: 16px;
+
+    font-size: 25px;
+}
+
+.page-title {
+    margin: 0;
+
+    color: var(--deep-blue-dark);
+
+    font-size: 28px;
+    font-weight: 800;
+}
+
+.page-subtitle {
+    margin: 4px 0 0;
+
+    color: var(--text-secondary);
+
+    font-size: 16px;
+}
+
+
+/* =========================================================
+   BUS BADGE
+========================================================= */
+
+.bus-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 11px 17px;
+
+    background: var(--orange-light);
+    color: var(--orange-hover);
+
+    border: 1px solid #FED7AA;
+    border-radius: 12px;
+
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.bus-badge i {
+    font-size: 17px;
+}
+
+
+/* =========================================================
+   SUMMARY CARDS
+========================================================= */
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+
+    margin-bottom: 24px;
+}
+
+.summary-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    padding: 20px;
+
+    background: var(--white);
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-card);
+}
+
+.summary-icon {
+    width: 48px;
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--deep-blue-light);
+    color: var(--deep-blue);
+
+    border-radius: 13px;
+
+    font-size: 20px;
+
+    flex-shrink: 0;
+}
+
+.summary-card.orange .summary-icon {
+    background: var(--orange-light);
+    color: var(--orange-hover);
+}
+
+.summary-card.green .summary-icon {
+    background: var(--light-green);
+    color: #047857;
+}
+
+.summary-card.purple .summary-icon {
+    background: var(--light-purple);
+    color: #6D28D9;
+}
+
+.summary-label {
+    color: var(--text-secondary);
+
+    font-size: 13px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+}
+
+.summary-value {
+    margin-top: 3px;
+
+    color: var(--deep-blue-dark);
+
+    font-size: 22px;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   FILTER CARD
+========================================================= */
+
+.filter-card {
+    padding: 20px 22px;
+    margin-bottom: 22px;
+
+    background: var(--white);
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-card);
+}
+
+.filter-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin-bottom: 16px;
+
+    color: var(--deep-blue-dark);
+
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.filter-header i {
+    color: var(--orange);
+}
+
+.filter-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 14px;
+    align-items: end;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.filter-label {
+    color: var(--text-secondary);
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.filter-input,
+.filter-select {
+    width: 100%;
+
+    height: 44px;
+
+    padding: 0 13px;
+
+    background: var(--white);
+
+    border: 1px solid var(--border);
+    border-radius: 9px;
+
+    color: var(--text-primary);
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition: all .25s ease;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+    border-color: var(--deep-blue);
+
+    box-shadow:
+        0 0 0 3px rgba(18, 59, 99, .10);
+}
+
+.clear-btn {
+    height: 44px;
+
+    padding: 0 17px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    background: var(--deep-blue);
+
+    color: var(--white);
+
+    border-radius: 9px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    transition: all .25s ease;
+}
+
+.clear-btn:hover {
+    background: var(--deep-blue-dark);
+}
+
+
+/* =========================================================
+   TABLE CARD
+========================================================= */
+
+.table-card {
+    background: var(--white);
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+
+    box-shadow: var(--shadow-card);
+
+    overflow: hidden;
+}
+
+.table-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    padding: 20px 22px;
+
+    background: var(--deep-blue-light);
+
+    border-bottom: 1px solid var(--border);
+}
+
+.table-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    color: var(--deep-blue-dark);
+
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.table-title i {
+    color: var(--orange);
+}
+
+.record-count {
+    padding: 7px 12px;
+
+    background: var(--white);
+
+    border: 1px solid var(--border);
+    border-radius: 8px;
+
+    color: var(--text-secondary);
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.trip-table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    min-width: 1000px;
+}
+
+.trip-table th {
+    padding: 15px 18px;
+
+    background: var(--light-gray);
+
+    border-bottom: 1px solid var(--border);
+
+    color: var(--text-secondary);
+
+    font-size: 12px;
+    font-weight: 800;
+
+    text-align: left;
+
+    text-transform: uppercase;
+    letter-spacing: .3px;
+}
+
+.trip-table td {
+    padding: 17px 18px;
+
+    border-bottom: 1px solid #EEF2F7;
+
+    color: var(--text-primary);
+
+    font-size: 14px;
+}
+
+.trip-table tbody tr {
+    transition: all .2s ease;
+}
+
+.trip-table tbody tr:hover {
+    background: #FAFCFE;
+}
+
+.trip-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* =========================================================
+   DATE
+========================================================= */
+
+.date-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.date-icon {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--deep-blue-light);
+    color: var(--deep-blue);
+
+    border-radius: 9px;
+}
+
+.date-main {
+    color: var(--deep-blue-dark);
+
+    font-weight: 800;
+}
+
+.date-day {
+    margin-top: 2px;
+
+    color: var(--text-secondary);
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   ROUTE
+========================================================= */
+
+.route-name {
+    color: var(--deep-blue-dark);
+
+    font-weight: 800;
+}
+
+.route-code {
+    margin-top: 3px;
+
+    color: var(--text-secondary);
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   TRIP TYPE
+========================================================= */
+
+.trip-type {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 7px 10px;
+
+    border-radius: 8px;
+
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.trip-type.morning {
+    background: var(--light-yellow);
+    color: #92400E;
+}
+
+.trip-type.afternoon {
+    background: var(--light-blue);
+    color: var(--deep-blue);
+}
+
+.trip-type.special {
+    background: var(--light-purple);
+    color: #6D28D9;
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 7px 11px;
+
+    border-radius: 8px;
+
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.status-completed {
+    background: var(--light-green);
+    color: #047857;
+}
+
+.status-started {
+    background: var(--light-blue);
+    color: var(--deep-blue);
+}
+
+.status-scheduled {
+    background: var(--light-yellow);
+    color: #92400E;
+}
+
+.status-cancelled {
+    background: var(--light-red);
+    color: #B91C1C;
+}
+
+
+/* =========================================================
+   TIME
+========================================================= */
+
+.time-value {
+    color: var(--text-primary);
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.time-label {
+    margin-top: 2px;
+
+    color: var(--text-light);
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   ACTION
+========================================================= */
+
+.view-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    padding: 8px 12px;
+
+    background: var(--deep-blue-light);
+    color: var(--deep-blue);
+
+    border: 1px solid #D6E5F2;
+    border-radius: 8px;
+
+    font-size: 12px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition: all .25s ease;
+}
+
+.view-btn:hover {
+    background: var(--deep-blue);
+    color: var(--white);
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.empty-state {
+    padding: 65px 25px;
+
+    text-align: center;
+}
+
+.empty-icon {
+    width: 70px;
+    height: 70px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 16px;
+
+    background: var(--deep-blue-light);
+    color: var(--deep-blue);
+
+    border-radius: 20px;
+
+    font-size: 28px;
+}
+
+.empty-title {
+    color: var(--deep-blue-dark);
+
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.empty-text {
+    max-width: 500px;
+
+    margin: 7px auto 0;
+
+    color: var(--text-secondary);
+
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   TRIP DETAILS MODAL
+========================================================= */
+
+.modal-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(11, 41, 69, .55);
+
+    z-index: 9999;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.trip-modal {
+    width: 100%;
+    max-width: 650px;
+
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    background: var(--white);
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 25px 70px rgba(15, 23, 42, .25);
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 20px 23px;
+
+    background: var(--deep-blue-light);
+
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    color: var(--deep-blue-dark);
+
+    font-size: 19px;
+    font-weight: 800;
+}
+
+.modal-close {
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--white);
+
+    color: var(--text-secondary);
+
+    border: 1px solid var(--border);
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    transition: all .2s ease;
+}
+
+.modal-close:hover {
+    background: var(--light-red);
+    color: #B91C1C;
+}
+
+.modal-body {
+    padding: 23px;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 13px;
+}
+
+.detail-item {
+    padding: 14px;
+
+    background: var(--light-gray);
+
+    border: 1px solid #EEF2F7;
+    border-radius: 10px;
+}
+
+.detail-label {
+    color: var(--text-secondary);
+
+    font-size: 12px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+}
+
+.detail-value {
+    margin-top: 4px;
+
+    color: var(--deep-blue-dark);
+
+    font-size: 15px;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .filter-row {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .clear-btn {
+        width: 100%;
+    }
+}
+
+
+@media (max-width: 650px) {
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .bus-badge {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-row {
+        grid-template-columns: 1fr;
+    }
+
+    .page-title {
+        font-size: 23px;
+    }
+
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="trip-history-page">
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <div class="page-header">
+
+        <div class="header-left">
+
+            <div class="header-icon">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
+
+            <div>
+
+                <h1 class="page-title">
+                    Trip History
+                </h1>
+
+                <p class="page-subtitle">
+                    View your previous bus trips and journey records.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        {% if bus %}
+
+        <div class="bus-badge">
+
+            <i class="fa-solid fa-bus"></i>
+
+            {{ bus.bus_number }}
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- =====================================================
+         SUMMARY
+    ====================================================== -->
+
+    <div class="summary-grid">
+
+
+        <div class="summary-card">
+
+            <div class="summary-icon">
+
+                <i class="fa-solid fa-road"></i>
+
+            </div>
+
+            <div>
+
+                <div class="summary-label">
+                    Total Trips
+                </div>
+
+                <div class="summary-value"
+                     id="totalTrips">
+
+                    {{ trips|length }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="summary-card green">
+
+            <div class="summary-icon">
+
+                <i class="fa-solid fa-circle-check"></i>
+
+            </div>
+
+            <div>
+
+                <div class="summary-label">
+                    Completed
+                </div>
+
+                <div class="summary-value"
+                     id="completedTrips">
+
+                    0
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="summary-card orange">
+
+            <div class="summary-icon">
+
+                <i class="fa-solid fa-hourglass-half"></i>
+
+            </div>
+
+            <div>
+
+                <div class="summary-label">
+                    Scheduled
+                </div>
+
+                <div class="summary-value"
+                     id="scheduledTrips">
+
+                    0
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="summary-card purple">
+
+            <div class="summary-icon">
+
+                <i class="fa-solid fa-calendar-days"></i>
+
+            </div>
+
+            <div>
+
+                <div class="summary-label">
+                    Trip Days
+                </div>
+
+                <div class="summary-value"
+                     id="tripDays">
+
+                    0
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         FILTER
+    ====================================================== -->
+
+    <div class="filter-card">
+
+        <div class="filter-header">
+
+            <i class="fa-solid fa-filter"></i>
+
+            Filter Trip History
+
+        </div>
+
+
+        <div class="filter-row">
+
+
+            <div class="filter-group">
+
+                <label class="filter-label">
+                    Search Route
+                </label>
+
+                <input
+                    type="text"
+                    id="routeSearch"
+                    class="filter-input"
+                    placeholder="Search route..."
+                >
+
+            </div>
+
+
+            <div class="filter-group">
+
+                <label class="filter-label">
+                    Trip Type
+                </label>
+
+                <select
+                    id="tripTypeFilter"
+                    class="filter-select"
+                >
+
+                    <option value="">
+                        All Trip Types
+                    </option>
+
+                    <option value="morning">
+                        Morning
+                    </option>
+
+                    <option value="afternoon">
+                        Afternoon
+                    </option>
+
+                    <option value="special">
+                        Special
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="filter-group">
+
+                <label class="filter-label">
+                    Status
+                </label>
+
+                <select
+                    id="statusFilter"
+                    class="filter-select"
+                >
+
+                    <option value="">
+                        All Status
+                    </option>
+
+                    <option value="completed">
+                        Completed
+                    </option>
+
+                    <option value="started">
+                        Started
+                    </option>
+
+                    <option value="scheduled">
+                        Scheduled
+                    </option>
+
+                    <option value="cancelled">
+                        Cancelled
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="clear-btn"
+                onclick="clearFilters()"
+            >
+
+                <i class="fa-solid fa-rotate-left"></i>
+
+                Clear
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         TABLE
+    ====================================================== -->
+
+    <div class="table-card">
+
+
+        <div class="table-header">
+
+            <div class="table-title">
+
+                <i class="fa-solid fa-list-check"></i>
+
+                Previous Trips
+
+            </div>
+
+
+            <div class="record-count">
+
+                <span id="visibleCount">
+                    {{ trips|length }}
+                </span>
+
+                records
+
+            </div>
+
+        </div>
+
+
+        {% if trips %}
+
+        <div class="table-wrapper">
+
+            <table class="trip-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Date
+                        </th>
+
+                        <th>
+                            Route
+                        </th>
+
+                        <th>
+                            Trip Type
+                        </th>
+
+                        <th>
+                            Start Time
+                        </th>
+
+                        <th>
+                            End Time
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="tripTableBody">
+
+
+                    {% for trip in trips %}
+
+                    <tr
+                        class="trip-row"
+                        data-route="{% if trip.route %}{{ trip.route.route_name|lower|escapejs }}{% endif %}"
+                        data-type="{{ trip.trip_type|lower }}"
+                        data-status="{{ trip.status|lower }}"
+                    >
+
+
+                        <!-- DATE -->
+
+                        <td>
+
+                            <div class="date-cell">
+
+                                <div class="date-icon">
+
+                                    <i class="fa-regular fa-calendar"></i>
+
+                                </div>
+
+                                <div>
+
+                                    <div class="date-main">
+
+                                        {{ trip.trip_date|date:"d M Y" }}
+
+                                    </div>
+
+                                    <div class="date-day">
+
+                                        {{ trip.trip_date|date:"l" }}
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <!-- ROUTE -->
+
+                        <td>
+
+                            <div class="route-name">
+
+                                {% if trip.route %}
+
+                                    {{ trip.route.route_name }}
+
+                                {% else %}
+
+                                    Route Not Assigned
+
+                                {% endif %}
+
+                            </div>
+
+                            <div class="route-code">
+
+                                {% if trip.route %}
+
+                                    {{ trip.route.route_code }}
+
+                                {% else %}
+
+                                    -
+
+                                {% endif %}
+
+                            </div>
+
+                        </td>
+
+
+                        <!-- TYPE -->
+
+                        <td>
+
+                            {% if trip.trip_type == "morning" %}
+
+                                <span class="trip-type morning">
+
+                                    <i class="fa-solid fa-sun"></i>
+
+                                    Morning
+
+                                </span>
+
+                            {% elif trip.trip_type == "afternoon" %}
+
+                                <span class="trip-type afternoon">
+
+                                    <i class="fa-solid fa-cloud-sun"></i>
+
+                                    Afternoon
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="trip-type special">
+
+                                    <i class="fa-solid fa-star"></i>
+
+                                    Special
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- START -->
+
+                        <td>
+
+                            <div class="time-value">
+
+                                {% if trip.actual_start_time %}
+
+                                    {{ trip.actual_start_time|date:"h:i A" }}
+
+                                {% elif trip.scheduled_start_time %}
+
+                                    {{ trip.scheduled_start_time|time:"h:i A" }}
+
+                                {% else %}
+
+                                    -
+
+                                {% endif %}
+
+                            </div>
+
+                            <div class="time-label">
+
+                                {% if trip.actual_start_time %}
+                                    Actual Start
+                                {% else %}
+                                    Scheduled
+                                {% endif %}
+
+                            </div>
+
+                        </td>
+
+
+                        <!-- END -->
+
+                        <td>
+
+                            <div class="time-value">
+
+                                {% if trip.actual_end_time %}
+
+                                    {{ trip.actual_end_time|date:"h:i A" }}
+
+                                {% else %}
+
+                                    -
+
+                                {% endif %}
+
+                            </div>
+
+                            <div class="time-label">
+                                Actual End
+                            </div>
+
+                        </td>
+
+
+                        <!-- STATUS -->
+
+                        <td>
+
+                            {% if trip.status == "completed" %}
+
+                                <span class="status-badge status-completed">
+
+                                    <i class="fa-solid fa-circle-check"></i>
+
+                                    Completed
+
+                                </span>
+
+                            {% elif trip.status == "started" %}
+
+                                <span class="status-badge status-started">
+
+                                    <i class="fa-solid fa-location-dot"></i>
+
+                                    Started
+
+                                </span>
+
+                            {% elif trip.status == "scheduled" %}
+
+                                <span class="status-badge status-scheduled">
+
+                                    <i class="fa-regular fa-clock"></i>
+
+                                    Scheduled
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="status-badge status-cancelled">
+
+                                    <i class="fa-solid fa-circle-xmark"></i>
+
+                                    Cancelled
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- ACTION -->
+
+                        <td>
+
+                            <button
+                                type="button"
+                                class="view-btn"
+                                onclick="showTripDetails(
+                                    '{{ trip.trip_date|date:"d M Y"|escapejs }}',
+                                    '{% if trip.route %}{{ trip.route.route_name|escapejs }}{% else %}Not Assigned{% endif %}',
+                                    '{{ trip.get_trip_type_display|escapejs }}',
+                                    '{% if trip.actual_start_time %}{{ trip.actual_start_time|date:"d M Y, h:i A"|escapejs }}{% elif trip.scheduled_start_time %}{{ trip.scheduled_start_time|time:"h:i A"|escapejs }}{% else %}-{% endif %}',
+                                    '{% if trip.actual_end_time %}{{ trip.actual_end_time|date:"d M Y, h:i A"|escapejs }}{% else %}-{% endif %}',
+                                    '{{ trip.get_status_display|escapejs }}',
+                                    '{{ trip.driver_notes|default:"No notes"|escapejs }}'
+                                )"
+                            >
+
+                                <i class="fa-solid fa-eye"></i>
+
+                                View
+
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- EMPTY FILTER RESULT -->
+
+        <div
+            id="filterEmpty"
+            class="empty-state"
+            style="display:none;"
+        >
+
+            <div class="empty-icon">
+
+                <i class="fa-solid fa-filter-circle-xmark"></i>
+
+            </div>
+
+            <div class="empty-title">
+                No Matching Trips
+            </div>
+
+            <div class="empty-text">
+                No trip records match the selected filters.
+                Try changing the search or filter options.
+            </div>
+
+        </div>
+
+
+        {% else %}
+
+
+        <!-- NO TRIPS -->
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+
+                <i class="fa-solid fa-route"></i>
+
+            </div>
+
+            <div class="empty-title">
+                No Trip History
+            </div>
+
+            <div class="empty-text">
+                Previous bus trip records will appear here
+                after you complete your trips.
+            </div>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     DETAILS MODAL
+========================================================= -->
+
+<div
+    id="tripModal"
+    class="modal-overlay"
+    onclick="closeModalOutside(event)"
+>
+
+    <div class="trip-modal">
+
+        <div class="modal-header">
+
+            <div class="modal-title">
+
+                <i class="fa-solid fa-route"></i>
+
+                Trip Details
+
+            </div>
+
+
+            <button
+                type="button"
+                class="modal-close"
+                onclick="closeTripModal()"
+            >
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+
+        <div class="modal-body">
+
+
+            <div class="detail-grid">
+
+
+                <div class="detail-item">
+
+                    <div class="detail-label">
+                        Date
+                    </div>
+
+                    <div
+                        class="detail-value"
+                        id="modalDate"
+                    >
+                        -
+                    </div>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <div class="detail-label">
+                        Route
+                    </div>
+
+                    <div
+                        class="detail-value"
+                        id="modalRoute"
+                    >
+                        -
+                    </div>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <div class="detail-label">
+                        Trip Type
+                    </div>
+
+                    <div
+                        class="detail-value"
+                        id="modalType"
+                    >
+                        -
+                    </div>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <div class="detail-label">
+                        Status
+                    </div>
+
+                    <div
+                        class="detail-value"
+                        id="modalStatus"
+                    >
+                        -
+                    </div>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <div class="detail-label">
+                        Start Time
+                    </div>
+
+                    <div
+                        class="detail-value"
+                        id="modalStart"
+                    >
+                        -
+                    </div>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <div class="detail-label">
+                        End Time
+                    </div>
+
+                    <div
+                        class="detail-value"
+                        id="modalEnd"
+                    >
+                        -
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <div
+                style="
+                    margin-top:15px;
+                    padding:15px;
+                    background:var(--light-gray);
+                    border:1px solid #EEF2F7;
+                    border-radius:10px;
+                "
+            >
+
+                <div
+                    style="
+                        color:var(--text-secondary);
+                        font-size:12px;
+                        font-weight:700;
+                        text-transform:uppercase;
+                    "
+                >
+                    Driver Notes
+                </div>
+
+                <div
+                    id="modalNotes"
+                    style="
+                        margin-top:6px;
+                        color:var(--text-primary);
+                        font-size:14px;
+                        line-height:1.6;
+                    "
+                >
+                    -
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   FILTER
+========================================================= */
+
+const routeSearch =
+    document.getElementById("routeSearch");
+
+const tripTypeFilter =
+    document.getElementById("tripTypeFilter");
+
+const statusFilter =
+    document.getElementById("statusFilter");
+
+const tripRows =
+    document.querySelectorAll(".trip-row");
+
+const visibleCount =
+    document.getElementById("visibleCount");
+
+const filterEmpty =
+    document.getElementById("filterEmpty");
+
+
+function applyFilters() {
+
+    const search =
+        routeSearch.value
+        .trim()
+        .toLowerCase();
+
+    const type =
+        tripTypeFilter.value
+        .toLowerCase();
+
+    const status =
+        statusFilter.value
+        .toLowerCase();
+
+
+    let visible = 0;
+
+
+    tripRows.forEach(function(row) {
+
+        const route =
+            row.dataset.route || "";
+
+        const rowType =
+            row.dataset.type || "";
+
+        const rowStatus =
+            row.dataset.status || "";
+
+
+        const routeMatch =
+            !search ||
+            route.includes(search);
+
+
+        const typeMatch =
+            !type ||
+            rowType === type;
+
+
+        const statusMatch =
+            !status ||
+            rowStatus === status;
+
+
+        if (
+            routeMatch &&
+            typeMatch &&
+            statusMatch
+        ) {
+
+            row.style.display = "";
+
+            visible++;
+
+        } else {
+
+            row.style.display = "none";
+
+        }
+
+    });
+
+
+    visibleCount.textContent = visible;
+
+
+    if (visible === 0 && tripRows.length > 0) {
+
+        filterEmpty.style.display = "block";
+
+    } else {
+
+        filterEmpty.style.display = "none";
+
+    }
+
+}
+
+
+routeSearch.addEventListener(
+    "input",
+    applyFilters
+);
+
+tripTypeFilter.addEventListener(
+    "change",
+    applyFilters
+);
+
+statusFilter.addEventListener(
+    "change",
+    applyFilters
+);
+
+
+/* =========================================================
+   CLEAR FILTERS
+========================================================= */
+
+function clearFilters() {
+
+    routeSearch.value = "";
+
+    tripTypeFilter.value = "";
+
+    statusFilter.value = "";
+
+    applyFilters();
+
+}
+
+
+/* =========================================================
+   SUMMARY COUNTS
+========================================================= */
+
+function calculateSummary() {
+
+    let completed = 0;
+    let scheduled = 0;
+
+    const dates = new Set();
+
+
+    tripRows.forEach(function(row) {
+
+        const status =
+            row.dataset.status || "";
+
+
+        if (status === "completed") {
+            completed++;
+        }
+
+
+        if (status === "scheduled") {
+            scheduled++;
+        }
+
+
+        const dateCell =
+            row.querySelector(".date-main");
+
+
+        if (dateCell) {
+
+            dates.add(
+                dateCell.textContent.trim()
+            );
+
+        }
+
+    });
+
+
+    const completedElement =
+        document.getElementById(
+            "completedTrips"
+        );
+
+    const scheduledElement =
+        document.getElementById(
+            "scheduledTrips"
+        );
+
+    const tripDaysElement =
+        document.getElementById(
+            "tripDays"
+        );
+
+
+    if (completedElement) {
+        completedElement.textContent =
+            completed;
+    }
+
+
+    if (scheduledElement) {
+        scheduledElement.textContent =
+            scheduled;
+    }
+
+
+    if (tripDaysElement) {
+        tripDaysElement.textContent =
+            dates.size;
+    }
+
+}
+
+
+calculateSummary();
+
+
+/* =========================================================
+   TRIP DETAILS
+========================================================= */
+
+function showTripDetails(
+    date,
+    route,
+    type,
+    start,
+    end,
+    status,
+    notes
+) {
+
+    document.getElementById(
+        "modalDate"
+    ).textContent = date;
+
+
+    document.getElementById(
+        "modalRoute"
+    ).textContent = route;
+
+
+    document.getElementById(
+        "modalType"
+    ).textContent = type;
+
+
+    document.getElementById(
+        "modalStart"
+    ).textContent = start;
+
+
+    document.getElementById(
+        "modalEnd"
+    ).textContent = end;
+
+
+    document.getElementById(
+        "modalStatus"
+    ).textContent = status;
+
+
+    document.getElementById(
+        "modalNotes"
+    ).textContent = notes || "No notes";
+
+
+    document.getElementById(
+        "tripModal"
+    ).classList.add("active");
+
+
+    document.body.style.overflow = "hidden";
+
+}
+
+
+/* =========================================================
+   CLOSE MODAL
+========================================================= */
+
+function closeTripModal() {
+
+    document.getElementById(
+        "tripModal"
+    ).classList.remove("active");
+
+    document.body.style.overflow = "";
+
+}
+
+
+function closeModalOutside(event) {
+
+    if (
+        event.target.id === "tripModal"
+    ) {
+
+        closeTripModal();
+
+    }
+
+}
+
+
+/* =========================================================
+   ESC KEY
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (event.key === "Escape") {
+
+            closeTripModal();
+
+        }
+
+    }
+);
+
+</script>
+
+{% endblock %}

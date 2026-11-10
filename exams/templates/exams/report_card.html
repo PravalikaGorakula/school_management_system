@@ -1,0 +1,1013 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+Report Card
+{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --orange-light: #FFF4E6;
+        --white: #FFFFFF;
+        --background: #F6F8FB;
+        --text-primary: #172033;
+        --text-secondary: #64748B;
+        --border: #E2E8F0;
+        --success: #198754;
+        --danger: #DC2626;
+    }
+
+    .report-page {
+        min-height: calc(100vh - 70px);
+        padding: 24px;
+        background: var(--background);
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 22px;
+    }
+
+    .heading-area {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .heading-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 10px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 23px;
+    }
+
+    .heading-area h1 {
+        margin: 0;
+        color: var(--deep-blue);
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+    .heading-area p {
+        margin: 5px 0 0;
+        color: var(--text-secondary);
+        font-size: 18px;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .action-btn {
+        min-height: 46px;
+        padding: 0 18px;
+        border-radius: 7px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .print-btn {
+        border: 1px solid var(--orange);
+        background: var(--orange);
+        color: var(--white);
+    }
+
+    .print-btn:hover {
+        background: var(--orange-hover);
+    }
+
+    .back-btn {
+        border: 1px solid var(--border);
+        background: var(--white);
+        color: var(--deep-blue);
+    }
+
+    .back-btn:hover {
+        background: var(--deep-blue-light);
+    }
+
+    /* REPORT CARD */
+
+    .report-card {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.07);
+        overflow: hidden;
+    }
+
+    .school-header {
+        padding: 28px;
+        border-bottom: 1px solid var(--border);
+        text-align: center;
+    }
+
+    .school-name {
+        margin: 0;
+        color: var(--deep-blue);
+        font-size: 30px;
+        font-weight: 800;
+    }
+
+    .school-subtitle {
+        margin: 8px 0 0;
+        color: var(--text-secondary);
+        font-size: 18px;
+    }
+
+    .report-title {
+        margin: 18px 0 0;
+        color: var(--orange-hover);
+        font-size: 24px;
+        font-weight: 700;
+    }
+
+    /* EXAM INFO */
+
+    .exam-info {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        border-bottom: 1px solid var(--border);
+    }
+
+    .info-box {
+        padding: 18px 20px;
+        border-right: 1px solid var(--border);
+    }
+
+    .info-box:last-child {
+        border-right: none;
+    }
+
+    .info-label {
+        margin-bottom: 6px;
+        color: var(--text-secondary);
+        font-size: 17px;
+    }
+
+    .info-value {
+        color: var(--text-primary);
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    /* STUDENT INFO */
+
+    .section {
+        padding: 22px 24px;
+    }
+
+    .section-title {
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: var(--deep-blue);
+        font-size: 21px;
+        font-weight: 700;
+    }
+
+    .student-info-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .student-info-item {
+        padding: 15px 16px;
+        border-right: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+    }
+
+    .student-info-item:nth-child(4n) {
+        border-right: none;
+    }
+
+    .student-info-item:nth-last-child(-n + 4) {
+        border-bottom: none;
+    }
+
+    .student-info-label {
+        color: var(--text-secondary);
+        font-size: 17px;
+        margin-bottom: 5px;
+    }
+
+    .student-info-value {
+        color: var(--text-primary);
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    /* MARKS TABLE */
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .marks-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 800px;
+    }
+
+    .marks-table th {
+        padding: 15px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue-dark);
+        border-bottom: 1px solid var(--border);
+        text-align: left;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .marks-table td {
+        padding: 14px 15px;
+        border-bottom: 1px solid var(--border);
+        color: var(--text-primary);
+        font-size: 18px;
+    }
+
+    .marks-table tbody tr:hover {
+        background: #FAFCFE;
+    }
+
+    .subject-name {
+        color: var(--deep-blue);
+        font-weight: 700;
+    }
+
+    .grade {
+        display: inline-flex;
+        min-width: 48px;
+        padding: 7px 10px;
+        justify-content: center;
+        border-radius: 7px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        font-weight: 700;
+    }
+
+    /* SUMMARY */
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+    }
+
+    .summary-card {
+        padding: 20px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: #FAFCFE;
+    }
+
+    .summary-label {
+        color: var(--text-secondary);
+        font-size: 17px;
+        margin-bottom: 7px;
+    }
+
+    .summary-value {
+        color: var(--deep-blue);
+        font-size: 25px;
+        font-weight: 700;
+    }
+
+    .result-pass {
+        color: var(--success);
+    }
+
+    .result-fail {
+        color: var(--danger);
+    }
+
+    /* RESULT STATUS */
+
+    .result-status {
+        margin: 0 24px 24px;
+        padding: 17px 20px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        background: var(--deep-blue-light);
+        border: 1px solid #C9DDEA;
+    }
+
+    .result-status-label {
+        color: var(--deep-blue);
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .result-badge {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .passed {
+        background: #EAF7EF;
+        color: var(--success);
+    }
+
+    .failed {
+        background: #FEECEC;
+        color: var(--danger);
+    }
+
+    /* FOOTER */
+
+    .report-footer {
+        padding: 20px 24px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        color: var(--text-secondary);
+        font-size: 17px;
+    }
+
+    /* PRINT */
+
+    @media print {
+
+        body {
+            background: white !important;
+        }
+
+        .report-page {
+            padding: 0;
+            background: white;
+        }
+
+        .page-header {
+            display: none;
+        }
+
+        .report-card {
+            max-width: none;
+            border: none;
+            box-shadow: none;
+            border-radius: 0;
+        }
+
+        .marks-table th {
+            background: #EAF2F8 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .result-status {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+    }
+
+    @media (max-width: 1000px) {
+
+        .exam-info {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .student-info-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .student-info-item:nth-child(4n) {
+            border-right: 1px solid var(--border);
+        }
+
+        .student-info-item:nth-child(2n) {
+            border-right: none;
+        }
+
+        .summary-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 650px) {
+
+        .report-page {
+            padding: 14px;
+        }
+
+        .page-header {
+            align-items: flex-start;
+        }
+
+        .heading-area h1 {
+            font-size: 24px;
+        }
+
+        .header-actions {
+            flex-direction: column;
+        }
+
+        .exam-info,
+        .student-info-grid,
+        .summary-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .info-box,
+        .student-info-item {
+            border-right: none !important;
+        }
+
+        .result-status,
+        .report-footer {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+
+<div class="report-page">
+
+    <!-- PAGE HEADER -->
+
+    <div class="page-header">
+
+        <div class="heading-area">
+
+            <div class="heading-icon">
+                <i class="fa-solid fa-file-lines"></i>
+            </div>
+
+            <div>
+                <h1>
+                    Report Card
+                </h1>
+
+                <p>
+                    Student examination performance report
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="header-actions">
+
+            <button
+                type="button"
+                class="action-btn print-btn"
+                onclick="window.print()"
+            >
+                <i class="fa-solid fa-print"></i>
+                Print Report
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- REPORT CARD -->
+
+    <div class="report-card">
+
+        <!-- SCHOOL HEADER -->
+
+        <div class="school-header">
+
+            <h1 class="school-name">
+                SMS College
+            </h1>
+
+            <p class="school-subtitle">
+                School Management System
+            </p>
+
+            <div class="report-title">
+                Academic Report Card
+            </div>
+
+        </div>
+
+
+        <!-- EXAMINATION INFORMATION -->
+
+        <div class="exam-info">
+
+            <div class="info-box">
+
+                <div class="info-label">
+                    Examination
+                </div>
+
+                <div class="info-value">
+                    {{ examination.exam_name }}
+                </div>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <div class="info-label">
+                    Examination Type
+                </div>
+
+                <div class="info-value">
+                    {{ examination.exam_type|default:"—" }}
+                </div>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <div class="info-label">
+                    Academic Year
+                </div>
+
+                <div class="info-value">
+                    {{ examination.academic_year }}
+                </div>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <div class="info-label">
+                    Examination Date
+                </div>
+
+                <div class="info-value">
+
+                    {% if examination.start_date %}
+
+                        {{ examination.start_date|date:"d M Y" }}
+
+                        {% if examination.end_date %}
+                            - {{ examination.end_date|date:"d M Y" }}
+                        {% endif %}
+
+                    {% else %}
+
+                        —
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- STUDENT INFORMATION -->
+
+        <div class="section">
+
+            <div class="section-title">
+
+                <i class="fa-solid fa-user-graduate"></i>
+
+                Student Information
+
+            </div>
+
+
+            <div class="student-info-grid">
+
+                <div class="student-info-item">
+
+                    <div class="student-info-label">
+                        Student Name
+                    </div>
+
+                    <div class="student-info-value">
+
+                        {% if student.full_name %}
+
+                            {{ student.full_name }}
+
+                        {% else %}
+
+                            {{ student.first_name }}
+                            {{ student.last_name }}
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <div class="student-info-item">
+
+                    <div class="student-info-label">
+                        Admission ID
+                    </div>
+
+                    <div class="student-info-value">
+
+                        {% if student.admission_id %}
+
+                            {{ student.admission_id }}
+
+                        {% elif student.application_id %}
+
+                            {{ student.application_id }}
+
+                        {% else %}
+
+                            —
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <div class="student-info-item">
+
+                    <div class="student-info-label">
+                        Class
+                    </div>
+
+                    <div class="student-info-value">
+                        {{ student.class_section|default:"—" }}
+                    </div>
+
+                </div>
+
+
+                <div class="student-info-item">
+
+                    <div class="student-info-label">
+                        Section
+                    </div>
+
+                    <div class="student-info-value">
+
+                        {% if student.class_section.section %}
+
+                            {{ student.class_section.section }}
+
+                        {% else %}
+
+                            —
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- SUBJECT MARKS -->
+
+        <div class="section">
+
+            <div class="section-title">
+
+                <i class="fa-solid fa-chart-column"></i>
+
+                Subject-wise Marks
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table class="marks-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                #
+                            </th>
+
+                            <th>
+                                Subject
+                            </th>
+
+                            <th>
+                                Subject Code
+                            </th>
+
+                            <th>
+                                Maximum Marks
+                            </th>
+
+                            <th>
+                                Obtained Marks
+                            </th>
+
+                            <th>
+                                Percentage
+                            </th>
+
+                            <th>
+                                Grade
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for mark in marks %}
+
+                            <tr>
+
+                                <td>
+                                    {{ forloop.counter }}
+                                </td>
+
+                                <td>
+
+                                    <span class="subject-name">
+
+                                        {{ mark.subject.subject_name }}
+
+                                    </span>
+
+                                </td>
+
+                                <td>
+
+                                    {% if mark.subject.subject_code %}
+
+                                        {{ mark.subject.subject_code }}
+
+                                    {% elif mark.subject.code %}
+
+                                        {{ mark.subject.code }}
+
+                                    {% else %}
+
+                                        —
+
+                                    {% endif %}
+
+                                </td>
+
+                                <td>
+                                    {{ mark.max_marks }}
+                                </td>
+
+                                <td>
+                                    {{ mark.obtained_marks }}
+                                </td>
+
+                                <td>
+                                    {{ mark.percentage }}%
+                                </td>
+
+                                <td>
+
+                                    <span class="grade">
+
+                                        {{ mark.grade|default:"—" }}
+
+                                    </span>
+
+                                </td>
+
+                                <td>
+
+                                    {% if mark.status == "published" %}
+
+                                        Published
+
+                                    {% elif mark.status == "submitted" %}
+
+                                        Submitted
+
+                                    {% else %}
+
+                                        Draft
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                        {% empty %}
+
+                            <tr>
+
+                                <td colspan="8" style="text-align:center; padding:40px;">
+
+                                    No marks available for this examination.
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- SUMMARY -->
+
+        <div class="section">
+
+            <div class="section-title">
+
+                <i class="fa-solid fa-square-poll-vertical"></i>
+
+                Performance Summary
+
+            </div>
+
+
+            <div class="summary-grid">
+
+                <div class="summary-card">
+
+                    <div class="summary-label">
+                        Total Maximum Marks
+                    </div>
+
+                    <div class="summary-value">
+                        {{ total_maximum|default:0 }}
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <div class="summary-label">
+                        Total Obtained Marks
+                    </div>
+
+                    <div class="summary-value">
+                        {{ total_obtained|default:0 }}
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <div class="summary-label">
+                        Overall Percentage
+                    </div>
+
+                    <div class="summary-value">
+                        {{ overall_percentage|default:0 }}%
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <div class="summary-label">
+                        Result
+                    </div>
+
+                    <div class="summary-value
+                        {% if is_passed %}
+                            result-pass
+                        {% else %}
+                            result-fail
+                        {% endif %}
+                    ">
+
+                        {% if result_status %}
+
+                            {{ result_status }}
+
+                        {% elif is_passed %}
+
+                            PASS
+
+                        {% else %}
+
+                            FAIL
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- RESULT STATUS -->
+
+        <div class="result-status">
+
+            <div class="result-status-label">
+
+                <i class="fa-solid fa-award"></i>
+
+                Final Result Status
+
+            </div>
+
+
+            {% if is_passed %}
+
+                <div class="result-badge passed">
+
+                    <i class="fa-solid fa-circle-check"></i>
+
+                    Passed
+
+                </div>
+
+            {% else %}
+
+                <div class="result-badge failed">
+
+                    <i class="fa-solid fa-circle-xmark"></i>
+
+                    Failed
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- FOOTER -->
+
+        <div class="report-footer">
+
+            <div>
+
+                Generated on:
+                {% now "d M Y, h:i A" %}
+
+            </div>
+
+            <div>
+
+                This is a system-generated report card.
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

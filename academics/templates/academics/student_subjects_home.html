@@ -1,0 +1,190 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+Student Subjects | SMS
+{% endblock %}
+
+{% block page_title %}
+Subjects
+{% endblock %}
+
+{% block extra_css %}
+
+<style>
+
+    .student-page {
+        padding: 25px;
+    }
+
+    .page-heading {
+        margin-bottom: 25px;
+    }
+
+    .page-heading h2 {
+        color: #123B63;
+        font-size: 30px;
+        margin-bottom: 8px;
+    }
+
+    .page-heading p {
+        color: #64748B;
+        font-size: 18px;
+    }
+
+    .subject-options {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(280px, 1fr));
+        gap: 25px;
+    }
+
+    .subject-option {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 14px;
+        padding: 30px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        transition: 0.2s;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+    }
+
+    .subject-option:hover {
+        transform: translateY(-3px);
+        border-color: #F28C28;
+    }
+
+    .subject-option-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 12px;
+        background: #123B63;
+        color: #FFFFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        flex-shrink: 0;
+    }
+
+    .assignment-option .subject-option-icon {
+        background: #F28C28;
+    }
+
+    .subject-option-content h3 {
+        color: #123B63;
+        font-size: 23px;
+        margin: 0 0 8px;
+    }
+
+    .subject-option-content p {
+        color: #64748B;
+        font-size: 17px;
+        margin: 0;
+    }
+
+    .arrow {
+        margin-left: auto;
+        color: #123B63;
+        font-size: 20px;
+    }
+
+    @media(max-width: 800px) {
+
+        .subject-options {
+            grid-template-columns: 1fr;
+        }
+
+    }
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="student-page">
+
+    <div class="page-heading">
+
+        <h2>
+            <i class="fa-solid fa-book"></i>
+            Subjects
+        </h2>
+
+        <p>
+            View your subjects, interact with teachers,
+            and manage your assignments.
+        </p>
+
+    </div>
+
+
+    <div class="subject-options">
+
+        <a
+            href="{% url 'academics:student_subject_list' %}"
+            class="subject-option"
+        >
+
+            <div class="subject-option-icon">
+
+                <i class="fa-solid fa-book-open"></i>
+
+            </div>
+
+            <div class="subject-option-content">
+
+                <h3>
+                    My Subjects
+                </h3>
+
+                <p>
+                    View assigned subjects and teachers.
+                </p>
+
+            </div>
+
+            <div class="arrow">
+                <i class="fa-solid fa-chevron-right"></i>
+            </div>
+
+        </a>
+
+
+        <a
+            href="{% url 'academics:student_assignments' %}"
+            class="subject-option assignment-option"
+        >
+
+            <div class="subject-option-icon">
+
+                <i class="fa-solid fa-file-lines"></i>
+
+            </div>
+
+            <div class="subject-option-content">
+
+                <h3>
+                    Assignments
+                </h3>
+
+                <p>
+                    View, download and submit assignments.
+                </p>
+
+            </div>
+
+            <div class="arrow">
+                <i class="fa-solid fa-chevron-right"></i>
+            </div>
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

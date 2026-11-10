@@ -1,0 +1,912 @@
+
+{% extends "dashboard/base.html" %}
+
+{% block title %}Generate & Edit Timetable{% endblock %}
+
+{% block extra_css %}
+<style>
+.timetable-page {
+    --blue: #123B63;
+    --dark-blue: #0B2945;
+    --light-blue: #EAF2F8;
+    --orange: #F28C28;
+    --orange-hover: #D97706;
+    --border: #DCE5ED;
+    --text: #263746;
+
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 28px;
+    color: var(--text);
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.timetable-page *,
+.timetable-page *::before,
+.timetable-page *::after {
+    box-sizing: border-box;
+}
+
+.timetable-page .page-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+    padding: 32px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--dark-blue), var(--blue));
+    color: #fff;
+}
+
+.timetable-page .page-heading h1 {
+    color: #fff;
+    margin: 0 0 8px;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.timetable-page .page-heading p {
+    color: #EAF2F8;
+    margin: 0;
+    font-size: 18px;
+}
+
+.timetable-page .heading-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 16px;
+    border-radius: 30px;
+    background: #FFF4E6;
+    color: #8B4A08;
+    font-size: 16px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* Workflow progress */
+
+.timetable-page .step-progress {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 28px;
+}
+
+.timetable-page .step-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+    padding: 22px 20px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(11, 41, 69, .04);
+    transition: border-color .2s ease, transform .2s ease;
+}
+
+.timetable-page .step-item:hover {
+    border-color: var(--orange);
+    transform: translateY(-2px);
+}
+
+.timetable-page .step-number {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--light-blue);
+    color: var(--blue);
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.timetable-page .step-item.active {
+    border: 2px solid var(--orange);
+    background: #FFF8F0;
+}
+
+.timetable-page .step-item.active .step-number {
+    background: var(--orange);
+    color: #fff;
+}
+
+.timetable-page .step-item strong {
+    display: block;
+    color: var(--blue);
+    font-size: 17px;
+    line-height: 1.4;
+}
+
+.timetable-page .step-item small {
+    display: block;
+    margin-top: 5px;
+    color: #687887;
+    font-size: 15px;
+    line-height: 1.4;
+}
+
+/* Panels */
+
+.timetable-page .panel {
+    padding: 28px;
+    margin-bottom: 28px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(11, 41, 69, .05);
+}
+
+.timetable-page .panel h2 {
+    margin: 0 0 10px;
+    color: var(--blue);
+    font-size: 23px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.timetable-page .panel-description {
+    margin: 0 0 26px;
+    color: #687887;
+    font-size: 18px;
+    line-height: 1.7;
+}
+
+/* Form */
+
+.timetable-page .form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.timetable-page .field {
+    min-width: 0;
+}
+
+.timetable-page .field label {
+    display: block;
+    margin-bottom: 9px;
+    color: var(--dark-blue);
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.timetable-page .field input,
+.timetable-page .field select {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    min-height: 48px;
+    padding: 11px 14px;
+    border: 1px solid #C9D5DF;
+    border-radius: 8px;
+    outline: none;
+    background: #fff;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 18px;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.timetable-page .field input:focus,
+.timetable-page .field select:focus,
+.timetable-page .timetable-table input:focus,
+.timetable-page .timetable-table select:focus {
+    border-color: var(--orange);
+    box-shadow: 0 0 0 3px rgba(242, 140, 40, .16);
+    outline: none;
+}
+
+/* Buttons */
+
+.timetable-page .button-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 28px;
+}
+
+.timetable-page .button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.timetable-page .btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    min-height: 46px;
+    padding: 11px 20px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    text-decoration: none;
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: center;
+    cursor: pointer;
+    transition: background .2s ease, color .2s ease,
+                border-color .2s ease, transform .2s ease;
+}
+
+.timetable-page .btn:hover {
+    transform: translateY(-1px);
+}
+
+.timetable-page .btn-primary {
+    background: var(--orange);
+    border-color: var(--orange);
+    color: #fff;
+}
+
+.timetable-page .btn-primary:hover {
+    background: var(--orange-hover);
+    border-color: var(--orange-hover);
+}
+
+.timetable-page .btn-secondary {
+    background: var(--light-blue);
+    color: var(--blue);
+    border-color: #D6E4EF;
+}
+
+.timetable-page .btn-secondary:hover {
+    background: #D7E7F4;
+    border-color: #B8D0E3;
+}
+
+.timetable-page .btn-outline {
+    background: #fff;
+    color: var(--blue);
+    border-color: var(--blue);
+}
+
+.timetable-page .btn-outline:hover {
+    background: var(--light-blue);
+}
+
+.timetable-page .btn:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Timetable editor */
+
+.timetable-page .table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.timetable-page .timetable-table {
+    width: 100%;
+    min-width: 1000px;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #fff;
+}
+
+.timetable-page .timetable-table th {
+    padding: 16px 18px;
+    background: var(--blue);
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.timetable-page .timetable-table td {
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+    font-size: 18px;
+}
+
+.timetable-page .timetable-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.timetable-page .timetable-table tbody tr:hover td {
+    background: #F5F9FC;
+}
+
+.timetable-page .timetable-table input,
+.timetable-page .timetable-table select {
+    width: 100%;
+    min-width: 145px;
+    min-height: 46px;
+    padding: 10px 12px;
+    border: 1px solid #C9D5DF;
+    border-radius: 7px;
+    background: #fff;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 17px;
+}
+
+/* Status labels */
+
+.timetable-page .status-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 13px;
+    border-radius: 30px;
+    background: #FFF4E6;
+    color: #97520B;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.timetable-page .status-label.published {
+    background: #E7F6EC;
+    color: #176534;
+}
+
+/* Notes */
+
+.timetable-page .info-note {
+    margin-top: 22px;
+    padding: 17px 20px;
+    border-left: 5px solid var(--orange);
+    border-radius: 8px;
+    background: #FFF8F0;
+    color: #69451F;
+    font-size: 17px;
+    line-height: 1.7;
+}
+
+.timetable-page .info-note strong {
+    color: #77430D;
+}
+
+/* Empty state */
+
+.timetable-page .empty-state {
+    padding: 38px 22px;
+    border: 1px dashed #C9D5DF;
+    border-radius: 10px;
+    background: #F8FAFC;
+    color: #687887;
+    text-align: center;
+}
+
+.timetable-page .empty-state h3 {
+    margin: 0 0 10px;
+    color: var(--blue);
+    font-size: 21px;
+}
+
+.timetable-page .empty-state p {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.7;
+}
+
+/* Django messages */
+
+.timetable-page .message-list {
+    margin-bottom: 24px;
+}
+
+.timetable-page .message-item {
+    margin-bottom: 12px;
+    padding: 15px 18px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: #F8FAFC;
+    font-size: 17px;
+}
+
+.timetable-page .message-item.success {
+    background: #EAF7EE;
+    border-color: #B7E1C3;
+    color: #176534;
+}
+
+.timetable-page .message-item.error {
+    background: #FFF0F0;
+    border-color: #F0B8B8;
+    color: #9B2020;
+}
+
+.timetable-page .message-item.warning {
+    background: #FFF8E8;
+    border-color: #F0D49A;
+    color: #805A0A;
+}
+
+.timetable-page .message-item.info {
+    background: var(--light-blue);
+    border-color: #C8DDEB;
+    color: var(--blue);
+}
+
+/* Responsive */
+
+@media (max-width: 1100px) {
+    .timetable-page .step-progress {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .timetable-page .form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .timetable-page {
+        padding: 18px;
+        font-size: 17px;
+    }
+
+    .timetable-page .page-heading {
+        padding: 24px;
+    }
+
+    .timetable-page .page-heading h1 {
+        font-size: 26px;
+    }
+
+    .timetable-page .panel {
+        padding: 22px;
+    }
+
+    .timetable-page .panel h2 {
+        font-size: 21px;
+    }
+
+    .timetable-page .panel-description,
+    .timetable-page .field label {
+        font-size: 17px;
+    }
+
+    .timetable-page .form-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .timetable-page .button-row {
+        align-items: stretch;
+    }
+
+    .timetable-page .button-row > .btn,
+    .timetable-page .button-row form,
+    .timetable-page .button-row form .btn {
+        width: 100%;
+    }
+
+    .timetable-page .button-row > .btn {
+        flex: 1 1 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .timetable-page {
+        padding: 12px;
+    }
+
+    .timetable-page .page-heading {
+        padding: 20px;
+    }
+
+    .timetable-page .page-heading h1 {
+        font-size: 23px;
+    }
+
+    .timetable-page .page-heading p {
+        font-size: 16px;
+    }
+
+    .timetable-page .heading-status {
+        font-size: 14px;
+    }
+
+    .timetable-page .step-progress {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .timetable-page .step-item {
+        padding: 17px;
+    }
+
+    .timetable-page .panel {
+        padding: 17px;
+    }
+
+    .timetable-page .btn {
+        width: 100%;
+        font-size: 16px;
+    }
+
+    .timetable-page .info-note {
+        padding: 14px;
+        font-size: 16px;
+    }
+
+    .timetable-page .empty-state {
+        padding: 26px 16px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="timetable-page">
+
+    <div class="page-heading">
+        <div>
+            <h1>Generate &amp; Edit Timetable</h1>
+            <p>
+                Generate a draft timetable and review period assignments
+                before validation.
+            </p>
+        </div>
+        <span class="heading-status">Step 3 of 4</span>
+    </div>
+
+    <!-- Workflow progress -->
+    <div class="step-progress">
+        <div class="step-item">
+            <span class="step-number">✓</span>
+            <div>
+                <strong>Configure</strong>
+                <small>School timings</small>
+            </div>
+        </div>
+
+        <div class="step-item">
+            <span class="step-number">✓</span>
+            <div>
+                <strong>Requirements</strong>
+                <small>Weekly subject periods</small>
+            </div>
+        </div>
+
+        <div class="step-item active">
+            <span class="step-number">3</span>
+            <div>
+                <strong>Generate &amp; Edit</strong>
+                <small>Prepare draft</small>
+            </div>
+        </div>
+
+        <div class="step-item">
+            <span class="step-number">4</span>
+            <div>
+                <strong>Validate &amp; Approval</strong>
+                <small>Review and publish</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Django messages -->
+    {% if messages %}
+        <div class="message-list" aria-live="polite">
+            {% for message in messages %}
+                <div class="message-item {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Generate timetable -->
+    <div class="panel">
+        <h2>Generate Timetable Draft</h2>
+
+        <p class="panel-description">
+            Select the class and academic year. The generator uses the saved
+            timetable configuration, subject-period requirements, and teacher
+            assignments.
+        </p>
+
+        <form
+            method="post"
+            action="{% url 'academics:timetable_generate' %}"
+        >
+            {% csrf_token %}
+
+            <input
+                type="hidden"
+                name="action"
+                value="generate_timetable"
+            >
+
+            <div class="form-grid">
+                <div class="field">
+                    <label for="class_section">Class / Section *</label>
+
+                    <select
+                        name="class_section"
+                        id="class_section"
+                        required
+                    >
+                        <option value="">Select class / section</option>
+
+                        {% for class_item in classes %}
+                            <option
+                                value="{{ class_item.pk }}"
+                                {% if selected_class|stringformat:"s" == class_item.pk|stringformat:"s" %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ class_item }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="academic_year">Academic Year *</label>
+
+                    <input
+                        type="text"
+                        id="academic_year"
+                        name="academic_year"
+                        placeholder="e.g. 2026-27"
+                        value="{{ selected_academic_year|default:'' }}"
+                        required
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="generation_mode">Generation Mode</label>
+
+                    <select
+                        name="generation_mode"
+                        id="generation_mode"
+                    >
+                        <option value="draft" selected>
+                            Generate draft
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="info-note">
+                <strong>Important:</strong>
+                Generating a timetable does not publish it automatically.
+                Review the draft and resolve conflicts before proceeding.
+                Generating again may replace entries in the existing Draft plan.
+            </div>
+
+            <div class="button-row">
+                <a
+                    class="btn btn-secondary"
+                    href="{% url 'academics:subject_period_requirements' %}"
+                >
+                    ← Back to Requirements
+                </a>
+
+                <button
+                    class="btn btn-primary"
+                    type="submit"
+                    {% if not classes %}disabled{% endif %}
+                >
+                    ⚙ Generate Draft
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Draft editor -->
+    <div class="panel">
+        <h2>Draft Timetable Editor</h2>
+
+        <p class="panel-description">
+            Edit the day, period, subject, teacher, and room of the generated
+            draft. Changes are saved only after server-side validation.
+        </p>
+
+        {% if current_plan and current_plan.status == "Draft" and entries %}
+
+            <div class="info-note">
+                <strong>Selected plan:</strong>
+                Draft Version {{ current_plan.version }}
+                {% if selected_class_obj %}
+                    — {{ selected_class_obj }}
+                {% endif %}
+                — {{ selected_academic_year }}
+            </div>
+
+            <form
+                method="post"
+                action="{% url 'academics:timetable_generate' %}"
+            >
+                {% csrf_token %}
+
+                <input
+                    type="hidden"
+                    name="action"
+                    value="save_timetable_draft"
+                >
+
+                <input
+                    type="hidden"
+                    name="class_section"
+                    value="{{ selected_class }}"
+                >
+
+                <input
+                    type="hidden"
+                    name="academic_year"
+                    value="{{ selected_academic_year }}"
+                >
+
+                <input
+                    type="hidden"
+                    name="plan_id"
+                    value="{{ current_plan.pk }}"
+                >
+
+                <div class="table-wrapper">
+                    <table class="timetable-table">
+                        <thead>
+                            <tr>
+                                <th>Day</th>
+                                <th>Period</th>
+                                <th>Subject</th>
+                                <th>Teacher</th>
+                                <th>Room</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for entry in entries %}
+                                <tr>
+                                    <td>
+                                        <select
+                                            name="day_{{ entry.pk }}"
+                                            required
+                                        >
+                                            {% for day in days %}
+                                                <option
+                                                    value="{{ day }}"
+                                                    {% if entry.day == day %}selected{% endif %}
+                                                >
+                                                    {{ day }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+
+                                    <td>
+                                        <select
+                                            name="period_{{ entry.pk }}"
+                                            required
+                                        >
+                                            {% for period in periods %}
+                                                <option
+                                                    value="{{ period.period_number }}"
+                                                    {% if entry.period == period.period_number %}selected{% endif %}
+                                                >
+                                                    {{ period.period_number }} - {{ period.period_name }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+
+                                    <td>
+                                        <select
+                                            name="subject_{{ entry.pk }}"
+                                            required
+                                        >
+                                            {% for subject in subjects %}
+                                                <option
+                                                    value="{{ subject.pk }}"
+                                                    {% if entry.subject_id == subject.pk %}selected{% endif %}
+                                                >
+                                                    {{ subject }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+
+                                    <td>
+                                        <select
+                                            name="teacher_{{ entry.pk }}"
+                                            required
+                                        >
+                                            {% for teacher in teachers %}
+                                                <option
+                                                    value="{{ teacher.pk }}"
+                                                    {% if entry.employee_id == teacher.pk %}selected{% endif %}
+                                                >
+                                                    {{ teacher.get_full_name|default:teacher.username }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+
+                                    <td>
+                                        <input
+                                            type="text"
+                                            name="room_{{ entry.pk }}"
+                                            value="{{ entry.room|default:'' }}"
+                                            placeholder="Room number"
+                                            maxlength="100"
+                                        >
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="button-row">
+                    <span class="status-label">
+                        Draft — Not Published
+                    </span>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        Save Draft Changes
+                    </button>
+                </div>
+            </form>
+
+        {% elif current_plan and current_plan.status == "Draft" %}
+
+            <div class="empty-state">
+                <h3>Draft has no timetable entries</h3>
+                <p>
+                    Generate the draft again after checking the class
+                    configuration, subject requirements, and teacher assignments.
+                </p>
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+                <h3>No draft timetable available</h3>
+                <p>
+                    Select a class and academic year above, then click
+                    <strong>Generate Draft</strong>.
+                </p>
+            </div>
+
+        {% endif %}
+    </div>
+
+    <!-- Navigation -->
+    <div class="button-row">
+        <a
+            class="btn btn-secondary"
+            href="{% url 'academics:subject_period_requirements' %}"
+        >
+            ← Previous Step
+        </a>
+
+        <a
+            class="btn btn-primary"
+            href="{% url 'academics:timetable_validate' %}{% if selected_class %}?class_section={{ selected_class }}&amp;academic_year={{ selected_academic_year|urlencode }}{% endif %}"
+        >
+            Next: Validate &amp; Approval →
+        </a>
+    </div>
+
+</div>
+{% endblock %}

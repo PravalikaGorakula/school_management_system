@@ -1,0 +1,781 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+Student Overview
+{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --orange-light: #FFF4E6;
+        --green: #25845A;
+        --green-light: #EAF7F0;
+        --purple: #7654A8;
+        --purple-light: #F2EDFA;
+        --red: #C74747;
+        --teal: #168A91;
+        --text-primary: #243447;
+        --text-secondary: #5F6F80;
+        --border-color: #E0E7EF;
+        --page-background: #F5F7FA;
+        --card-background: #FFFFFF;
+        --radius-small: 10px;
+        --radius-medium: 14px;
+        --radius-large: 18px;
+        --shadow-card: 0 4px 16px rgba(18, 59, 99, 0.07);
+        --shadow-hover: 0 10px 25px rgba(18, 59, 99, 0.13);
+    }
+
+    .student-dashboard {
+        width: 100%;
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 28px;
+        box-sizing: border-box;
+        color: var(--text-primary);
+        font-family: "Segoe UI", Arial, sans-serif;
+        font-size: 18px;
+        line-height: 1.6;
+    }
+
+    .student-dashboard *,
+    .student-dashboard *::before,
+    .student-dashboard *::after {
+        box-sizing: border-box;
+    }
+
+    /* PAGE HEADER */
+
+    .student-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 24px;
+        padding: 32px;
+        margin-bottom: 34px;
+        border-radius: var(--radius-large);
+        color: #FFFFFF;
+        background: linear-gradient(
+            120deg,
+            var(--deep-blue-dark),
+            var(--deep-blue)
+        );
+        box-shadow: var(--shadow-card);
+    }
+
+    .student-header h1 {
+        margin: 0 0 8px;
+        font-size: 30px;
+        font-weight: 700;
+        line-height: 1.35;
+    }
+
+    .student-header p {
+        margin: 0;
+        color: #E5EDF5;
+        font-size: 18px;
+    }
+
+    .student-date {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 18px;
+        border-radius: var(--radius-small);
+        background: rgba(255, 255, 255, 0.12);
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .student-date i {
+        color: #FFD19A;
+        font-size: 21px;
+    }
+
+    /* SECTION HEADING */
+
+    .student-section {
+        margin-bottom: 38px;
+    }
+
+    .student-section-title {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        margin: 0 0 24px;
+        padding: 0 0 14px;
+        color: var(--deep-blue-dark);
+        font-size: 23px;
+        font-weight: 700;
+        line-height: 1.5;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    .student-section-title i {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 43px;
+        height: 43px;
+        flex-shrink: 0;
+        background: var(--orange-light);
+        color: var(--orange-hover);
+        border-radius: 12px;
+        font-size: 20px;
+    }
+
+    /* STATISTICS CARDS */
+
+    .student-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 24px;
+    }
+
+    .student-stat-card {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        min-width: 0;
+        min-height: 140px;
+        padding: 26px 24px;
+        background: var(--card-background);
+        border: 1px solid var(--border-color);
+        border-left: 5px solid var(--deep-blue);
+        border-radius: var(--radius-medium);
+        box-shadow: var(--shadow-card);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .student-stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .student-stat-card.orange {
+        background: linear-gradient(135deg, #FFFFFF, #FFF8EF);
+        border-left-color: var(--orange);
+    }
+
+    .student-stat-card.green {
+        background: linear-gradient(135deg, #FFFFFF, #F0FAF4);
+        border-left-color: var(--green);
+    }
+
+    .student-stat-card.purple {
+        background: linear-gradient(135deg, #FFFFFF, #F7F3FC);
+        border-left-color: var(--purple);
+    }
+
+    .student-stat-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        min-width: 60px;
+        border-radius: 15px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        font-size: 25px;
+    }
+
+    .student-stat-card.orange .student-stat-icon {
+        background: var(--orange-light);
+        color: var(--orange-hover);
+    }
+
+    .student-stat-card.green .student-stat-icon {
+        background: var(--green-light);
+        color: var(--green);
+    }
+
+    .student-stat-card.purple .student-stat-icon {
+        background: var(--purple-light);
+        color: var(--purple);
+    }
+
+    .student-stat-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .student-stat-label {
+        margin-bottom: 8px;
+        color: var(--text-secondary);
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+    }
+
+    .student-stat-value {
+        color: var(--deep-blue-dark);
+        font-size: 28px;
+        font-weight: 750;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+    }
+
+    /* CHART GRID */
+
+    .student-charts-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 24px;
+    }
+
+    .student-chart-card {
+        min-width: 0;
+        padding: 26px;
+        background: var(--card-background);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-medium);
+        box-shadow: var(--shadow-card);
+        transition: box-shadow 0.2s ease;
+    }
+
+    .student-chart-card:hover {
+        box-shadow: var(--shadow-hover);
+    }
+
+    .student-chart-heading {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 8px;
+    }
+
+    .student-chart-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        min-width: 48px;
+        border-radius: 12px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        font-size: 21px;
+    }
+
+    .student-chart-card:nth-child(even) .student-chart-icon {
+        background: var(--orange-light);
+        color: var(--orange-hover);
+    }
+
+    .student-chart-heading h3 {
+        margin: 0;
+        color: var(--deep-blue-dark);
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 1.4;
+    }
+
+    .student-chart-description {
+        margin: 0 0 24px;
+        color: var(--text-secondary);
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    .student-chart-container {
+        position: relative;
+        width: 100%;
+        height: 340px;
+    }
+
+    .student-chart-note {
+        margin: 18px 0 0;
+        padding: 12px 14px;
+        border-radius: var(--radius-small);
+        background: var(--deep-blue-light);
+        color: var(--text-secondary);
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 1200px) {
+        .student-stats-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .student-charts-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .student-dashboard {
+            padding: 18px;
+        }
+
+        .student-header {
+            padding: 24px;
+            margin-bottom: 28px;
+        }
+
+        .student-header h1 {
+            font-size: 26px;
+        }
+
+        .student-section-title {
+            font-size: 21px;
+            margin-bottom: 20px;
+        }
+
+        .student-stats-grid {
+            grid-template-columns: 1fr;
+            gap: 18px;
+        }
+
+        .student-stat-card {
+            min-height: 120px;
+            padding: 22px;
+        }
+
+        .student-chart-card {
+            padding: 22px;
+        }
+
+        .student-chart-container {
+            height: 310px;
+        }
+
+        .student-section {
+            margin-bottom: 30px;
+        }
+    }
+
+    @media (max-width: 420px) {
+        .student-dashboard {
+            padding: 12px;
+        }
+
+        .student-header {
+            padding: 20px;
+        }
+
+        .student-stat-card {
+            gap: 14px;
+            padding: 18px;
+        }
+
+        .student-stat-icon {
+            width: 52px;
+            height: 52px;
+            min-width: 52px;
+            font-size: 22px;
+        }
+
+        .student-stat-value {
+            font-size: 24px;
+        }
+
+        .student-chart-card {
+            padding: 16px;
+        }
+
+        .student-chart-container {
+            height: 280px;
+        }
+    }
+</style>
+
+<div class="student-dashboard">
+
+    <!-- HEADER -->
+
+    <div class="student-header">
+        <div>
+            <h1>Student Overview</h1>
+            <p>
+                Complete overview of student information, admissions,
+                attendance and fee collection.
+            </p>
+        </div>
+
+        <div class="student-date">
+            <i class="fa-regular fa-calendar"></i>
+            <span>
+                {% if today %}
+                    {{ today|date:"d M Y" }}
+                {% else %}
+                    {% now "d M Y" %}
+                {% endif %}
+            </span>
+        </div>
+    </div>
+
+    <!-- STUDENT STATISTICS -->
+
+    <div class="student-section">
+
+        <h2 class="student-section-title">
+            <i class="fa-solid fa-chart-simple"></i>
+            Student Statistics
+        </h2>
+
+        <div class="student-stats-grid">
+
+            <div class="student-stat-card">
+                <div class="student-stat-icon">
+                    <i class="fa-solid fa-user-graduate"></i>
+                </div>
+
+                <div class="student-stat-info">
+                    <div class="student-stat-label">Total Students</div>
+                    <div class="student-stat-value">
+                        {{ student_count|default:0 }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="student-stat-card orange">
+                <div class="student-stat-icon">
+                    <i class="fa-solid fa-user-plus"></i>
+                </div>
+
+                <div class="student-stat-info">
+                    <div class="student-stat-label">Admissions</div>
+                    <div class="student-stat-value">
+                        {{ new_admission_count|default:0 }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="student-stat-card green">
+                <div class="student-stat-icon">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+
+                <div class="student-stat-info">
+                    <div class="student-stat-label">Attendance</div>
+                    <div class="student-stat-value">
+                        {{ attendance_percentage|default:0 }}%
+                    </div>
+                </div>
+            </div>
+
+            <div class="student-stat-card purple">
+                <div class="student-stat-icon">
+                    <i class="fa-solid fa-indian-rupee-sign"></i>
+                </div>
+
+                <div class="student-stat-info">
+                    <div class="student-stat-label">Fees Collected</div>
+                    <div class="student-stat-value">
+                        ₹{{ student_fee_total|default:0|floatformat:2 }}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- STUDENT ANALYTICS -->
+
+    <div class="student-section">
+
+        <h2 class="student-section-title">
+            <i class="fa-solid fa-chart-pie"></i>
+            Student Analytics
+        </h2>
+
+        <div class="student-charts-grid">
+
+            <!-- BAR CHART -->
+
+            <div class="student-chart-card">
+
+                <div class="student-chart-heading">
+                    <div class="student-chart-icon">
+                        <i class="fa-solid fa-chart-column"></i>
+                    </div>
+
+                    <h3>Student Statistics</h3>
+                </div>
+
+                <p class="student-chart-description">
+                    Comparison of student numbers, admissions and attendance.
+                </p>
+
+                <div class="student-chart-container">
+                    <canvas id="studentBarChart"></canvas>
+                </div>
+
+                <p class="student-chart-note">
+                    Total students and admissions are counts.
+                    Attendance is shown as a percentage.
+                </p>
+
+            </div>
+
+            <!-- PIE CHART -->
+
+            <div class="student-chart-card">
+
+                <div class="student-chart-heading">
+                    <div class="student-chart-icon">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </div>
+
+                    <h3>Student Overview</h3>
+                </div>
+
+                <p class="student-chart-description">
+                    Visual summary of the available student indicators.
+                </p>
+
+                <div class="student-chart-container">
+                    <canvas id="studentPieChart"></canvas>
+                </div>
+
+                <p class="student-chart-note">
+                    This chart compares different indicators. Student counts,
+                    attendance percentages and fee amounts use different units.
+                </p>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- CHART.JS LIBRARY -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const studentCount = Number(
+        "{{ student_count|default:0 }}"
+    ) || 0;
+
+    const admissionCount = Number(
+        "{{ new_admission_count|default:0 }}"
+    ) || 0;
+
+    const attendancePercentage = Number(
+        "{{ attendance_percentage|default:0 }}"
+    ) || 0;
+
+    const feeTotal = Number(
+        "{{ student_fee_total|default:0 }}"
+    ) || 0;
+
+    const navyBlue = "#123B63";
+    const orange = "#F28C28";
+    const green = "#25845A";
+    const purple = "#7654A8";
+
+    const chartText = "#5F6F80";
+    const chartGrid = "#E0E7EF";
+
+    Chart.defaults.font.family = '"Segoe UI", Arial, sans-serif';
+    Chart.defaults.font.size = 14;
+    Chart.defaults.color = chartText;
+
+    // BAR CHART
+
+    const barCanvas = document.getElementById("studentBarChart");
+
+    if (barCanvas && typeof Chart !== "undefined") {
+
+        new Chart(barCanvas, {
+            type: "bar",
+
+            data: {
+                labels: [
+                    "Total Students",
+                    "Admissions",
+                    "Attendance (%)"
+                ],
+
+                datasets: [{
+                    label: "Student Statistics",
+
+                    data: [
+                        studentCount,
+                        admissionCount,
+                        attendancePercentage
+                    ],
+
+                    backgroundColor: [
+                        navyBlue,
+                        orange,
+                        green
+                    ],
+
+                    borderRadius: 8,
+                    borderSkipped: false,
+                    maxBarThickness: 68
+                }]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+
+                    tooltip: {
+                        backgroundColor: "#0B2945",
+                        padding: 13,
+                        cornerRadius: 8,
+
+                        callbacks: {
+                            label: function(context) {
+                                if (context.dataIndex === 2) {
+                                    return "Attendance: " +
+                                        context.raw + "%";
+                                }
+
+                                return context.raw + " students";
+                            }
+                        }
+                    }
+                },
+
+                scales: {
+                    y: {
+                        beginAtZero: true,
+
+                        grid: {
+                            color: chartGrid
+                        },
+
+                        border: {
+                            display: false
+                        },
+
+                        ticks: {
+                            color: chartText,
+                            precision: 0,
+                            padding: 10
+                        }
+                    },
+
+                    x: {
+                        grid: {
+                            display: false
+                        },
+
+                        border: {
+                            display: false
+                        },
+
+                        ticks: {
+                            color: navyBlue,
+                            maxRotation: 0,
+                            minRotation: 0
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // PIE CHART
+
+    const pieCanvas = document.getElementById("studentPieChart");
+
+    if (pieCanvas && typeof Chart !== "undefined") {
+
+        new Chart(pieCanvas, {
+            type: "pie",
+
+            data: {
+                labels: [
+                    "Total Students",
+                    "Admissions",
+                    "Attendance (%)",
+                    "Fees Collected"
+                ],
+
+                datasets: [{
+                    data: [
+                        studentCount,
+                        admissionCount,
+                        attendancePercentage,
+                        feeTotal
+                    ],
+
+                    backgroundColor: [
+                        navyBlue,
+                        orange,
+                        green,
+                        purple
+                    ],
+
+                    borderColor: "#FFFFFF",
+                    borderWidth: 4,
+                    hoverOffset: 10
+                }]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                plugins: {
+                    legend: {
+                        position: "bottom",
+
+                        labels: {
+                            color: "#243447",
+                            padding: 18,
+                            usePointStyle: true,
+                            pointStyle: "circle",
+                            boxWidth: 10,
+                            boxHeight: 10
+                        }
+                    },
+
+                    tooltip: {
+                        backgroundColor: "#0B2945",
+                        padding: 13,
+                        cornerRadius: 8,
+
+                        callbacks: {
+                            label: function(context) {
+                                const value = Number(context.raw) || 0;
+                                const label = context.label;
+
+                                if (label === "Fees Collected") {
+                                    return label + ": ₹" +
+                                        value.toLocaleString("en-IN");
+                                }
+
+                                if (label === "Attendance (%)") {
+                                    return label + ": " + value + "%";
+                                }
+
+                                return label + ": " + value;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+});
+</script>
+
+{% endblock %}

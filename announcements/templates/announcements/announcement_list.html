@@ -1,0 +1,876 @@
+{% extends "dashboard/base.html" %}
+
+{% load static %}
+
+{% block title %}
+Announcements
+{% endblock %}
+
+
+{% block extra_css %}
+<style>
+    /* =========================================================
+   ANNOUNCEMENTS - CLEAN NAVY BLUE & ORANGE THEME
+========================================================= */
+
+:root {
+    --deep-blue: #123B63;
+    --deep-blue-dark: #0B2945;
+    --deep-blue-light: #EAF2F8;
+
+    --orange: #F28C28;
+    --orange-hover: #D97706;
+    --orange-light: #FFF4E6;
+
+    --text-dark: #293747;
+    --text-muted: #657386;
+    --border-color: #E0E6ED;
+    --white: #FFFFFF;
+
+    --card-radius: 11px;
+    --small-radius: 7px;
+}
+
+/* =========================================================
+   MAIN PAGE
+========================================================= */
+
+.announcement-page,
+.announcement-page * {
+    box-sizing: border-box;
+}
+
+.announcement-page {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 20px;
+    color: var(--text-dark);
+    font-size: 18px;
+}
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.announcement-page .page-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    flex-wrap: wrap;
+
+    margin-bottom: 22px;
+    padding: 18px 22px;
+
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--orange);
+    border-radius: var(--card-radius);
+
+    box-shadow: 0 3px 10px rgba(11, 41, 69, 0.04);
+}
+
+.announcement-page .page-head h1 {
+    margin: 0;
+    color: var(--deep-blue-dark);
+    font-size: 25px;
+    font-weight: 650;
+    line-height: 1.4;
+}
+
+.announcement-page .page-heading {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    min-width: 0;
+}
+
+.announcement-page .page-heading p {
+    margin: 5px 0 0;
+    color: var(--text-muted);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+.announcement-page .page-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    width: 46px;
+    height: 46px;
+
+    color: var(--white);
+    background: var(--deep-blue);
+    border-radius: 9px;
+
+    font-size: 21px;
+}
+
+/* =========================================================
+   ACTION BUTTONS
+========================================================= */
+
+.announcement-page .announcement-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.announcement-page .primary-btn,
+.announcement-page .secondary-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    min-height: 42px;
+    padding: 9px 15px;
+
+    border: 1px solid transparent;
+    border-radius: var(--small-radius);
+
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.4;
+
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.announcement-page .primary-btn {
+    color: var(--white);
+    background: var(--deep-blue);
+    border-color: var(--deep-blue);
+}
+
+.announcement-page .primary-btn:hover {
+    color: var(--white);
+    background: var(--orange-hover);
+    border-color: var(--orange-hover);
+}
+
+.announcement-page .secondary-btn {
+    color: var(--deep-blue);
+    background: var(--white);
+    border-color: #C9D5E1;
+}
+
+.announcement-page .secondary-btn:hover {
+    color: var(--white);
+    background: var(--deep-blue);
+    border-color: var(--deep-blue);
+}
+
+/* =========================================================
+   SUCCESS / ERROR MESSAGES
+========================================================= */
+
+.announcement-page .announcement-messages {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.announcement-page .message-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+
+    padding: 13px 16px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.announcement-page .message-alert > i {
+    margin-top: 4px;
+    font-size: 19px;
+}
+
+.announcement-page .message-success {
+    color: #176B3A;
+    background: #EAF7EF;
+    border-color: #C7E8D1;
+}
+
+.announcement-page .message-error {
+    color: #B42318;
+    background: #FDEEEE;
+    border-color: #F4CCCC;
+}
+
+.announcement-page .message-warning {
+    color: #805500;
+    background: #FFF6DF;
+    border-color: #F0DDA9;
+}
+
+.announcement-page .message-info {
+    color: var(--deep-blue);
+    background: var(--deep-blue-light);
+    border-color: #D3E2EF;
+}
+
+/* =========================================================
+   ANNOUNCEMENT SUMMARY
+========================================================= */
+
+.announcement-page .announcement-summary {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+
+    margin-bottom: 17px;
+    padding: 14px 17px;
+
+    background: #F1F6FA;
+    border: 1px solid #DFE8F0;
+    border-radius: 9px;
+}
+
+.announcement-page .summary-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    width: 39px;
+    height: 39px;
+
+    color: var(--white);
+    background: var(--orange);
+    border-radius: 8px;
+
+    font-size: 19px;
+}
+
+.announcement-page .announcement-summary h2 {
+    margin: 0 0 3px;
+    color: var(--deep-blue-dark);
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.announcement-page .announcement-summary p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+.announcement-page .announcement-count {
+    margin-left: auto;
+    padding: 6px 11px;
+
+    color: var(--deep-blue);
+    background: var(--white);
+    border: 1px solid #D5E0EA;
+    border-radius: 20px;
+
+    font-size: 18px;
+    font-weight: 500;
+}
+
+/* =========================================================
+   ANNOUNCEMENT GRID
+========================================================= */
+
+.announcement-page .announcement-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 17px;
+}
+
+/* =========================================================
+   COMPACT ANNOUNCEMENT CARDS
+========================================================= */
+
+.announcement-page .announcement-card {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+    min-height: 0;
+    padding: 17px;
+
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: var(--card-radius);
+
+    box-shadow: 0 2px 8px rgba(11, 41, 69, 0.035);
+
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.announcement-page .announcement-card:hover {
+    border-color: #E9B778;
+    box-shadow: 0 5px 14px rgba(11, 41, 69, 0.07);
+}
+
+/* =========================================================
+   PRIORITY AND DATE
+========================================================= */
+
+.announcement-page .announcement-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 9px;
+    flex-wrap: wrap;
+
+    margin-bottom: 15px;
+}
+
+.announcement-page .priority-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 5px 9px;
+    border-radius: 5px;
+
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.announcement-page .priority-badge.urgent {
+    color: #A12626;
+    background: #FCECEC;
+    border: 1px solid #F3D0D0;
+}
+
+.announcement-page .priority-badge.important {
+    color: #88520A;
+    background: #FFF3DF;
+    border: 1px solid #F2DFC0;
+}
+
+.announcement-page .priority-badge.normal {
+    color: var(--deep-blue);
+    background: #EDF4FA;
+    border: 1px solid #D8E5F0;
+}
+
+.announcement-page .announcement-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    color: var(--text-muted);
+    font-size: 18px;
+    font-weight: 400;
+}
+
+/* =========================================================
+   TITLE AND MESSAGE
+========================================================= */
+
+.announcement-page .announcement-card h3 {
+    margin: 0 0 10px;
+
+    color: var(--deep-blue);
+    font-size: 21px;
+    font-weight: 600;
+    line-height: 1.45;
+
+    overflow-wrap: anywhere;
+}
+
+.announcement-page .announcement-preview {
+    display: -webkit-box;
+
+    margin: 0 0 17px;
+    color: #5F6B7A;
+
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.65;
+
+    overflow: hidden;
+    overflow-wrap: anywhere;
+
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+}
+
+/* =========================================================
+   CARD DIVIDER
+========================================================= */
+
+.announcement-page .announcement-divider {
+    width: 100%;
+    height: 1px;
+    margin: 0 0 14px;
+    background: #E8EDF2;
+}
+
+/* =========================================================
+   AUDIENCE AND FOOTER
+========================================================= */
+
+.announcement-page .announcement-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+
+    margin-top: auto;
+}
+
+.announcement-page .audience {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+}
+
+.announcement-page .audience-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    width: 35px;
+    height: 35px;
+
+    color: var(--deep-blue);
+    background: var(--deep-blue-light);
+    border-radius: 7px;
+
+    font-size: 17px;
+}
+
+.announcement-page .audience > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.announcement-page .audience-label {
+    color: var(--text-muted);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.3;
+}
+
+.announcement-page .audience-value {
+    color: var(--deep-blue-dark);
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   READ MORE BUTTON
+========================================================= */
+
+.announcement-page .read-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    min-height: 38px;
+    padding: 8px 11px;
+
+    color: var(--deep-blue);
+    background: #F0F5F9;
+    border: 1px solid #D8E3EC;
+    border-radius: 6px;
+
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.4;
+
+    transition: color 0.2s ease, background 0.2s ease;
+}
+
+.announcement-page .read-btn:hover {
+    color: var(--white);
+    background: var(--orange-hover);
+    border-color: var(--orange-hover);
+}
+
+.announcement-page .read-btn i {
+    font-size: 15px;
+}
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.announcement-page .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 270px;
+    padding: 30px 22px;
+
+    text-align: center;
+    background: var(--white);
+    border: 1px dashed #CCD8E3;
+    border-radius: var(--card-radius);
+}
+
+.announcement-page .empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 66px;
+    height: 66px;
+    margin-bottom: 17px;
+
+    color: var(--deep-blue);
+    background: var(--orange-light);
+    border: 1px solid #F3DFC5;
+    border-radius: 50%;
+
+    font-size: 29px;
+}
+
+.announcement-page .empty-state h3,
+.announcement-page .empty-state h2 {
+    margin: 0 0 9px;
+    color: var(--deep-blue-dark);
+    font-size: 23px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.announcement-page .empty-state p {
+    max-width: 600px;
+    margin: 0 0 20px;
+
+    color: var(--text-muted);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.7;
+}
+
+/* =========================================================
+   ACCESSIBILITY
+========================================================= */
+
+.announcement-page a:focus-visible {
+    outline: 2px solid var(--orange);
+    outline-offset: 3px;
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1150px) {
+    .announcement-page .announcement-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px;
+    }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+    .announcement-page {
+        padding: 13px;
+    }
+
+    .announcement-page .page-head {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 15px;
+        padding: 16px;
+        margin-bottom: 17px;
+    }
+
+    .announcement-page .page-heading {
+        align-items: flex-start;
+    }
+
+    .announcement-page .page-head h1 {
+        font-size: 23px;
+    }
+
+    .announcement-page .page-icon {
+        width: 41px;
+        height: 41px;
+        font-size: 19px;
+    }
+
+    .announcement-page .announcement-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+        width: 100%;
+    }
+
+    .announcement-page .primary-btn,
+    .announcement-page .secondary-btn {
+        width: 100%;
+    }
+
+    .announcement-page .announcement-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 13px;
+    }
+
+    .announcement-page .announcement-card {
+        padding: 15px;
+    }
+
+    .announcement-page .announcement-card h3 {
+        font-size: 20px;
+    }
+
+    .announcement-page .announcement-footer {
+        align-items: flex-start;
+    }
+
+    .announcement-page .announcement-count {
+        margin-left: 0;
+    }
+
+    .announcement-page .read-btn {
+        margin-left: auto;
+    }
+
+    .announcement-page .empty-state {
+        min-height: 240px;
+        padding: 24px 16px;
+    }
+}
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 380px) {
+    .announcement-page {
+        padding: 10px;
+    }
+
+    .announcement-page .page-heading {
+        gap: 10px;
+    }
+
+    .announcement-page .announcement-card-top {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .announcement-page .announcement-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .announcement-page .read-btn {
+        width: 100%;
+        margin-left: 0;
+    }
+}
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="announcement-page">
+
+    <!-- =====================================================
+         PAGE HEADER
+    ====================================================== -->
+
+    <div class="page-head">
+
+        <div>
+
+            <h1>
+                Announcements
+            </h1>
+        </div>
+
+
+        {% if can_create %}
+
+        <div class="announcement-actions">
+
+            <a
+                href="{% url 'announcements:create' %}"
+                class="primary-btn"
+            >
+                <i class="fa-solid fa-plus"></i>
+
+                Create Announcement
+            </a>
+
+            <a
+                href="{% url 'announcements:history' %}"
+                class="secondary-btn"
+            >
+                <i class="fa-solid fa-clock-rotate-left"></i>
+
+                History
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+    {% if announcements %}
+
+    <div class="announcement-grid">
+
+        {% for announcement in announcements %}
+
+        <div class="announcement-card">
+
+            <!-- Priority -->
+
+            <div class="announcement-card-top">
+
+                <span class="priority-badge {{ announcement.priority }}">
+
+                    {% if announcement.priority == "urgent" %}
+
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+
+                    {% elif announcement.priority == "important" %}
+
+                        <i class="fa-solid fa-circle-exclamation"></i>
+
+                    {% else %}
+
+                        <i class="fa-solid fa-circle-info"></i>
+
+                    {% endif %}
+
+                    {{ announcement.get_priority_display }}
+
+                </span>
+
+
+                <span class="announcement-date">
+
+                    {{ announcement.publish_date|date:"d M Y" }}
+
+                </span>
+
+            </div>
+
+
+            <!-- Title -->
+
+            <h3>
+                {{ announcement.title }}
+            </h3>
+
+
+            <!-- Message -->
+
+            <p class="announcement-preview">
+
+                {{ announcement.message|truncatechars:180 }}
+
+            </p>
+
+
+            <!-- Footer -->
+
+            <div class="announcement-footer">
+
+                <div class="audience">
+
+                    <i class="fa-solid fa-users"></i>
+
+                    {{ announcement.get_audience_display }}
+
+                </div>
+
+
+                <a
+                    href="{% url 'announcements:detail' announcement.id %}"
+                    class="read-btn"
+                >
+
+                    Read More
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                </a>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    {% else %}
+
+    <!-- =====================================================
+         EMPTY STATE
+    ====================================================== -->
+
+    <div class="empty-state">
+
+        <div class="empty-icon">
+
+            <i class="fa-solid fa-bullhorn"></i>
+
+        </div>
+
+        <h3>
+            No announcements
+        </h3>
+
+        <p>
+            There are currently no announcements available for you.
+        </p>
+
+
+        {% if can_create %}
+
+        <a
+            href="{% url 'announcements:create' %}"
+            class="primary-btn"
+        >
+
+            <i class="fa-solid fa-plus"></i>
+
+            Create Announcement
+
+        </a>
+
+        {% endif %}
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

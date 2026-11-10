@@ -1,0 +1,1228 @@
+
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Finance Management | SMS{% endblock %}
+{% block page_title %}Finance Management{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'finance/css/finance.css' %}">
+<style>
+  
+:root {
+    --finance-navy: #102F50;
+    --finance-navy-dark: #09243D;
+    --finance-blue: #1D4E78;
+    --finance-blue-light: #EAF1F7;
+
+    --finance-orange: #F28C28;
+    --finance-orange-dark: #D87513;
+    --finance-orange-light: #FFF1E2;
+
+    --finance-bg: #F3F6F9;
+    --finance-white: #FFFFFF;
+
+    --finance-text: #25384A;
+    --finance-muted: #526579;
+
+    --finance-border: #DCE4EC;
+
+    --finance-green: #16804A;
+    --finance-green-light: #E7F5EC;
+
+    --finance-red: #C83E3E;
+    --finance-red-light: #FCECEC;
+
+    --finance-shadow: 0 3px 10px rgba(16, 47, 80, 0.06);
+
+    --finance-radius: 10px;
+}
+
+
+/* ==========================================================
+   01. MAIN PAGE
+   ========================================================== */
+
+.finance-page {
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 16px;
+
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 18px;
+
+    color: var(--finance-text);
+    box-sizing: border-box;
+}
+
+.finance-page *,
+.finance-page *::before,
+.finance-page *::after {
+    box-sizing: border-box;
+}
+
+
+/* ==========================================================
+   02. PAGE HEADER
+   ========================================================== */
+
+.finance-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+
+    padding: 22px 25px;
+    margin-bottom: 18px;
+
+    background: linear-gradient(
+        115deg,
+        var(--finance-navy-dark),
+        var(--finance-blue)
+    );
+
+    border-radius: 11px;
+    border-bottom: 4px solid var(--finance-orange);
+
+    color: var(--finance-white);
+
+    box-shadow: 0 5px 15px rgba(9, 36, 61, 0.12);
+}
+
+.finance-hero h2 {
+    margin: 0 0 7px;
+
+    color: #FFFFFF;
+    font-size: 28px;
+    font-weight: 750;
+}
+
+.finance-hero h2 i {
+    margin-right: 8px;
+    color: var(--finance-orange);
+}
+
+.finance-hero p {
+    margin: 0;
+    color: #E8F0F7;
+    font-size: 18px;
+    line-height: 1.4;
+}
+
+
+/* ==========================================================
+   03. BUTTONS
+   ========================================================== */
+
+.finance-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    min-height: 43px;
+    padding: 9px 15px;
+
+    border: 1px solid transparent;
+    border-radius: 7px;
+
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 650;
+
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+.finance-btn i {
+    font-size: 18px;
+}
+
+.finance-primary {
+    background: var(--finance-orange);
+    color: #FFFFFF;
+    border-color: var(--finance-orange);
+}
+
+.finance-primary:hover {
+    background: var(--finance-orange-dark);
+    border-color: var(--finance-orange-dark);
+    color: #FFFFFF;
+    transform: translateY(-1px);
+}
+
+.finance-secondary {
+    background: var(--finance-blue-light);
+    color: var(--finance-navy);
+    border-color: #D2DFEA;
+}
+
+.finance-secondary:hover {
+    background: var(--finance-navy);
+    color: #FFFFFF;
+    border-color: var(--finance-navy);
+}
+
+.finance-btn:focus-visible {
+    outline: 3px solid var(--finance-orange);
+    outline-offset: 2px;
+}
+
+
+/* ==========================================================
+   04. DJANGO MESSAGES
+   ========================================================== */
+
+.finance-message {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 10px 14px;
+    margin-bottom: 15px;
+
+    background: var(--finance-orange-light);
+    color: var(--finance-navy);
+
+    border: 1px solid #F5D6B5;
+    border-left: 4px solid var(--finance-orange);
+    border-radius: 7px;
+
+    font-size: 18px;
+    line-height: 1.4;
+}
+
+.finance-message i {
+    color: var(--finance-orange-dark);
+    font-size: 19px;
+}
+
+
+/* ==========================================================
+   05. SECTION HEADINGS
+   ========================================================== */
+
+.finance-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    margin: 20px 0 12px;
+}
+
+.finance-section-heading h3 {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    margin: 0;
+
+    color: var(--finance-navy);
+    font-size: 23px;
+    font-weight: 750;
+}
+
+.finance-section-heading h3 i {
+    color: var(--finance-orange);
+}
+
+.finance-section-heading p {
+    margin: 5px 0 0;
+    color: var(--finance-muted);
+    font-size: 18px;
+    line-height: 1.4;
+}
+
+
+/* ==========================================================
+   06. SUMMARY GRID
+   ========================================================== */
+
+.finance-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+
+    gap: 14px;
+    margin-bottom: 17px;
+}
+
+
+/* ==========================================================
+   07. SUMMARY CARDS
+   ========================================================== */
+
+.finance-stat {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+    min-height: 145px;
+
+    padding: 16px 18px;
+
+    background: var(--finance-white);
+
+    border: 1px solid var(--finance-border);
+    border-left: 4px solid var(--finance-orange);
+
+    border-radius: var(--finance-radius);
+
+    color: var(--finance-text);
+    text-decoration: none;
+
+    box-shadow: var(--finance-shadow);
+
+    transition: all 0.2s ease;
+}
+
+.finance-stat:hover {
+    transform: translateY(-3px);
+    border-color: var(--finance-orange);
+    box-shadow: 0 7px 16px rgba(16, 47, 80, 0.10);
+    color: var(--finance-text);
+}
+
+.finance-stat-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 9px;
+
+    margin-bottom: 10px;
+}
+
+.finance-stat-label span {
+    color: var(--finance-blue);
+    font-size: 18px;
+    font-weight: 650;
+    line-height: 1.4;
+}
+
+.finance-stat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    width: 39px;
+    height: 39px;
+
+    border-radius: 8px;
+
+    background: var(--finance-blue-light);
+    color: var(--finance-navy);
+
+    font-size: 19px;
+}
+
+.finance-stat:nth-child(2) .finance-stat-icon {
+    background: var(--finance-green-light);
+    color: var(--finance-green);
+}
+
+.finance-stat:nth-child(3) .finance-stat-icon {
+    background: var(--finance-orange-light);
+    color: var(--finance-orange-dark);
+}
+
+.finance-stat:nth-child(4) .finance-stat-icon {
+    background: var(--finance-blue-light);
+    color: var(--finance-blue);
+}
+
+.finance-stat strong {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: var(--finance-navy-dark);
+    font-size: 27px;
+    font-weight: 800;
+    line-height: 1.3;
+
+    overflow-wrap: anywhere;
+}
+
+.finance-stat small {
+    color: var(--finance-muted);
+    font-size: 18px;
+    line-height: 1.35;
+}
+
+
+/* ==========================================================
+   08. COMMON PANELS
+   ========================================================== */
+
+.finance-panel {
+    width: 100%;
+
+    padding: 17px 19px;
+    margin-bottom: 17px;
+
+    background: var(--finance-white);
+
+    border: 1px solid var(--finance-border);
+    border-radius: var(--finance-radius);
+
+    box-shadow: var(--finance-shadow);
+}
+
+.finance-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    margin-bottom: 12px;
+}
+
+.finance-panel-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    margin: 0;
+
+    color: var(--finance-navy);
+    font-size: 22px;
+    font-weight: 750;
+}
+
+.finance-panel-header h3 i {
+    color: var(--finance-orange);
+}
+
+.finance-panel-description {
+    margin: 0;
+    color: var(--finance-muted);
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+
+/* ==========================================================
+   09. FEE STRUCTURE SETUP
+   ========================================================== */
+
+.finance-setup-panel {
+    background: #F8FAFC;
+    border-left: 4px solid var(--finance-orange);
+}
+
+.finance-setup-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.finance-setup-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    width: 49px;
+    height: 49px;
+
+    border-radius: 9px;
+
+    background: var(--finance-orange-light);
+    color: var(--finance-orange-dark);
+
+    font-size: 23px;
+}
+
+.finance-setup-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.finance-setup-text .finance-panel-header {
+    margin-bottom: 5px;
+}
+
+.finance-setup-text p {
+    margin: 0;
+    color: var(--finance-muted);
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+
+/* ==========================================================
+   10. PENDING FINANCE ACTIVITIES
+   ========================================================== */
+
+.finance-alert-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.finance-alert-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    min-width: 0;
+    min-height: 105px;
+
+    padding: 14px 16px;
+
+    background: var(--finance-white);
+
+    border: 1px solid var(--finance-border);
+    border-left: 4px solid var(--finance-orange);
+
+    border-radius: var(--finance-radius);
+
+    color: var(--finance-text);
+    text-decoration: none;
+
+    box-shadow: var(--finance-shadow);
+
+    transition: all 0.2s ease;
+}
+
+.finance-alert-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--finance-orange);
+    box-shadow: 0 6px 15px rgba(16, 47, 80, 0.09);
+    color: var(--finance-text);
+}
+
+.finance-alert-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    width: 43px;
+    height: 43px;
+
+    border-radius: 8px;
+
+    background: var(--finance-orange-light);
+    color: var(--finance-orange-dark);
+
+    font-size: 20px;
+}
+
+.finance-alert-card:nth-child(2) .finance-alert-icon {
+    background: var(--finance-blue-light);
+    color: var(--finance-navy);
+}
+
+.finance-alert-card:nth-child(3) .finance-alert-icon {
+    background: var(--finance-red-light);
+    color: var(--finance-red);
+}
+
+.finance-alert-info {
+    min-width: 0;
+}
+
+.finance-alert-info span {
+    display: block;
+    margin-bottom: 4px;
+
+    color: var(--finance-blue);
+    font-size: 18px;
+    font-weight: 650;
+    line-height: 1.35;
+}
+
+.finance-alert-info strong {
+    display: block;
+
+    color: var(--finance-navy-dark);
+    font-size: 25px;
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+.finance-alert-info small {
+    display: block;
+    margin-top: 3px;
+
+    color: var(--finance-muted);
+    font-size: 18px;
+    line-height: 1.35;
+}
+
+
+/* ==========================================================
+   11. RECENT COLLECTIONS TABLE
+   Compact table with reduced row and column spacing
+   ========================================================== */
+
+.finance-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+
+    border: 1px solid var(--finance-border);
+    border-radius: 8px;
+
+    background: var(--finance-white);
+}
+
+.finance-table {
+    width: 100%;
+    min-width: 820px;
+
+    border-collapse: collapse;
+    border-spacing: 0;
+
+    background: var(--finance-white);
+}
+
+
+/* Table Header */
+
+.finance-table thead {
+    background: var(--finance-navy);
+}
+
+.finance-table th {
+    padding: 10px 12px;
+
+    color: #FFFFFF;
+    background: var(--finance-navy);
+
+    font-size: 18px;
+    font-weight: 700;
+
+    text-align: left;
+    white-space: nowrap;
+
+    border-bottom: 3px solid var(--finance-orange);
+}
+
+
+/* Table Rows */
+
+.finance-table td {
+    padding: 9px 12px;
+
+    color: var(--finance-text);
+
+    font-size: 18px;
+    line-height: 1.3;
+
+    border-bottom: 1px solid #E6EBF0;
+
+    vertical-align: middle;
+}
+
+.finance-table tbody tr {
+    transition: background 0.15s ease;
+}
+
+.finance-table tbody tr:hover {
+    background: #F1F5F9;
+}
+
+.finance-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* Receipt Number */
+
+.finance-table td:first-child {
+    color: var(--finance-blue);
+    font-weight: 700;
+}
+
+
+/* Amount */
+
+.finance-table td:nth-child(4) {
+    color: var(--finance-green);
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+
+/* Table Action Button */
+
+.finance-table .finance-btn {
+    min-height: 36px;
+    padding: 5px 11px;
+
+    font-size: 18px;
+}
+
+
+/* Empty State */
+
+.finance-empty {
+    padding: 20px !important;
+
+    color: var(--finance-muted) !important;
+
+    font-size: 18px !important;
+    text-align: center;
+}
+
+
+/* ==========================================================
+   12. FORM CONTROLS
+   ========================================================== */
+
+.finance-page input,
+.finance-page select,
+.finance-page textarea {
+    width: 100%;
+    min-height: 43px;
+
+    padding: 8px 11px;
+
+    color: var(--finance-text);
+    background: #FFFFFF;
+
+    border: 1px solid #C8D4DF;
+    border-radius: 7px;
+
+    font-family: inherit;
+    font-size: 18px;
+
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.finance-page input:focus,
+.finance-page select:focus,
+.finance-page textarea:focus {
+    border-color: var(--finance-orange);
+    box-shadow: 0 0 0 3px rgba(242, 140, 40, 0.13);
+}
+
+.finance-page label {
+    display: block;
+    margin-bottom: 5px;
+
+    color: var(--finance-navy);
+    font-size: 18px;
+    font-weight: 650;
+}
+
+
+/* ==========================================================
+   13. RESPONSIVE TABLET
+   ========================================================== */
+
+@media (max-width: 1200px) {
+    .finance-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .finance-alert-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+
+/* ==========================================================
+   14. RESPONSIVE MOBILE
+   ========================================================== */
+
+@media (max-width: 768px) {
+    .finance-page {
+        padding: 12px;
+    }
+
+    .finance-hero {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 19px;
+        gap: 13px;
+    }
+
+    .finance-hero h2 {
+        font-size: 25px;
+    }
+
+    .finance-hero p {
+        font-size: 18px;
+    }
+
+    .finance-grid,
+    .finance-alert-grid {
+        grid-template-columns: 1fr;
+        gap: 11px;
+    }
+
+    .finance-stat {
+        min-height: 125px;
+        padding: 14px 16px;
+    }
+
+    .finance-panel {
+        padding: 14px;
+        margin-bottom: 14px;
+    }
+
+    .finance-panel-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .finance-setup-content {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .finance-setup-content > .finance-btn {
+        width: 100%;
+    }
+
+    .finance-alert-card {
+        min-height: 95px;
+    }
+
+    .finance-section-heading {
+        margin: 17px 0 11px;
+    }
+
+    .finance-table-wrap {
+        overflow-x: auto;
+    }
+}
+
+
+/* ==========================================================
+   15. SMALL MOBILE
+   ========================================================== */
+
+@media (max-width: 420px) {
+    .finance-page {
+        padding: 9px;
+    }
+
+    .finance-hero {
+        padding: 17px;
+    }
+
+    .finance-hero h2 {
+        font-size: 23px;
+    }
+
+    .finance-hero .finance-btn {
+        width: 100%;
+    }
+
+    .finance-panel {
+        padding: 12px;
+    }
+
+    .finance-panel-header .finance-btn {
+        width: 100%;
+    }
+
+    .finance-stat strong {
+        font-size: 25px;
+    }
+
+    .finance-alert-card {
+        padding: 12px;
+    }
+
+    .finance-btn {
+        white-space: normal;
+        text-align: center;
+    }
+}
+
+
+/* ==========================================================
+   16. ACCESSIBILITY
+   ========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .finance-page *,
+    .finance-page *::before,
+    .finance-page *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="finance-page">
+
+    <!-- PAGE HEADER -->
+
+    <header class="finance-hero">
+
+        <div>
+            <h2>
+                <i class="fa-solid fa-chart-pie"></i>
+                Finance & Accounts
+            </h2>
+
+            <p>
+                Manage school fees, payroll, expenses and financial controls from one place.
+            </p>
+        </div>
+
+        <a class="finance-btn finance-primary"
+           href="{% url 'finance:payment_create' %}">
+            <i class="fa-solid fa-plus"></i>
+            Record Payment
+        </a>
+
+    </header>
+
+
+    <!-- SUCCESS / ERROR MESSAGES -->
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="finance-message">
+                <i class="fa-solid fa-circle-check"></i>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+
+    <!-- FINANCIAL OVERVIEW -->
+
+    <div class="finance-section-heading">
+        <div>
+            <h3>
+                <i class="fa-solid fa-chart-line"></i>
+                Financial Overview
+            </h3>
+            <p>Overview of school fee demand, collections and expenses.</p>
+        </div>
+    </div>
+
+
+    <div class="finance-grid">
+
+        <!-- TOTAL FEE DEMAND -->
+
+        <div class="finance-stat">
+
+            <div class="finance-stat-label">
+                <span>Total Fee Demand</span>
+
+                <div class="finance-stat-icon">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                </div>
+            </div>
+
+            <strong>₹{{ total_demand|floatformat:2 }}</strong>
+
+            <small>
+                {{ fee_count }} student fee records
+            </small>
+
+        </div>
+
+
+        <!-- TOTAL COLLECTION -->
+
+        <div class="finance-stat">
+
+            <div class="finance-stat-label">
+                <span>Total Fee Collection</span>
+
+                <div class="finance-stat-icon">
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
+            </div>
+
+            <strong>₹{{ total_paid|floatformat:2 }}</strong>
+
+            <small>
+                {{ payment_count }} payment transactions
+            </small>
+
+        </div>
+
+
+        <!-- OUTSTANDING BALANCE -->
+
+        <div class="finance-stat">
+
+            <div class="finance-stat-label">
+                <span>Outstanding Balance</span>
+
+                <div class="finance-stat-icon">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+            </div>
+
+            <strong>₹{{ total_due|floatformat:2 }}</strong>
+
+            <small>
+                Demand less recorded collections
+            </small>
+
+        </div>
+
+
+        <!-- APPROVED EXPENSES -->
+
+        <div class="finance-stat">
+
+            <div class="finance-stat-label">
+                <span>Approved Expenses</span>
+
+                <div class="finance-stat-icon">
+                    <i class="fa-solid fa-money-bill-transfer"></i>
+                </div>
+            </div>
+
+            <strong>₹{{ total_expenses|floatformat:2 }}</strong>
+
+            <small>
+                Management-approved expenses
+            </small>
+
+        </div>
+
+    </div>
+
+
+    <!-- FEE STRUCTURE SETUP -->
+
+    <section class="finance-panel finance-setup-panel">
+
+        <div class="finance-setup-content">
+
+            <div class="finance-setup-icon">
+                <i class="fa-solid fa-gears"></i>
+            </div>
+
+            <div class="finance-setup-text">
+
+                <div class="finance-panel-header">
+                    <h3>
+                        <i class="fa-solid fa-file-circle-check"></i>
+                        Fee Structure Setup
+                    </h3>
+                </div>
+
+                <p>
+                    First create a class-wise fee structure, then publish it to
+                    generate student fee demands. Record collections from the
+                    payment page so balances and receipts remain connected.
+                </p>
+
+            </div>
+
+            <a class="finance-btn finance-secondary"
+               href="{% url 'finance:fee_structure_list' %}">
+                <i class="fa-solid fa-arrow-right"></i>
+                Manage Fee Structures
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- PENDING FINANCE ACTIVITIES -->
+
+    <div class="finance-section-heading">
+
+        <div>
+            <h3>
+                <i class="fa-solid fa-bell"></i>
+                Pending Finance Activities
+            </h3>
+
+            <p>Important finance records that need attention.</p>
+        </div>
+
+    </div>
+
+
+    <div class="finance-alert-grid">
+
+        <!-- PENDING EXPENSE APPROVALS -->
+
+        <a class="finance-alert-card"
+           href="{% url 'finance:expense_list' %}">
+
+            <div class="finance-alert-icon">
+                <i class="fa-solid fa-file-circle-exclamation"></i>
+            </div>
+
+            <div class="finance-alert-info">
+
+                <span>Pending Expense Approvals</span>
+
+                <strong>{{ pending_expenses }}</strong>
+
+                <small>Needs management review</small>
+
+            </div>
+
+        </a>
+
+
+        <!-- UNPAID PAYROLL -->
+
+        <a class="finance-alert-card"
+           href="{% url 'finance:salary_list' %}?status=unpaid">
+
+            <div class="finance-alert-icon">
+                <i class="fa-solid fa-money-check-dollar"></i>
+            </div>
+
+            <div class="finance-alert-info">
+
+                <span>Unpaid Payroll Records</span>
+
+                <strong>{{ unpaid_payroll }}</strong>
+
+                <small>Check before month-end close</small>
+
+            </div>
+
+        </a>
+
+
+        <!-- OVERDUE FEE ALERTS -->
+
+        <a class="finance-alert-card"
+           href="{% url 'finance:alerts' %}">
+
+            <div class="finance-alert-icon">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+
+            <div class="finance-alert-info">
+
+                <span>Overdue Fee Alerts</span>
+
+                <strong>{{ overdue_count }}</strong>
+
+                <small>Past due date with no recorded payment</small>
+
+            </div>
+
+        </a>
+
+    </div>
+
+
+    <!-- RECENT COLLECTIONS -->
+
+    <section class="finance-panel">
+
+        <div class="finance-panel-header">
+
+            <h3>
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                Recent Collections
+            </h3>
+
+            <a class="finance-btn finance-secondary"
+               href="{% url 'finance:payment_list' %}">
+                <i class="fa-solid fa-list"></i>
+                View All Payments
+            </a>
+
+        </div>
+
+
+        <div class="finance-table-wrap">
+
+            <table class="finance-table">
+
+                <thead>
+                    <tr>
+                        <th>Receipt Number</th>
+                        <th>Student</th>
+                        <th>Payment Date</th>
+                        <th>Amount</th>
+                        <th>Payment Method</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+
+                <tbody>
+
+                    {% for p in recent_payments %}
+
+                        <tr>
+
+                            <td>
+                                {{ p.receipt_number }}
+                            </td>
+
+                            <td>
+                                {{ p.fee.student.first_name }}
+                                {{ p.fee.student.last_name }}
+                            </td>
+
+                            <td>
+                                {{ p.paid_at|date:"d M Y, h:i A" }}
+                            </td>
+
+                            <td>
+                                ₹{{ p.amount|floatformat:2 }}
+                            </td>
+
+                            <td>
+                                {{ p.get_payment_method_display }}
+                            </td>
+
+                            <td>
+                                <a class="finance-btn finance-secondary"
+                                   href="{% url 'finance:receipt' p.pk %}">
+                                    <i class="fa-solid fa-receipt"></i>
+                                    Receipt
+                                </a>
+                            </td>
+
+                        </tr>
+
+                    {% empty %}
+
+                        <tr>
+                            <td colspan="6" class="finance-empty">
+                                <i class="fa-solid fa-inbox"></i>
+                                <br>
+                                No payments recorded yet.
+                            </td>
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,1103 @@
+
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Student Attendance{% endblock %}
+
+{% block extra_css %}
+<style>
+.attendance-page {
+    --blue: #123B63;
+    --dark-blue: #0B2945;
+    --light-blue: #EAF2F8;
+    --orange: #F28C28;
+    --orange-hover: #D97706;
+    --green: #218653;
+    --red: #C83D3D;
+    --border: #D8E2EC;
+    --muted: #667085;
+
+    padding: 30px;
+    background: #F4F7FB;
+    min-height: calc(100vh - 70px);
+    color: #243B53;
+    font-size: 18px;
+}
+
+.attendance-page * {
+    box-sizing: border-box;
+}
+
+.attendance-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 26px;
+    flex-wrap: wrap;
+}
+
+.attendance-header h1 {
+    margin: 0;
+    color: var(--blue);
+    font-size: 32px;
+    font-weight: 800;
+}
+
+.attendance-header p {
+    margin: 8px 0 0;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+.header-date {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 13px 18px;
+    color: var(--blue);
+    font-weight: 800;
+}
+
+.message-container {
+    margin-bottom: 22px;
+}
+
+.message {
+    padding: 15px 18px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.message.success {
+    background: #EDF8F1;
+    border: 1px solid #C8E6D2;
+    border-left: 5px solid var(--green);
+    color: #26734D;
+}
+
+.message.error {
+    background: #FFF0F0;
+    border: 1px solid #F0CACA;
+    border-left: 5px solid var(--red);
+    color: #A83232;
+}
+
+.message.warning {
+    background: #FFF6E8;
+    border: 1px solid #F5D8A8;
+    color: #80520A;
+}
+
+.message.info {
+    background: var(--light-blue);
+    border: 1px solid #CBDDEA;
+    color: var(--blue);
+}
+
+.filter-card,
+.attendance-card {
+    background: #FFFFFF;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(18, 59, 99, 0.06);
+    margin-bottom: 24px;
+    overflow: hidden;
+}
+
+.filter-card {
+    padding: 24px;
+}
+
+.section-heading {
+    margin: 0 0 20px;
+    color: var(--blue);
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    color: var(--blue);
+    font-weight: 800;
+}
+
+.form-control {
+    width: 100%;
+    min-height: 49px;
+    padding: 10px 13px;
+    border: 1px solid #CBD7E3;
+    border-radius: 9px;
+    background: white;
+    color: #243B53;
+    font: inherit;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(18, 59, 99, 0.12);
+}
+
+.filter-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 47px;
+    padding: 10px 20px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+.btn-primary {
+    background: var(--blue);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--orange);
+    color: white;
+}
+
+.btn-orange {
+    background: var(--orange);
+    color: white;
+}
+
+.btn-orange:hover {
+    background: var(--orange-hover);
+}
+
+.btn-outline {
+    background: white;
+    border-color: var(--blue);
+    color: var(--blue);
+}
+
+.btn-outline:hover {
+    background: var(--light-blue);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.info-card {
+    padding: 17px 20px;
+    margin-bottom: 24px;
+    background: var(--light-blue);
+    border: 1px solid #CBDDEA;
+    border-left: 5px solid var(--orange);
+    border-radius: 11px;
+    line-height: 1.6;
+    color: #38526B;
+}
+
+.info-card strong {
+    color: var(--blue);
+}
+
+.session-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 13px;
+    border-radius: 20px;
+    font-size: 15px;
+    font-weight: 800;
+    text-transform: capitalize;
+}
+
+.status-draft {
+    background: #FFF3DE;
+    color: #875400;
+}
+
+.status-submitted {
+    background: #E6F0FF;
+    color: #2456A6;
+}
+
+.status-finalized {
+    background: #E3F7EB;
+    color: #216A43;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+.summary-card {
+    position: relative;
+    padding: 20px;
+    min-height: 115px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    box-shadow: 0 4px 15px rgba(18, 59, 99, 0.05);
+    overflow: hidden;
+}
+
+.summary-card::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--blue);
+}
+
+.summary-card.green::after {
+    background: var(--green);
+}
+
+.summary-card.red::after {
+    background: var(--red);
+}
+
+.summary-card.orange::after {
+    background: var(--orange);
+}
+
+.summary-label {
+    margin-bottom: 10px;
+    color: var(--muted);
+    font-weight: 700;
+}
+
+.summary-value {
+    color: var(--blue);
+    font-size: 30px;
+    font-weight: 900;
+}
+
+.summary-card.green .summary-value {
+    color: var(--green);
+}
+
+.summary-card.red .summary-value {
+    color: var(--red);
+}
+
+.summary-card.orange .summary-value {
+    color: var(--orange);
+}
+
+.attendance-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    flex-wrap: wrap;
+    padding: 22px 24px;
+    border-bottom: 1px solid var(--border);
+}
+
+.attendance-card-header h2 {
+    margin: 0;
+    color: var(--blue);
+    font-size: 23px;
+    font-weight: 800;
+}
+
+.student-count {
+    padding: 8px 14px;
+    border-radius: 22px;
+    background: #FFF3E4;
+    border: 1px solid #FFD7AD;
+    color: var(--orange-hover);
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.attendance-table {
+    width: 100%;
+    min-width: 850px;
+    border-collapse: collapse;
+}
+
+.attendance-table thead {
+    background: var(--blue);
+    color: white;
+}
+
+.attendance-table th {
+    padding: 16px;
+    text-align: left;
+    font-size: 16px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.attendance-table td {
+    padding: 17px 16px;
+    border-bottom: 1px solid #E5EBF1;
+    vertical-align: middle;
+}
+
+.attendance-table tbody tr:hover {
+    background: #FFF9F3;
+}
+
+.attendance-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.student-number {
+    color: var(--orange);
+    font-weight: 900;
+}
+
+.student-name {
+    color: var(--blue);
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.student-id {
+    color: var(--muted);
+    font-size: 15px;
+    margin-top: 4px;
+}
+
+.status-options {
+    display: flex;
+    gap: 9px;
+    flex-wrap: wrap;
+}
+
+.status-option {
+    position: relative;
+}
+
+.status-option input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+}
+
+.status-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 95px;
+    min-height: 42px;
+    padding: 8px 12px;
+    border: 1px solid #CBD6E0;
+    border-radius: 8px;
+    background: white;
+    color: #38526B;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.status-label.status-leave {
+    background: #EAF7F0;
+    color: #25845A;
+    border-color: #B7DEC7;
+    cursor: default;
+}
+
+.status-label:hover {
+    border-color: var(--orange);
+    background: #FFF7ED;
+}
+
+.status-option input:checked + .status-label {
+    background: var(--blue);
+    color: white;
+    border-color: var(--blue);
+}
+
+.status-option input:focus-visible + .status-label {
+    outline: 3px solid rgba(242, 140, 40, 0.45);
+    outline-offset: 2px;
+}
+
+.save-area {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    flex-wrap: wrap;
+    padding: 21px 24px;
+    background: #F8FAFC;
+    border-top: 1px solid var(--border);
+}
+
+.quick-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.empty-state {
+    padding: 45px 24px;
+    text-align: center;
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+.empty-state h3 {
+    margin: 0 0 10px;
+    color: var(--blue);
+    font-size: 22px;
+}
+
+.empty-icon {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 40px;
+}
+
+@media (max-width: 1050px) {
+    .summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .filter-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 650px) {
+    .attendance-page {
+        padding: 16px;
+    }
+
+    .attendance-header h1 {
+        font-size: 26px;
+    }
+
+    .filter-grid,
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-card {
+        padding: 17px;
+    }
+
+    .filter-actions,
+    .filter-actions .btn {
+        width: 100%;
+    }
+
+    .save-area {
+        align-items: stretch;
+    }
+
+    .quick-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .quick-actions .btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="attendance-page">
+
+    <div class="attendance-header">
+        <div>
+            <h1>Student Attendance</h1>
+            <p>Record, review, and submit attendance for your assigned classes.</p>
+        </div>
+
+        <div class="header-date">
+            {{ selected_date|date:"d M Y" }}
+        </div>
+    </div>
+
+
+    {% if messages %}
+    <div class="message-container" aria-live="polite">
+        {% for message in messages %}
+        <div class="message {{ message.tags|default:'info' }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+
+    <div class="filter-card">
+        <h2 class="section-heading">Select Attendance Details</h2>
+
+        <form method="get" id="attendanceFilterForm">
+            <div class="filter-grid">
+
+                <div class="form-group">
+                    <label for="class_section">Class / Section</label>
+                    <select
+                        name="class_section"
+                        id="class_section"
+                        class="form-control"
+                        required
+                    >
+                        <option value="">Select class</option>
+
+                        {% for class_item in assigned_classes %}
+                        <option
+                            value="{{ class_item.id }}"
+                            {% if selected_class and selected_class.id == class_item.id %}selected{% endif %}
+                        >
+                            {{ class_item }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="subject">Subject</label>
+                    <select
+                        name="subject"
+                        id="subject"
+                        class="form-control"
+                        required
+                    >
+                        <option value="">Select subject</option>
+
+                        {% for assignment in assigned_subjects %}
+                        <option
+                            value="{{ assignment.subject.id }}"
+                            {% if selected_subject and selected_subject.subject.id == assignment.subject.id %}selected{% endif %}
+                        >
+                            {{ assignment.subject }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="date">Attendance Date</label>
+                    <input
+                        type="date"
+                        name="date"
+                        id="date"
+                        class="form-control"
+                        value="{{ selected_date|date:'Y-m-d' }}"
+                        required
+                    >
+                </div>
+
+            </div>
+
+            <div class="filter-actions">
+                <button type="submit" class="btn btn-primary">
+                    View Attendance
+                </button>
+            </div>
+        </form>
+    </div>
+
+
+    <div class="info-card">
+        <strong>Attendance workflow:</strong>
+        Save Draft allows you to continue marking later.
+        Submit Attendance requires a status for every student.
+        After submission, an authorized reviewer must finalize the session.
+        Parent notifications should be processed only after finalization.
+    </div>
+
+    {% if selected_holiday %}
+    <div class="info-card" role="status">
+        <strong>{{ selected_holiday.status }}:</strong>
+        {{ selected_holiday.name }}. Attendance marking is disabled for this date.
+    </div>
+    {% endif %}
+
+
+    {% if attendance_session %}
+    <div class="info-card">
+        <strong>Current session status:</strong>
+
+        <span class="session-status status-{{ attendance_session.status }}">
+            {{ attendance_session.get_status_display|default:attendance_session.status }}
+        </span>
+
+        {% if attendance_session.status == "draft" %}
+            You can continue editing this draft.
+        {% elif attendance_session.status == "submitted" %}
+            This session has been submitted and is awaiting review.
+        {% elif attendance_session.status == "finalized" %}
+            This session is finalized. Use the correction workflow if changes are needed.
+        {% endif %}
+    </div>
+    {% endif %}
+
+
+    {% if selected_holiday %}
+    <div class="attendance-card">
+        <div class="empty-state">
+            <h3>{{ selected_holiday.name }}</h3>
+            <p>Holiday. No attendance is expected for this date.</p>
+        </div>
+    </div>
+
+    {% elif students %}
+
+    <div class="summary-grid">
+
+        <div class="summary-card">
+            <div class="summary-label">Total Students</div>
+            <div class="summary-value" id="totalCount">
+                {{ eligible_student_count }}
+            </div>
+        </div>
+
+        <div class="summary-card green">
+            <div class="summary-label">Present</div>
+            <div class="summary-value" id="presentCount">0</div>
+        </div>
+
+        <div class="summary-card red">
+            <div class="summary-label">Absent</div>
+            <div class="summary-value" id="absentCount">0</div>
+        </div>
+
+        <div class="summary-card orange">
+            <div class="summary-label">Late</div>
+            <div class="summary-value" id="lateCount">0</div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-label">Unmarked</div>
+            <div class="summary-value" id="unmarkedCount">{{ eligible_student_count }}</div>
+        </div>
+
+    </div>
+
+    {% if approved_leave_count %}
+    <div class="info-card">
+        Approved leave: {{ approved_leave_count }} student(s), excluded from attendance submission.
+    </div>
+    {% endif %}
+
+
+    <div class="attendance-card">
+
+        <div class="attendance-card-header">
+            <h2>Attendance Register</h2>
+
+            <div class="student-count">
+                {{ students|length }} Students
+            </div>
+        </div>
+
+
+        <form method="post" id="attendanceForm">
+            {% csrf_token %}
+
+            <input
+                type="hidden"
+                name="class_section"
+                value="{{ selected_class.id }}"
+            >
+
+            <input
+                type="hidden"
+                name="subject"
+                value="{{ selected_subject.subject.id }}"
+            >
+
+            <input
+                type="hidden"
+                name="date"
+                value="{{ selected_date|date:'Y-m-d' }}"
+            >
+
+
+            <div class="table-wrapper">
+                <table class="attendance-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Student</th>
+                            <th>Application ID</th>
+                            <th>Attendance Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for student in students %}
+                        <tr data-student-id="{{ student.id }}" data-approved-leave="{% if student.approved_leave_today %}true{% else %}false{% endif %}">
+
+                            <td class="student-number">
+                                {{ forloop.counter }}
+                            </td>
+
+                            <td>
+                                <div class="student-name">
+                                    {{ student.first_name }}
+                                    {{ student.last_name }}
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="student-id">
+                                    {{ student.application_id }}
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="status-options">
+
+                                    {% if student.approved_leave_today %}
+                                    <span class="status-label status-leave">Approved Leave</span>
+                                    {% endif %}
+
+                                    <div class="status-option">
+                                        <input
+                                            type="radio"
+                                            id="present_{{ student.id }}"
+                                            name="status_{{ student.id }}"
+                                            value="Present"
+                                            {% if student.attendance_record and student.attendance_record.status == "Present" %}checked{% endif %}
+                                            {% if student.approved_leave_today or attendance_session and attendance_session.status != "draft" %}disabled{% endif %}
+                                        >
+                                        <label
+                                            for="present_{{ student.id }}"
+                                            class="status-label"
+                                        >
+                                            Present
+                                        </label>
+                                    </div>
+
+                                    <div class="status-option">
+                                        <input
+                                            type="radio"
+                                            id="absent_{{ student.id }}"
+                                            name="status_{{ student.id }}"
+                                            value="Absent"
+                                            {% if student.attendance_record and student.attendance_record.status == "Absent" %}checked{% endif %}
+                                            {% if student.approved_leave_today or attendance_session and attendance_session.status != "draft" %}disabled{% endif %}
+                                        >
+                                        <label
+                                            for="absent_{{ student.id }}"
+                                            class="status-label"
+                                        >
+                                            Absent
+                                        </label>
+                                    </div>
+
+                                    <div class="status-option">
+                                        <input
+                                            type="radio"
+                                            id="late_{{ student.id }}"
+                                            name="status_{{ student.id }}"
+                                            value="Late"
+                                            {% if student.attendance_record and student.attendance_record.status == "Late" %}checked{% endif %}
+                                            {% if student.approved_leave_today or attendance_session and attendance_session.status != "draft" %}disabled{% endif %}
+                                        >
+                                        <label
+                                            for="late_{{ student.id }}"
+                                            class="status-label"
+                                        >
+                                            Late
+                                        </label>
+                                    </div>
+
+                                    {% if attendance_session and attendance_session.status == "finalized" and student.attendance_record %}
+                                    <a class="btn btn-outline" href="{% url 'attendance:request_attendance_correction' student.attendance_record.id %}">
+                                        Request Correction
+                                    </a>
+                                    {% endif %}
+
+                                </div>
+                            </td>
+
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+
+            <div class="save-area">
+
+                <div class="quick-actions">
+                    <button
+                        type="button"
+                        class="btn btn-outline"
+                        id="selectPresentBtn"
+                        {% if attendance_session and attendance_session.status != "draft" %}disabled{% endif %}
+                    >
+                        Mark All Present
+                    </button>
+                </div>
+
+                <div class="quick-actions">
+                    <button
+                        type="submit"
+                        name="action"
+                        value="save_draft"
+                        class="btn btn-primary"
+                        {% if attendance_session and attendance_session.status != "draft" %}disabled{% endif %}
+                    >
+                        Save Draft
+                    </button>
+
+                    <button
+                        type="submit"
+                        name="action"
+                        value="submit"
+                        class="btn btn-orange"
+                        {% if attendance_session and attendance_session.status != "draft" %}disabled{% endif %}
+                    >
+                        Submit Attendance
+                    </button>
+                </div>
+
+            </div>
+
+        </form>
+    </div>
+
+    {% elif not assigned_classes %}
+        <div class="attendance-card">
+            <div class="empty-state">
+                <span class="empty-icon">📚</span>
+                <h3>No Classes Assigned</h3>
+                <p>
+                    No active class and subject assignments were found for your account.
+                    Please contact the school administrator.
+                </p>
+            </div>
+        </div>
+
+    {% elif not selected_class %}
+        <div class="attendance-card">
+            <div class="empty-state">
+                <span class="empty-icon">🏫</span>
+                <h3>Select a Class</h3>
+                <p>Select an assigned class, subject, and date to view attendance.</p>
+            </div>
+        </div>
+
+    {% elif not selected_subject %}
+        <div class="attendance-card">
+            <div class="empty-state">
+                <span class="empty-icon">📖</span>
+                <h3>No Subject Selected</h3>
+                <p>Select a subject assigned to you for this class.</p>
+            </div>
+        </div>
+
+    {% else %}
+        <div class="attendance-card">
+            <div class="empty-state">
+                <span class="empty-icon">👨‍🎓</span>
+                <h3>No Active Students Found</h3>
+                <p>No active students were found for the selected class.</p>
+            </div>
+        </div>
+    {% endif %}
+
+</div>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    "use strict";
+
+    const attendanceForm = document.getElementById("attendanceForm");
+    const selectPresentBtn = document.getElementById("selectPresentBtn");
+
+    const presentCount = document.getElementById("presentCount");
+    const absentCount = document.getElementById("absentCount");
+    const lateCount = document.getElementById("lateCount");
+    const unmarkedCount = document.getElementById("unmarkedCount");
+
+    const attendanceFilterForm = document.getElementById(
+        "attendanceFilterForm"
+    );
+    const classSelect = document.getElementById("class_section");
+    const subjectSelect = document.getElementById("subject");
+
+    function updateSummary() {
+        let present = 0;
+        let absent = 0;
+        let late = 0;
+
+        document.querySelectorAll(
+            ".attendance-table tbody tr"
+        ).forEach(function (row) {
+            if (row.dataset.approvedLeave === "true") {
+                return;
+            }
+            const selected = row.querySelector(
+                'input[type="radio"]:checked'
+            );
+
+            if (!selected) {
+                return;
+            }
+
+            if (selected.value === "Present") {
+                present++;
+            } else if (selected.value === "Absent") {
+                absent++;
+            } else if (selected.value === "Late") {
+                late++;
+            }
+        });
+
+        if (presentCount) presentCount.textContent = present;
+        if (absentCount) absentCount.textContent = absent;
+        if (lateCount) lateCount.textContent = late;
+        if (unmarkedCount) {
+            const total = document.querySelectorAll(
+                '.attendance-table tbody tr[data-approved-leave="false"]'
+            ).length;
+            unmarkedCount.textContent = total - present - absent - late;
+        }
+    }
+
+    if (selectPresentBtn) {
+        selectPresentBtn.addEventListener("click", function () {
+            document.querySelectorAll(
+                '.attendance-table input[type="radio"][value="Present"]'
+            ).forEach(function (input) {
+                if (!input.disabled) {
+                    input.checked = true;
+                }
+            });
+
+            updateSummary();
+        });
+    }
+
+    document.querySelectorAll(
+        '.attendance-table input[type="radio"]'
+    ).forEach(function (input) {
+        input.addEventListener("change", updateSummary);
+    });
+
+    if (attendanceForm) {
+        attendanceForm.addEventListener("submit", function (event) {
+            const submitter = event.submitter;
+            const action = submitter ? submitter.value : "";
+
+            /*
+             * Drafts may be incomplete.
+             * Submission requires every student to have a status.
+             */
+            if (action === "submit") {
+                const rows = document.querySelectorAll(
+                    ".attendance-table tbody tr"
+                );
+
+                const missingStudents = [];
+
+                rows.forEach(function (row) {
+                    if (row.dataset.approvedLeave === "true") {
+                        return;
+                    }
+                    const selected = row.querySelector(
+                        'input[type="radio"]:checked'
+                    );
+
+                    if (!selected) {
+                        const studentName = row.querySelector(
+                            ".student-name"
+                        );
+
+                        missingStudents.push(
+                            studentName
+                                ? studentName.textContent.trim()
+                                : "Student"
+                        );
+                    }
+                });
+
+                if (missingStudents.length > 0) {
+                    event.preventDefault();
+
+                    alert(
+                        "Attendance is incomplete.\n\n" +
+                        "Please mark every student before submitting.\n" +
+                        "Students not marked: " +
+                        missingStudents.length
+                    );
+
+                    return;
+                }
+
+                if (!window.confirm(
+                    "Submit attendance for review?\n\n" +
+                    "After submission, you cannot edit this session directly."
+                )) {
+                    event.preventDefault();
+                }
+
+                return;
+            }
+
+            if (action === "save_draft") {
+                if (!window.confirm(
+                    "Save the current attendance as a draft?"
+                )) {
+                    event.preventDefault();
+                }
+            }
+        });
+    }
+
+    /*
+     * When the class changes, reload the page so the backend
+     * can provide the correct subjects for that class.
+     */
+    if (attendanceFilterForm && classSelect && subjectSelect) {
+        classSelect.addEventListener("change", function () {
+            subjectSelect.value = "";
+        });
+    }
+
+    updateSummary();
+});
+</script>
+{% endblock %}

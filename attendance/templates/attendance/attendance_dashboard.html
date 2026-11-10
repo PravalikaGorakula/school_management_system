@@ -1,0 +1,574 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Attendance Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+
+    /* =====================================================
+       ATTENDANCE DASHBOARD
+       ===================================================== */
+
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --orange-light: #FFF4E6;
+
+        --light-gray: #F8FAFC;
+        --white: #FFFFFF;
+
+        --text-primary: #1F2937;
+        --text-secondary: #64748B;
+        --border: #E2E8F0;
+
+        --radius-md: 10px;
+        --radius-lg: 14px;
+
+        --shadow-card: 0 10px 35px rgba(15, 23, 42, 0.08);
+    }
+
+
+    /* =====================================================
+       PAGE
+       ===================================================== */
+
+    .attendance-dashboard-page {
+        padding: 30px;
+        min-height: calc(100vh - 72px);
+        background: var(--light-gray);
+    }
+
+
+    /* =====================================================
+       PAGE HEADER
+       ===================================================== */
+
+    .attendance-page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        background: var(--white);
+
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+
+        padding: 26px 30px;
+        margin-bottom: 28px;
+
+        box-shadow: var(--shadow-card);
+    }
+
+
+    .attendance-page-title {
+        margin: 0;
+
+        color: var(--deep-blue);
+
+        font-size: 30px;
+        font-weight: 700;
+
+        line-height: 1.3;
+    }
+
+
+    .attendance-page-subtitle {
+        margin: 7px 0 0;
+
+        color: var(--text-secondary);
+
+        font-size: 17px;
+        line-height: 1.6;
+    }
+
+
+    /* =====================================================
+       CARD GRID
+       ===================================================== */
+
+    .attendance-card-grid {
+        display: grid;
+
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+
+        gap: 24px;
+
+        width: 100%;
+    }
+
+
+    /* =====================================================
+       CARD LINK
+       ===================================================== */
+
+    .attendance-card-link {
+        display: block;
+
+        height: 100%;
+
+        text-decoration: none;
+        color: inherit;
+    }
+
+
+    /* =====================================================
+       ATTENDANCE CARD
+       ===================================================== */
+
+    .attendance-card {
+        position: relative;
+
+        display: flex;
+        flex-direction: column;
+
+        height: 100%;
+        min-height: 235px;
+
+        padding: 24px;
+
+        background: var(--white);
+
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+
+        box-shadow: var(--shadow-card);
+
+        overflow: hidden;
+
+        transition:
+            transform 0.25s ease,
+            box-shadow 0.25s ease,
+            border-color 0.25s ease;
+    }
+
+
+    /* Top orange line */
+
+    .attendance-card::before {
+        content: "";
+
+        position: absolute;
+
+        top: 0;
+        left: 0;
+        right: 0;
+
+        height: 4px;
+
+        background: var(--orange);
+
+        transform: scaleX(0);
+        transform-origin: left;
+
+        transition: transform 0.25s ease;
+    }
+
+
+    /* Hover */
+
+    .attendance-card-link:hover .attendance-card {
+        transform: translateY(-6px);
+
+        border-color: rgba(242, 140, 40, 0.35);
+
+        box-shadow:
+            0 18px 40px rgba(15, 23, 42, 0.13);
+    }
+
+
+    .attendance-card-link:hover .attendance-card::before {
+        transform: scaleX(1);
+    }
+
+
+    /* =====================================================
+       CARD TOP
+       ===================================================== */
+
+    .attendance-card-top {
+        display: flex;
+
+        align-items: center;
+        justify-content: space-between;
+
+        margin-bottom: 22px;
+    }
+
+
+    /* =====================================================
+       CARD ICON
+       ===================================================== */
+
+    .attendance-card-icon {
+        width: 58px;
+        height: 58px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 14px;
+
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+
+        font-size: 24px;
+
+        transition:
+            background 0.25s ease,
+            color 0.25s ease,
+            transform 0.25s ease;
+    }
+
+
+    .attendance-card-link:hover .attendance-card-icon {
+        background: var(--orange-light);
+        color: var(--orange);
+
+        transform: scale(1.06);
+    }
+
+
+    /* =====================================================
+       ARROW
+       ===================================================== */
+
+    .attendance-card-arrow {
+        width: 38px;
+        height: 38px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 50%;
+
+        background: var(--light-gray);
+        color: var(--text-secondary);
+
+        font-size: 14px;
+
+        transition:
+            background 0.25s ease,
+            color 0.25s ease,
+            transform 0.25s ease;
+    }
+
+
+    .attendance-card-link:hover .attendance-card-arrow {
+        background: var(--orange);
+        color: var(--white);
+
+        transform: translateX(3px);
+    }
+
+
+    /* =====================================================
+       CARD CONTENT
+       ===================================================== */
+
+    .attendance-card-content {
+        flex: 1;
+    }
+
+
+    .attendance-card-title {
+        margin: 0 0 9px;
+
+        color: var(--deep-blue);
+
+        font-size: 21px;
+        font-weight: 700;
+
+        line-height: 1.4;
+    }
+
+
+    .attendance-card-description {
+        margin: 0;
+
+        color: var(--text-secondary);
+
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+
+    /* =====================================================
+       CARD FOOTER
+       ===================================================== */
+
+    .attendance-card-footer {
+        display: flex;
+
+        align-items: center;
+        justify-content: space-between;
+
+        margin-top: 22px;
+        padding-top: 15px;
+
+        border-top: 1px solid var(--border);
+
+        color: var(--deep-blue);
+
+        font-size: 15px;
+        font-weight: 600;
+
+        transition: color 0.25s ease;
+    }
+
+
+    .attendance-card-footer i {
+        font-size: 13px;
+
+        transition: transform 0.25s ease;
+    }
+
+
+    .attendance-card-link:hover .attendance-card-footer {
+        color: var(--orange);
+    }
+
+
+    .attendance-card-link:hover .attendance-card-footer i {
+        transform: translateX(5px);
+    }
+
+
+    /* =====================================================
+       EMPTY STATE
+       ===================================================== */
+
+    .attendance-no-options {
+        grid-column: 1 / -1;
+    }
+
+
+    .attendance-empty {
+        text-align: center;
+
+        padding: 55px 25px;
+
+        background: var(--white);
+
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+
+        box-shadow: var(--shadow-card);
+    }
+
+
+    .attendance-empty-icon {
+        width: 70px;
+        height: 70px;
+
+        margin: 0 auto 18px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 50%;
+
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+
+        font-size: 28px;
+    }
+
+
+    .attendance-empty-title {
+        margin: 0 0 8px;
+
+        color: var(--deep-blue);
+
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+
+    .attendance-empty-text {
+        margin: 0;
+
+        color: var(--text-secondary);
+
+        font-size: 16px;
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+       ===================================================== */
+
+    @media (max-width: 1200px) {
+
+        .attendance-card-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+    }
+
+
+    @media (max-width: 768px) {
+
+        .attendance-dashboard-page {
+            padding: 20px;
+        }
+
+        .attendance-page-header {
+            padding: 22px;
+        }
+
+        .attendance-page-title {
+            font-size: 26px;
+        }
+
+        .attendance-page-subtitle {
+            font-size: 15px;
+        }
+
+        .attendance-card-grid {
+            grid-template-columns: 1fr;
+            gap: 18px;
+        }
+
+        .attendance-card {
+            min-height: 220px;
+        }
+
+    }
+
+
+    @media (max-width: 480px) {
+
+        .attendance-dashboard-page {
+            padding: 15px;
+        }
+
+        .attendance-page-header {
+            padding: 18px;
+        }
+
+        .attendance-page-title {
+            font-size: 23px;
+        }
+
+        .attendance-card {
+            padding: 20px;
+        }
+
+        .attendance-card-title {
+            font-size: 19px;
+        }
+
+    }
+
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="attendance-dashboard-page">
+    <div class="attendance-card-grid">
+
+        {% for card in cards %}
+
+        <!-- Entire card is clickable -->
+
+        <a
+            href="{% url card.url %}"
+            class="attendance-card-link"
+        >
+
+            <div class="attendance-card">
+
+                <!-- CARD TOP -->
+
+                <div class="attendance-card-top">
+
+                    <div class="attendance-card-icon">
+
+                        <i class="{{ card.icon }}"></i>
+
+                    </div>
+
+
+                    <div class="attendance-card-arrow">
+
+                        <i class="fas fa-arrow-right"></i>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CARD CONTENT -->
+
+                <div class="attendance-card-content">
+
+                    <h3 class="attendance-card-title">
+                        {{ card.title }}
+                    </h3>
+
+                </div>
+
+
+                <!-- CARD FOOTER -->
+
+                <div class="attendance-card-footer">
+
+                    <span>
+                        View Attendance
+                    </span>
+
+                    <i class="fas fa-chevron-right"></i>
+
+                </div>
+
+            </div>
+
+        </a>
+
+
+        {% empty %}
+
+
+        <!-- EMPTY STATE -->
+
+        <div class="attendance-no-options">
+
+            <div class="attendance-empty">
+
+                <div class="attendance-empty-icon">
+
+                    <i class="fas fa-calendar-check"></i>
+
+                </div>
+
+                <h3 class="attendance-empty-title">
+                    No Attendance Options
+                </h3>
+
+                <p class="attendance-empty-text">
+                    No attendance options are available for your role.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,1041 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Report Bus Issue{% endblock %}
+
+{% block extra_css %}
+
+<style>
+:root {
+    --deep-blue: #123B63;
+    --deep-blue-dark: #0B2945;
+    --deep-blue-light: #EAF2F8;
+
+    --orange: #F28C28;
+    --orange-hover: #D97706;
+    --orange-light: #FFF4E6;
+
+    --light-blue: #EEF6FF;
+    --light-green: #ECFDF5;
+    --light-purple: #F5F3FF;
+    --light-yellow: #FFFBEB;
+    --light-red: #FEF2F2;
+    --light-cyan: #ECFEFF;
+
+    --white: #FFFFFF;
+    --light-gray: #F8FAFC;
+
+    --text-primary: #1F2937;
+    --text-secondary: #64748B;
+    --text-light: #94A3B8;
+
+    --border: #E2E8F0;
+
+    --radius-sm: 8px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+
+    --shadow-card:
+        0 10px 35px rgba(15, 23, 42, 0.08);
+
+    --transition:
+        all 0.25s ease;
+}
+
+.issue-page {
+    padding: 30px;
+    min-height: calc(100vh - 72px);
+}
+
+/* HEADER */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+    gap: 20px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.header-icon {
+    width: 58px;
+    height: 58px;
+    border-radius: 14px;
+    background: var(--orange-light);
+    color: var(--orange-hover);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+}
+
+.page-title {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 800;
+    color: var(--deep-blue);
+}
+
+.page-subtitle {
+    margin: 4px 0 0;
+    color: var(--text-secondary);
+    font-size: 16px;
+}
+
+.bus-badge {
+    background: var(--deep-blue-light);
+    color: var(--deep-blue);
+    padding: 11px 18px;
+    border-radius: 10px;
+    font-weight: 700;
+}
+
+/* MAIN GRID */
+
+.issue-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    gap: 24px;
+}
+
+/* CARD */
+
+.card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 21px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.card-header h2 {
+    margin: 0;
+    color: var(--deep-blue);
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.card-header p {
+    margin: 4px 0 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.card-body {
+    padding: 24px;
+}
+
+/* FORM */
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.required {
+    color: #DC2626;
+}
+
+.form-control {
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: var(--white);
+    color: var(--text-primary);
+    font-size: 16px;
+    outline: none;
+    transition: var(--transition);
+}
+
+.form-control:focus {
+    border-color: var(--deep-blue);
+    box-shadow: 0 0 0 3px rgba(18, 59, 99, 0.10);
+}
+
+textarea.form-control {
+    min-height: 125px;
+    resize: vertical;
+}
+
+.form-help {
+    margin-top: 6px;
+    color: var(--text-light);
+    font-size: 13px;
+}
+
+/* FORM ROW */
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* PHOTO */
+
+.file-wrapper {
+    border: 2px dashed var(--border);
+    border-radius: 11px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    background: var(--light-gray);
+}
+
+.file-wrapper:hover {
+    border-color: var(--deep-blue);
+    background: var(--deep-blue-light);
+}
+
+.file-icon {
+    width: 45px;
+    height: 45px;
+    margin: 0 auto 9px;
+    border-radius: 10px;
+    background: var(--white);
+    color: var(--deep-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+}
+
+.file-wrapper strong {
+    display: block;
+    color: var(--deep-blue);
+    font-size: 15px;
+}
+
+.file-wrapper span {
+    display: block;
+    margin-top: 4px;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.file-input {
+    display: none;
+}
+
+/* BUTTON */
+
+.submit-btn {
+    width: 100%;
+    min-height: 50px;
+    border-radius: 10px;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 16px;
+    font-weight: 750;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+}
+
+.submit-btn:hover {
+    background: var(--orange-hover);
+    transform: translateY(-1px);
+}
+
+.submit-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* INFO BOX */
+
+.info-box {
+    display: flex;
+    gap: 12px;
+    background: var(--light-blue);
+    border: 1px solid #D7E8FA;
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 20px;
+}
+
+.info-icon {
+    color: var(--deep-blue);
+    font-size: 18px;
+    margin-top: 2px;
+}
+
+.info-box p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* ISSUE LIST */
+
+.issue-list {
+    padding: 20px;
+}
+
+.issue-item {
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    padding: 17px;
+    margin-bottom: 13px;
+    transition: var(--transition);
+}
+
+.issue-item:last-child {
+    margin-bottom: 0;
+}
+
+.issue-item:hover {
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.07);
+    transform: translateY(-1px);
+}
+
+.issue-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+.issue-left {
+    display: flex;
+    gap: 12px;
+}
+
+.issue-icon {
+    width: 43px;
+    height: 43px;
+    border-radius: 10px;
+    background: var(--deep-blue-light);
+    color: var(--deep-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.issue-title {
+    margin: 0 0 4px;
+    color: var(--text-primary);
+    font-size: 17px;
+    font-weight: 750;
+}
+
+.issue-description {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+.issue-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 13px;
+}
+
+.meta-badge {
+    padding: 6px 9px;
+    border-radius: 7px;
+    background: var(--light-gray);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 650;
+}
+
+/* PRIORITY */
+
+.priority-low {
+    background: var(--light-blue);
+    color: #1D4ED8;
+}
+
+.priority-medium {
+    background: var(--light-yellow);
+    color: #A16207;
+}
+
+.priority-high {
+    background: var(--orange-light);
+    color: #C2410C;
+}
+
+.priority-critical {
+    background: var(--light-red);
+    color: #B91C1C;
+}
+
+/* STATUS */
+
+.status-reported {
+    background: var(--light-yellow);
+    color: #A16207;
+}
+
+.status-under_review {
+    background: var(--light-blue);
+    color: #1D4ED8;
+}
+
+.status-in_progress {
+    background: var(--light-purple);
+    color: #6D28D9;
+}
+
+.status-resolved,
+.status-closed {
+    background: var(--light-green);
+    color: #047857;
+}
+
+/* EMPTY */
+
+.empty-state {
+    text-align: center;
+    padding: 55px 20px;
+}
+
+.empty-icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: var(--light-green);
+    color: #059669;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 29px;
+}
+
+.empty-state h3 {
+    margin: 0 0 6px;
+    color: var(--deep-blue);
+}
+
+.empty-state p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+/* NO BUS */
+
+.no-bus {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    padding: 70px 30px;
+    text-align: center;
+}
+
+.no-bus-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    background: var(--orange-light);
+    color: var(--orange-hover);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+}
+
+.no-bus h2 {
+    margin-bottom: 7px;
+    color: var(--deep-blue);
+}
+
+.no-bus p {
+    margin: 0;
+    color: var(--text-secondary);
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1000px) {
+
+    .issue-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 650px) {
+
+    .issue-page {
+        padding: 18px;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .page-title {
+        font-size: 25px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .issue-top {
+        flex-direction: column;
+    }
+}
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="issue-page">
+
+    <!-- HEADER -->
+
+    <div class="page-header">
+
+        <div class="header-left">
+
+            <div class="header-icon">
+                <i class="fa-solid fa-screwdriver-wrench"></i>
+            </div>
+
+            <div>
+                <h1 class="page-title">
+                    Report Bus Issue
+                </h1>
+
+                <p class="page-subtitle">
+                    Report mechanical, GPS, safety or other bus problems
+                </p>
+            </div>
+
+        </div>
+
+        {% if bus %}
+        <div class="bus-badge">
+            <i class="fa-solid fa-bus"></i>
+            {{ bus.bus_number }}
+        </div>
+        {% endif %}
+
+    </div>
+
+
+    {% if bus %}
+
+    <div class="issue-grid">
+
+        <!-- =================================================
+             REPORT FORM
+        ================================================== -->
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <div>
+                    <h2>
+                        <i class="fa-solid fa-file-circle-exclamation"></i>
+                        Report New Issue
+                    </h2>
+
+                    <p>
+                        Provide accurate details about the problem.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="card-body">
+
+                <div class="info-box">
+
+                    <div class="info-icon">
+                        <i class="fa-solid fa-circle-info"></i>
+                    </div>
+
+                    <p>
+                        Report any issue immediately if it may affect
+                        passenger safety or vehicle operation.
+                    </p>
+
+                </div>
+
+
+                <form
+                    method="POST"
+                    enctype="multipart/form-data"
+                    id="issueForm"
+                >
+
+                    {% csrf_token %}
+
+
+                    <!-- ISSUE TYPE -->
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Issue Type
+                            <span class="required">*</span>
+                        </label>
+
+                        <select
+                            name="issue_type"
+                            class="form-control"
+                            required
+                        >
+
+                            <option value="">
+                                Select issue type
+                            </option>
+
+                            <option value="engine">
+                                Engine
+                            </option>
+
+                            <option value="tyre">
+                                Tyre
+                            </option>
+
+                            <option value="brake">
+                                Brake
+                            </option>
+
+                            <option value="battery">
+                                Battery
+                            </option>
+
+                            <option value="gps">
+                                GPS
+                            </option>
+
+                            <option value="electrical">
+                                Electrical
+                            </option>
+
+                            <option value="ac">
+                                AC
+                            </option>
+
+                            <option value="other">
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- PRIORITY -->
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Priority
+                            <span class="required">*</span>
+                        </label>
+
+                        <select
+                            name="priority"
+                            class="form-control"
+                            required
+                        >
+
+                            <option value="">
+                                Select priority
+                            </option>
+
+                            <option value="low">
+                                Low
+                            </option>
+
+                            <option value="medium">
+                                Medium
+                            </option>
+
+                            <option value="high">
+                                High
+                            </option>
+
+                            <option value="critical">
+                                Critical
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- TITLE -->
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Issue Title
+                            <span class="required">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            name="title"
+                            class="form-control"
+                            placeholder="Example: Front brake making unusual noise"
+                            maxlength="200"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- DESCRIPTION -->
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Description
+                            <span class="required">*</span>
+                        </label>
+
+                        <textarea
+                            name="description"
+                            class="form-control"
+                            placeholder="Describe the issue clearly..."
+                            required
+                        ></textarea>
+
+                    </div>
+
+
+                    <!-- PHOTO -->
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Supporting Photo
+                        </label>
+
+                        <label
+                            class="file-wrapper"
+                            for="photoInput"
+                        >
+
+                            <div class="file-icon">
+                                <i class="fa-solid fa-camera"></i>
+                            </div>
+
+                            <strong id="fileText">
+                                Click to upload photo
+                            </strong>
+
+                            <span>
+                                JPG, PNG or JPEG
+                            </span>
+
+                        </label>
+
+                        <input
+                            type="file"
+                            id="photoInput"
+                            name="photo"
+                            class="file-input"
+                            accept="image/png,image/jpeg,image/jpg"
+                        >
+
+                        <div class="form-help">
+                            Optional. Upload a clear photo of the issue.
+                        </div>
+
+                    </div>
+
+
+                    <!-- SUBMIT -->
+
+                    <button
+                        type="submit"
+                        class="submit-btn"
+                        id="submitBtn"
+                    >
+
+                        <i class="fa-solid fa-paper-plane"></i>
+
+                        <span id="submitText">
+                            Submit Issue Report
+                        </span>
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             PREVIOUS ISSUES
+        ================================================== -->
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <div>
+                    <h2>
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        My Reported Issues
+                    </h2>
+
+                    <p>
+                        Track issues you have reported.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="issue-list">
+
+                {% if issues %}
+
+                    {% for issue in issues %}
+
+                    <div class="issue-item">
+
+                        <div class="issue-top">
+
+                            <div class="issue-left">
+
+                                <div class="issue-icon">
+
+                                    {% if issue.issue_type == "engine" %}
+                                        <i class="fa-solid fa-gears"></i>
+
+                                    {% elif issue.issue_type == "tyre" %}
+                                        <i class="fa-solid fa-circle-dot"></i>
+
+                                    {% elif issue.issue_type == "brake" %}
+                                        <i class="fa-solid fa-stop"></i>
+
+                                    {% elif issue.issue_type == "battery" %}
+                                        <i class="fa-solid fa-car-battery"></i>
+
+                                    {% elif issue.issue_type == "gps" %}
+                                        <i class="fa-solid fa-location-crosshairs"></i>
+
+                                    {% elif issue.issue_type == "electrical" %}
+                                        <i class="fa-solid fa-bolt"></i>
+
+                                    {% elif issue.issue_type == "ac" %}
+                                        <i class="fa-solid fa-snowflake"></i>
+
+                                    {% else %}
+                                        <i class="fa-solid fa-wrench"></i>
+                                    {% endif %}
+
+                                </div>
+
+
+                                <div>
+
+                                    <h3 class="issue-title">
+                                        {{ issue.title }}
+                                    </h3>
+
+                                    <p class="issue-description">
+                                        {{ issue.description|truncatechars:130 }}
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="issue-meta">
+
+                            <span class="meta-badge">
+                                <i class="fa-solid fa-tag"></i>
+                                {{ issue.get_issue_type_display }}
+                            </span>
+
+
+                            <span class="meta-badge priority-{{ issue.priority }}">
+                                <i class="fa-solid fa-flag"></i>
+                                {{ issue.get_priority_display }}
+                            </span>
+
+
+                            <span class="meta-badge status-{{ issue.status }}">
+                                <i class="fa-solid fa-circle"></i>
+                                {{ issue.get_status_display }}
+                            </span>
+
+
+                            <span class="meta-badge">
+                                <i class="fa-regular fa-calendar"></i>
+                                {{ issue.created_at|date:"d M Y" }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <div class="empty-state">
+
+                        <div class="empty-icon">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+
+                        <h3>
+                            No Issues Reported
+                        </h3>
+
+                        <p>
+                            You haven't reported any bus issues yet.
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {% else %}
+
+    <!-- NO BUS -->
+
+    <div class="no-bus">
+
+        <div class="no-bus-icon">
+            <i class="fa-solid fa-bus"></i>
+        </div>
+
+        <h2>
+            No Bus Assigned
+        </h2>
+
+        <p>
+            No bus is currently assigned to your driver account.
+            Please contact the transport administrator.
+        </p>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const photoInput = document.getElementById("photoInput");
+    const fileText = document.getElementById("fileText");
+
+    const issueForm = document.getElementById("issueForm");
+    const submitBtn = document.getElementById("submitBtn");
+    const submitText = document.getElementById("submitText");
+
+
+    /* PHOTO */
+
+    if (photoInput) {
+
+        photoInput.addEventListener("change", function () {
+
+            if (this.files.length > 0) {
+
+                const file = this.files[0];
+
+                if (file.size > 5 * 1024 * 1024) {
+
+                    alert("Photo size must be less than 5 MB.");
+
+                    this.value = "";
+
+                    fileText.textContent =
+                        "Click to upload photo";
+
+                    return;
+                }
+
+                fileText.textContent = file.name;
+
+            }
+
+        });
+
+    }
+
+
+    /* FORM SUBMIT */
+
+    if (issueForm) {
+
+        issueForm.addEventListener("submit", function () {
+
+            submitBtn.disabled = true;
+
+            submitText.textContent = "Submitting...";
+
+        });
+
+    }
+
+});
+
+</script>
+
+{% endblock %}

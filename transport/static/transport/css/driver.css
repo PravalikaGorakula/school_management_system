@@ -1,0 +1,1299 @@
+/* =========================================================
+   TRANSPORT DRIVER
+   MY BUS & ROUTE
+   ========================================================= */
+
+
+/* =========================================================
+   PAGE
+   ========================================================= */
+
+.transport-page {
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   PAGE HEADER
+   ========================================================= */
+
+.transport-page-header {
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 24px 28px;
+    margin-bottom: 24px;
+
+    background: var(--white);
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+
+    box-shadow: var(--shadow-card);
+}
+
+
+.page-heading {
+
+    display: flex;
+    align-items: center;
+
+    gap: 16px;
+}
+
+
+.page-icon {
+
+    width: 58px;
+    height: 58px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--deep-blue-light);
+    color: var(--deep-blue);
+
+    border-radius: var(--radius-lg);
+
+    font-size: 25px;
+
+    flex-shrink: 0;
+}
+
+
+.page-heading h1 {
+
+    margin: 0;
+
+    color: var(--deep-blue-dark);
+
+    font-size: 28px;
+    font-weight: 800;
+
+    line-height: 1.2;
+}
+
+
+.page-heading p {
+
+    margin: 6px 0 0;
+
+    color: var(--text-secondary);
+
+    font-size: var(--font-size-small);
+}
+
+
+.header-status {
+    display: flex;
+    align-items: center;
+}
+
+
+/* =========================================================
+   STATUS BADGES
+   ========================================================= */
+
+.status-badge {
+
+    display: inline-flex;
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 8px 14px;
+
+    border-radius: 50px;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+
+.status-dot {
+
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: currentColor;
+}
+
+
+.status-badge.active {
+
+    background: var(--light-green);
+
+    color: #047857;
+}
+
+
+.status-badge.inactive {
+
+    background: #F1F5F9;
+
+    color: var(--text-secondary);
+}
+
+
+.status-badge.warning {
+
+    background: var(--light-yellow);
+
+    color: #B45309;
+}
+
+
+/* =========================================================
+   BUS SUMMARY
+   ========================================================= */
+
+.bus-summary-card {
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 25px;
+
+    padding: 25px 28px;
+
+    margin-bottom: 24px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--deep-blue-light),
+            var(--white)
+        );
+
+    border: 1px solid #D7E6F1;
+
+    border-radius: var(--radius-xl);
+
+    box-shadow: var(--shadow-card);
+}
+
+
+.bus-main-info {
+
+    display: flex;
+    align-items: center;
+
+    gap: 18px;
+}
+
+
+.bus-icon {
+
+    width: 70px;
+    height: 70px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--deep-blue);
+
+    color: var(--white);
+
+    border-radius: var(--radius-lg);
+
+    font-size: 30px;
+
+    box-shadow:
+        0 8px 20px rgba(18, 59, 99, 0.18);
+}
+
+
+.section-label {
+
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: var(--text-secondary);
+
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+
+.bus-main-info h2 {
+
+    margin: 0;
+
+    color: var(--deep-blue-dark);
+
+    font-size: 27px;
+
+    font-weight: 800;
+}
+
+
+.bus-main-info p {
+
+    margin: 5px 0 0;
+
+    color: var(--text-secondary);
+
+    font-size: 15px;
+}
+
+
+.bus-main-info p strong {
+
+    color: var(--text-primary);
+}
+
+
+.bus-summary-status {
+
+    min-width: 150px;
+
+    padding: 15px 18px;
+
+    background: var(--white);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-md);
+}
+
+
+.summary-label {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: var(--text-secondary);
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   CONTENT GRID
+   ========================================================= */
+
+.content-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 22px;
+
+    margin-bottom: 24px;
+}
+
+
+/* =========================================================
+   CARD
+   ========================================================= */
+
+.dashboard-card {
+
+    background: var(--white);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-xl);
+
+    box-shadow: var(--shadow-card);
+
+    overflow: hidden;
+}
+
+
+.card-header {
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 19px 23px;
+
+    background: #FBFDFF;
+
+    border-bottom: 1px solid var(--border);
+}
+
+
+.card-title {
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.card-title-icon {
+
+    width: 43px;
+    height: 43px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: var(--radius-md);
+
+    font-size: 18px;
+}
+
+
+.card-title-icon.blue {
+
+    background: var(--deep-blue-light);
+
+    color: var(--deep-blue);
+}
+
+
+.card-title-icon.orange {
+
+    background: var(--orange-light);
+
+    color: var(--orange);
+}
+
+
+.card-title-icon.green {
+
+    background: var(--light-green);
+
+    color: #059669;
+}
+
+
+.card-title h3 {
+
+    margin: 0;
+
+    color: var(--deep-blue-dark);
+
+    font-size: 18px;
+
+    font-weight: 800;
+}
+
+
+.card-title p {
+
+    margin: 3px 0 0;
+
+    color: var(--text-secondary);
+
+    font-size: 13px;
+}
+
+
+.card-body {
+
+    padding: 23px;
+}
+
+
+/* =========================================================
+   DETAILS GRID
+   ========================================================= */
+
+.details-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 13px;
+}
+
+
+.details-grid.compact {
+
+    margin-top: 18px;
+}
+
+
+.detail-item {
+
+    padding: 14px 15px;
+
+    background: var(--light-gray);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-md);
+
+    min-width: 0;
+}
+
+
+.detail-item span {
+
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: var(--text-secondary);
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+
+.detail-item strong {
+
+    display: block;
+
+    color: var(--text-primary);
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    word-break: break-word;
+}
+
+
+/* =========================================================
+   GPS
+   ========================================================= */
+
+.gps-status-box {
+
+    display: flex;
+    align-items: center;
+
+    gap: 14px;
+
+    padding: 16px;
+
+    background: var(--light-blue);
+
+    border: 1px solid #DCEAF5;
+
+    border-radius: var(--radius-md);
+}
+
+
+.gps-status-icon {
+
+    width: 48px;
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--deep-blue-light);
+
+    color: var(--deep-blue);
+
+    border-radius: var(--radius-md);
+
+    font-size: 21px;
+
+    flex-shrink: 0;
+}
+
+
+.gps-status-box strong {
+
+    display: block;
+
+    color: var(--deep-blue-dark);
+
+    font-size: 16px;
+}
+
+
+.gps-status-box span {
+
+    display: block;
+
+    margin-top: 3px;
+
+    color: var(--text-secondary);
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   ROUTE CARD
+   ========================================================= */
+
+.route-card {
+
+    margin-bottom: 24px;
+}
+
+
+.route-code {
+
+    padding: 7px 12px;
+
+    background: var(--deep-blue-light);
+
+    color: var(--deep-blue);
+
+    border-radius: 50px;
+
+    font-size: 13px;
+
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   ROUTE OVERVIEW
+   ========================================================= */
+
+.route-overview {
+
+    display: grid;
+
+    grid-template-columns: 1fr 100px 1fr;
+
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 20px;
+
+    margin-bottom: 22px;
+
+    background: var(--light-gray);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-lg);
+}
+
+
+.route-location {
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.location-icon {
+
+    width: 45px;
+    height: 45px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    flex-shrink: 0;
+
+    font-size: 18px;
+}
+
+
+.location-icon.start {
+
+    background: var(--orange-light);
+
+    color: var(--orange);
+}
+
+
+.location-icon.end {
+
+    background: var(--light-green);
+
+    color: #059669;
+}
+
+
+.route-location span {
+
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: var(--text-secondary);
+
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+
+.route-location strong {
+
+    display: block;
+
+    color: var(--text-primary);
+
+    font-size: 16px;
+
+    font-weight: 800;
+}
+
+
+.route-line {
+
+    display: flex;
+    align-items: center;
+
+    gap: 5px;
+}
+
+
+.route-line span {
+
+    flex: 1;
+
+    height: 2px;
+
+    background: #CBD5E1;
+}
+
+
+.route-line i {
+
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--deep-blue);
+
+    color: var(--white);
+
+    border-radius: 50%;
+
+    font-size: 15px;
+}
+
+
+/* =========================================================
+   ROUTE STATS
+   ========================================================= */
+
+.route-stats {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 14px;
+
+    margin-bottom: 30px;
+}
+
+
+.route-stat {
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 15px;
+
+    background: var(--white);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-md);
+}
+
+
+.route-stat-icon {
+
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    flex-shrink: 0;
+}
+
+
+.route-stat-icon.blue {
+
+    background: var(--deep-blue-light);
+
+    color: var(--deep-blue);
+}
+
+
+.route-stat-icon.orange {
+
+    background: var(--orange-light);
+
+    color: var(--orange);
+}
+
+
+.route-stat-icon.green {
+
+    background: var(--light-green);
+
+    color: #059669;
+}
+
+
+.route-stat span {
+
+    display: block;
+
+    color: var(--text-secondary);
+
+    font-size: 12px;
+}
+
+
+.route-stat strong {
+
+    display: block;
+
+    margin-top: 2px;
+
+    color: var(--deep-blue-dark);
+
+    font-size: 17px;
+
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   SECTION HEADING
+   ========================================================= */
+
+.stops-section {
+
+    border-top: 1px solid var(--border);
+
+    padding-top: 24px;
+}
+
+
+.section-heading {
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 18px;
+}
+
+
+.section-heading h4 {
+
+    margin: 0;
+
+    color: var(--deep-blue-dark);
+
+    font-size: 19px;
+
+    font-weight: 800;
+}
+
+
+.section-heading p {
+
+    margin: 4px 0 0;
+
+    color: var(--text-secondary);
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   ROUTE STOPS
+   ========================================================= */
+
+.route-stops {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+
+.stop-item {
+
+    display: flex;
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 15px 17px;
+
+    background: var(--light-gray);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-md);
+
+    transition: var(--transition);
+}
+
+
+.stop-item:hover {
+
+    background: var(--deep-blue-light);
+
+    border-color: #D2E3F0;
+
+    transform: translateX(3px);
+}
+
+
+.stop-number {
+
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--deep-blue);
+
+    color: var(--white);
+
+    border-radius: 50%;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    flex-shrink: 0;
+}
+
+
+.stop-content {
+
+    flex: 1;
+
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+}
+
+
+.stop-main h5 {
+
+    margin: 0;
+
+    color: var(--text-primary);
+
+    font-size: 16px;
+
+    font-weight: 800;
+}
+
+
+.stop-main p {
+
+    display: flex;
+    align-items: center;
+
+    gap: 5px;
+
+    margin: 4px 0 0;
+
+    color: var(--text-secondary);
+
+    font-size: 13px;
+}
+
+
+.stop-main p i {
+
+    color: var(--deep-blue);
+}
+
+
+.stop-times {
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.stop-time {
+
+    min-width: 90px;
+
+    padding: 7px 10px;
+
+    text-align: center;
+
+    border-radius: var(--radius-sm);
+}
+
+
+.stop-time span {
+
+    display: block;
+
+    font-size: 11px;
+
+    font-weight: 600;
+}
+
+
+.stop-time strong {
+
+    display: block;
+
+    margin-top: 2px;
+
+    font-size: 13px;
+}
+
+
+.stop-time.pickup {
+
+    background: var(--orange-light);
+
+    color: #C2410C;
+}
+
+
+.stop-time.drop {
+
+    background: var(--light-green);
+
+    color: #047857;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.empty-state {
+
+    padding: 45px 25px;
+
+    text-align: center;
+}
+
+
+.empty-icon {
+
+    width: 65px;
+    height: 65px;
+
+    margin: 0 auto 15px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--deep-blue-light);
+
+    color: var(--deep-blue);
+
+    border-radius: 50%;
+
+    font-size: 26px;
+}
+
+
+.empty-state h4 {
+
+    margin: 0;
+
+    color: var(--deep-blue-dark);
+
+    font-size: 19px;
+
+    font-weight: 800;
+}
+
+
+.empty-state p {
+
+    max-width: 500px;
+
+    margin: 7px auto 0;
+
+    color: var(--text-secondary);
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   NO BUS
+   ========================================================= */
+
+.no-bus-card {
+
+    padding: 65px 30px;
+
+    text-align: center;
+
+    background: var(--white);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-xl);
+
+    box-shadow: var(--shadow-card);
+}
+
+
+.no-bus-icon {
+
+    width: 85px;
+    height: 85px;
+
+    margin: 0 auto 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--deep-blue-light);
+
+    color: var(--deep-blue);
+
+    border-radius: 50%;
+
+    font-size: 34px;
+}
+
+
+.no-bus-card h2 {
+
+    margin: 0;
+
+    color: var(--deep-blue-dark);
+
+    font-size: 25px;
+
+    font-weight: 800;
+}
+
+
+.no-bus-card > p {
+
+    max-width: 620px;
+
+    margin: 9px auto 25px;
+
+    color: var(--text-secondary);
+
+    font-size: 15px;
+}
+
+
+.no-bus-info {
+
+    display: flex;
+    justify-content: center;
+
+    flex-wrap: wrap;
+
+    gap: 12px;
+}
+
+
+.no-bus-info div {
+
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 10px 14px;
+
+    background: var(--light-gray);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-md);
+
+    color: var(--text-secondary);
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+
+.no-bus-info i {
+
+    color: var(--deep-blue);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+    .content-grid {
+
+        grid-template-columns: 1fr;
+    }
+
+    .route-overview {
+
+        grid-template-columns: 1fr;
+    }
+
+    .route-line {
+
+        transform: rotate(90deg);
+
+        width: 80px;
+
+        margin: 0 auto;
+    }
+}
+
+
+@media (max-width: 800px) {
+
+    .transport-page-header,
+    .bus-summary-card {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+    .bus-summary-status {
+
+        width: 100%;
+    }
+
+    .route-stats {
+
+        grid-template-columns: 1fr;
+    }
+
+    .stop-content {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+    .stop-times {
+
+        width: 100%;
+    }
+}
+
+
+@media (max-width: 600px) {
+
+    .page-heading h1 {
+
+        font-size: 23px;
+    }
+
+    .page-icon {
+
+        width: 50px;
+        height: 50px;
+
+        font-size: 21px;
+    }
+
+    .bus-main-info {
+
+        align-items: flex-start;
+    }
+
+    .bus-icon {
+
+        width: 58px;
+        height: 58px;
+
+        font-size: 25px;
+    }
+
+    .bus-main-info h2 {
+
+        font-size: 23px;
+    }
+
+    .details-grid {
+
+        grid-template-columns: 1fr;
+    }
+
+    .card-header,
+    .card-body {
+
+        padding: 18px;
+    }
+
+    .route-overview {
+
+        padding: 15px;
+    }
+
+    .stop-times {
+
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+    .stop-time {
+
+        width: 100%;
+    }
+
+    .no-bus-card {
+
+        padding: 45px 20px;
+    }
+}

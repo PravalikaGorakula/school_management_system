@@ -1,0 +1,1645 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}
+My Attendance
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+.student-attendance-page {
+    padding: 32px;
+    background: #f4f7fb;
+    min-height: calc(100vh - 70px);
+    color: #243b53;
+    font-size: 18px;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.attendance-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+}
+
+.attendance-header h1 {
+    margin: 0;
+    color: #123B63;
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+}
+
+.attendance-header p {
+    margin: 9px 0 0;
+    color: #667085;
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+.student-class {
+    background: #ffffff;
+    border: 1px solid #d5e0eb;
+    border-radius: 12px;
+    padding: 13px 19px;
+    color: #123B63;
+    font-size: 18px;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(18, 59, 99, 0.07);
+}
+
+.student-class i {
+    margin-right: 7px;
+    color: #F28C28;
+}
+
+
+/* =========================================================
+   WARNING
+========================================================= */
+
+.attendance-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-left: 6px solid #F28C28;
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 24px;
+    color: #8a4b00;
+    font-size: 18px;
+    line-height: 1.5;
+    box-shadow: 0 4px 14px rgba(242, 140, 40, 0.08);
+}
+
+.attendance-warning i {
+    color: #F28C28;
+    font-size: 23px;
+    margin-top: 2px;
+}
+
+.attendance-warning strong {
+    color: #7a4200;
+}
+
+
+/* =========================================================
+   OVERALL ATTENDANCE
+========================================================= */
+
+.overall-card {
+    background: #ffffff;
+    border: 1px solid #d8e2ec;
+    border-radius: 18px;
+    padding: 27px 28px;
+    margin-bottom: 25px;
+    box-shadow: 0 6px 22px rgba(18, 59, 99, 0.08);
+}
+
+.overall-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.overall-title {
+    color: #123B63;
+    font-size: 21px;
+    font-weight: 800;
+}
+
+.overall-percentage {
+    color: #123B63;
+    font-size: 36px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+}
+
+.progress-track {
+    width: 100%;
+    height: 15px;
+    background: #e8edf2;
+    border-radius: 30px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        #123B63,
+        #1d5a91
+    );
+    border-radius: 30px;
+    transition: width 0.5s ease;
+}
+
+.progress-bar.warning {
+    background: linear-gradient(
+        90deg,
+        #F28C28,
+        #D97706
+    );
+}
+
+.overall-note {
+    margin-top: 13px;
+    color: #667085;
+    font-size: 18px;
+}
+
+
+/* =========================================================
+   STAT CARDS
+========================================================= */
+
+.attendance-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 28px;
+}
+
+.stat-card {
+    position: relative;
+    background: #ffffff;
+    border: 1px solid #d8e2ec;
+    border-radius: 16px;
+    padding: 22px;
+    min-height: 145px;
+    box-shadow: 0 5px 18px rgba(18, 59, 99, 0.06);
+    transition: all 0.25s ease;
+    overflow: hidden;
+}
+
+.stat-card::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 4px;
+    background: #123B63;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    border-color: #F28C28;
+    box-shadow: 0 9px 25px rgba(18, 59, 99, 0.11);
+}
+
+.stat-card.present::after {
+    background: #2e8b57;
+}
+
+.stat-card.absent::after {
+    background: #d9534f;
+}
+
+.stat-card.late::after {
+    background: #F28C28;
+}
+
+.stat-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: #eef5fb;
+    color: #123B63;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    font-size: 20px;
+}
+
+.stat-label {
+    color: #667085;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.stat-value {
+    color: #123B63;
+    font-size: 30px;
+    font-weight: 900;
+    margin-top: 5px;
+}
+
+.stat-card.present .stat-icon {
+    color: #2e8b57;
+    background: #edf8f1;
+}
+
+.stat-card.present .stat-value {
+    color: #2e8b57;
+}
+
+.stat-card.absent .stat-icon {
+    color: #d9534f;
+    background: #fff0f0;
+}
+
+.stat-card.absent .stat-value {
+    color: #d9534f;
+}
+
+.stat-card.late .stat-icon {
+    color: #d96f00;
+    background: #fff4e6;
+}
+
+.stat-card.late .stat-value {
+    color: #d96f00;
+}
+
+
+/* =========================================================
+   SECTION CARD
+========================================================= */
+
+.section-card {
+    background: #ffffff;
+    border: 1px solid #d8e2ec;
+    border-radius: 18px;
+    overflow: hidden;
+    margin-bottom: 28px;
+    box-shadow: 0 6px 22px rgba(18, 59, 99, 0.07);
+}
+
+.section-header {
+    padding: 23px 25px;
+    border-bottom: 1px solid #dce5ee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+}
+
+.section-header h2 {
+    margin: 0;
+    color: #123B63;
+    font-size: 23px;
+    font-weight: 800;
+}
+
+.section-header p {
+    margin: 7px 0 0;
+    color: #667085;
+    font-size: 18px;
+    line-height: 1.45;
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.attendance-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 950px;
+}
+
+.attendance-table thead {
+    background: #123B63;
+    color: #ffffff;
+}
+
+.attendance-table th {
+    padding: 17px 18px;
+    text-align: left;
+    font-size: 17px;
+    font-weight: 800;
+    white-space: nowrap;
+    letter-spacing: 0.2px;
+}
+
+.attendance-table td {
+    padding: 18px;
+    border-bottom: 1px solid #e5ebf1;
+    color: #243b53;
+    font-size: 18px;
+    vertical-align: middle;
+}
+
+.attendance-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.attendance-table tbody tr:hover {
+    background: #fff9f3;
+}
+
+.attendance-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.attendance-table td strong {
+    font-weight: 800;
+}
+
+.subject-name {
+    color: #123B63;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.subject-code {
+    color: #667085;
+    font-size: 16px;
+    margin-top: 4px;
+}
+
+.number {
+    color: #F28C28;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   SUBJECT PERCENTAGE
+========================================================= */
+
+.subject-percentage {
+    min-width: 190px;
+}
+
+.percentage-value {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.percentage-value strong {
+    color: #123B63;
+    font-size: 19px;
+    font-weight: 900;
+}
+
+.mini-progress {
+    height: 9px;
+    background: #e7edf3;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.mini-progress-bar {
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        #123B63,
+        #1d5a91
+    );
+    border-radius: 20px;
+}
+
+.mini-progress-bar.warning {
+    background: linear-gradient(
+        90deg,
+        #F28C28,
+        #D97706
+    );
+}
+
+
+/* =========================================================
+   STATUS BADGES
+========================================================= */
+
+.status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-width: 95px;
+    padding: 8px 13px;
+    border-radius: 22px;
+    font-size: 16px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.status i {
+    font-size: 14px;
+}
+
+.status-present {
+    color: #26734d;
+    background: #edf8f1;
+    border: 1px solid #c8e6d2;
+}
+
+.status-absent {
+    color: #a83232;
+    background: #fff0f0;
+    border: 1px solid #f0caca;
+}
+
+.status-late {
+    color: #a85d00;
+    background: #fff4e6;
+    border: 1px solid #ffd7ad;
+}
+
+.status-leave {
+    color: #5b5f97;
+    background: #f0f0ff;
+    border: 1px solid #d9d9f5;
+}
+
+
+/* =========================================================
+   LOW ATTENDANCE
+========================================================= */
+
+.low-attendance {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    padding: 6px 10px;
+    border-radius: 7px;
+    background: #fff4e6;
+    border: 1px solid #ffd7ad;
+    color: #c45d00;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   FILTER
+========================================================= */
+
+.history-filter {
+    background: #f8fafc;
+    border-bottom: 1px solid #dce5ee;
+    padding: 20px 24px;
+}
+
+.filter-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 17px;
+    align-items: end;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filter-group label {
+    color: #123B63;
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.filter-control {
+    height: 48px;
+    border: 1px solid #cbd7e3;
+    border-radius: 10px;
+    padding: 0 14px;
+    background: #ffffff;
+    color: #243b53;
+    outline: none;
+    font-size: 18px;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.filter-control:hover {
+    border-color: #9eb1c4;
+}
+
+.filter-control:focus {
+    border-color: #123B63;
+    box-shadow: 0 0 0 4px rgba(18, 59, 99, 0.10);
+}
+
+.btn-filter {
+    height: 48px;
+    padding: 0 23px;
+    border: 2px solid #123B63;
+    border-radius: 10px;
+    background: #123B63;
+    color: #ffffff;
+    font-size: 17px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.btn-filter:hover {
+    background: #F28C28;
+    border-color: #F28C28;
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   HISTORY SUMMARY
+========================================================= */
+
+.history-summary {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.history-count {
+    background: #eef5fb;
+    color: #123B63;
+    border: 1px solid #d5e2ee;
+    padding: 8px 13px;
+    border-radius: 22px;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.empty-state {
+    text-align: center;
+    padding: 65px 25px;
+}
+
+.empty-icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 17px;
+    border-radius: 50%;
+    background: #eef5fb;
+    color: #123B63;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 27px;
+}
+
+.empty-state h3 {
+    margin: 0 0 9px;
+    color: #123B63;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.empty-state p {
+    margin: 0;
+    color: #667085;
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   DATE COLUMN
+========================================================= */
+
+.attendance-table td:first-child strong {
+    color: #123B63;
+    font-size: 18px;
+}
+
+
+/* =========================================================
+   MOBILE / TABLET
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .student-attendance-page {
+        padding: 25px;
+    }
+
+    .attendance-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .filter-form {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .btn-filter {
+        width: 100%;
+    }
+}
+
+
+@media (max-width: 750px) {
+
+    .student-attendance-page {
+        padding: 18px;
+    }
+
+    .attendance-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .attendance-header h1 {
+        font-size: 29px;
+    }
+
+    .attendance-header p {
+        font-size: 18px;
+    }
+
+    .student-class {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .attendance-stats {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .overall-card {
+        padding: 22px;
+    }
+
+    .overall-title {
+        font-size: 19px;
+    }
+
+    .overall-percentage {
+        font-size: 30px;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 20px;
+    }
+
+    .section-header h2 {
+        font-size: 21px;
+    }
+
+    .history-filter {
+        padding: 18px;
+    }
+
+    .filter-form {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-control,
+    .btn-filter {
+        height: 48px;
+    }
+}
+
+
+@media (max-width: 500px) {
+
+    .student-attendance-page {
+        padding: 14px;
+    }
+
+    .attendance-header h1 {
+        font-size: 26px;
+    }
+
+    .attendance-header p {
+        font-size: 18px;
+    }
+
+    .overall-card {
+        border-radius: 14px;
+        padding: 19px;
+    }
+
+    .overall-top {
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .overall-percentage {
+        font-size: 27px;
+    }
+
+    .stat-card {
+        padding: 19px;
+    }
+
+    .stat-value {
+        font-size: 28px;
+    }
+
+    .section-card {
+        border-radius: 14px;
+    }
+
+    .section-header h2 {
+        font-size: 20px;
+    }
+
+    .section-header p {
+        font-size: 18px;
+    }
+
+    .attendance-table th,
+    .attendance-table td {
+        padding: 15px;
+    }
+}
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="student-attendance-page">
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <div class="attendance-header">
+
+        <div>
+
+            <h1>
+                My Attendance
+            </h1>
+
+            <p>
+                Track your attendance, subject-wise performance
+                and daily attendance history.
+            </p>
+
+        </div>
+
+
+        {% if student and student.class_section %}
+
+            <div class="student-class">
+
+                <i class="fas fa-graduation-cap"></i>
+
+                {{ student.class_section.grade }}
+                -
+                {{ student.class_section.section }}
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+    {% if current_holiday %}
+    <div class="attendance-warning" role="status">
+        <i class="fas fa-calendar-day"></i>
+        <div><strong>{{ current_holiday.status }}:</strong> {{ current_holiday.name }}</div>
+    </div>
+    {% endif %}
+
+    {% if holiday_entries %}
+    <div class="section-card" role="status">
+        {% for entry in holiday_entries %}
+            <strong>{{ entry.status }}:</strong> {{ entry.date|date:"d M Y" }} · {{ entry.name }}{% if not forloop.last %}<br>{% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+
+    <!-- =====================================================
+         ERROR
+    ====================================================== -->
+
+    {% if error %}
+
+        <div class="attendance-warning">
+
+            <i class="fas fa-circle-exclamation"></i>
+
+            <div>
+                {{ error }}
+            </div>
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- =====================================================
+         LOW ATTENDANCE WARNING
+    ====================================================== -->
+
+    {% if warning %}
+
+        <div class="attendance-warning">
+
+            <i class="fas fa-triangle-exclamation"></i>
+
+            <div>
+
+                <strong>
+                    Attendance Warning
+                </strong>
+
+                <br>
+
+                Your overall attendance is
+                {{ percentage }}%.
+
+                Please maintain at least
+                <strong>75%</strong>
+                attendance.
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- =====================================================
+         OVERALL ATTENDANCE
+    ====================================================== -->
+
+    <div class="overall-card">
+
+        <div class="overall-top">
+
+            <div class="overall-title">
+
+                Overall Attendance
+
+            </div>
+
+            <div class="overall-percentage">
+                {% if percentage != None %}
+                    {{ percentage }}%
+                {% else %}
+                    —
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <div class="progress-track">
+
+            <div
+                class="progress-bar {% if warning %}warning{% endif %}"
+                data-attendance-percentage="{{ percentage|default:0 }}">
+            </div>
+
+        </div>
+
+
+        <div class="overall-note">
+            Eligible working days: {{ eligible_working_days }}.
+            Approved leave days: {{ approved_leave_days }}.
+            Pending leave requests: {{ history_summary.pending_leave_requests }}.
+            Attendance not yet submitted: {{ unsubmitted_days }}.
+            Present and Late count as credited attendance.
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         STAT CARDS
+    ====================================================== -->
+
+    <div class="attendance-stats">
+
+
+        <!-- TOTAL -->
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+
+                <i class="fas fa-calendar-days"></i>
+
+            </div>
+
+            <div class="stat-label">
+                Eligible Working Days
+            </div>
+
+            <div class="stat-value">
+                {{ total|default:"0" }}
+            </div>
+
+        </div>
+
+
+        <!-- PRESENT -->
+
+        <div class="stat-card present">
+
+            <div class="stat-icon">
+
+                <i class="fas fa-check-circle"></i>
+
+            </div>
+
+            <div class="stat-label">
+                Present
+            </div>
+
+            <div class="stat-value">
+                {{ present|default:"0" }}
+            </div>
+
+        </div>
+
+
+        <!-- ABSENT -->
+
+        <div class="stat-card absent">
+
+            <div class="stat-icon">
+
+                <i class="fas fa-times-circle"></i>
+
+            </div>
+
+            <div class="stat-label">
+                Absent
+            </div>
+
+            <div class="stat-value">
+                {{ absent|default:"0" }}
+            </div>
+
+        </div>
+
+
+        <!-- LATE -->
+
+        <div class="stat-card late">
+
+            <div class="stat-icon">
+
+                <i class="fas fa-clock"></i>
+
+            </div>
+
+            <div class="stat-label">
+                Late
+            </div>
+
+            <div class="stat-value">
+                {{ late|default:"0" }}
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         SUBJECT-WISE ATTENDANCE
+    ====================================================== -->
+
+    <div class="section-card">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    Subject-wise Attendance
+                </h2>
+
+                <p>
+                    Attendance performance for each subject.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        {% if subject_attendance %}
+
+            <div class="table-wrapper">
+
+                <table class="attendance-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                #
+                            </th>
+
+                            <th>
+                                Subject
+                            </th>
+
+                            <th>
+                                Subject Code
+                            </th>
+
+                            <th>
+                                Total Classes
+                            </th>
+
+                            <th>
+                                Present
+                            </th>
+
+                            <th>
+                                Absent
+                            </th>
+
+                            <th>
+                                Late
+                            </th>
+
+                            <th>
+                                Attendance %
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for item in subject_attendance %}
+
+                            <tr>
+
+                                <td class="number">
+
+                                    {{ forloop.counter }}
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="subject-name">
+
+                                        {{ item.subject.subject_name }}
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="subject-code">
+
+                                        {% if item.subject.subject_code %}
+
+                                            {{ item.subject.subject_code }}
+
+                                        {% else %}
+
+                                            -
+
+                                        {% endif %}
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <strong>
+                                        {{ item.total }}
+                                    </strong>
+
+                                </td>
+
+
+                                <td>
+
+                                    {{ item.present }}
+
+                                </td>
+
+
+                                <td>
+
+                                    {{ item.absent }}
+
+                                </td>
+
+
+                                <td>
+
+                                    {{ item.late }}
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="subject-percentage">
+
+                                        <div class="percentage-value">
+
+                                            <strong>
+                                                {% if item.percentage != None %}{{ item.percentage }}%{% else %}—{% endif %}
+                                            </strong>
+
+                                        </div>
+
+
+                                        
+
+
+                                        {% if item.warning %}
+
+                                            <span class="low-attendance">
+
+                                                <i class="fas fa-triangle-exclamation"></i>
+
+                                                Below 75%
+
+                                            </span>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+
+                    <i class="fas fa-book-open"></i>
+
+                </div>
+
+                <h3>
+                    No Subject Attendance
+                </h3>
+
+                <p>
+                    Subject-wise attendance will appear here
+                    after your teachers mark attendance.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- =====================================================
+         DAILY ATTENDANCE HISTORY
+    ====================================================== -->
+
+    <div class="section-card">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    Daily Attendance History
+                </h2>
+
+                <p>
+                    View your attendance for each class and date.
+                </p>
+
+            </div>
+
+
+            <div class="history-summary">
+
+                <span class="history-count">
+
+                    {{ history_total }}
+                    Records
+
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             FILTER
+        ================================================== -->
+
+        <div class="history-filter">
+
+            <form
+                method="get"
+                class="filter-form"
+            >
+
+
+                <!-- SUBJECT -->
+
+                <div class="filter-group">
+
+                    <label for="subject">
+
+                        Subject
+
+                    </label>
+
+                    <select
+                        name="subject"
+                        id="subject"
+                        class="filter-control"
+                    >
+
+                        <option value="">
+                            All Subjects
+                        </option>
+
+
+                        {% for subject in student_subjects %}
+
+                            <option
+                                value="{{ subject.subject_id }}"
+
+                                {% if selected_subject_id|stringformat:"s" == subject.subject_id|stringformat:"s" %}
+                                    selected
+                                {% endif %}
+                            >
+
+                                {{ subject.subject__subject_name }}
+
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="filter-group">
+                    <label for="start_date">From</label>
+                    <input
+                        type="date"
+                        name="start_date"
+                        id="start_date"
+                        class="filter-control"
+                        value="{{ report_start_date }}"
+                    >
+                </div>
+
+                <div class="filter-group">
+                    <label for="end_date">To</label>
+                    <input
+                        type="date"
+                        name="end_date"
+                        id="end_date"
+                        class="filter-control"
+                        value="{{ report_end_date }}"
+                    >
+                </div>
+
+
+                <!-- MONTH -->
+
+                <div class="filter-group">
+
+                    <label for="month">
+
+                        Month
+
+                    </label>
+
+                    <input
+                        type="month"
+                        name="month"
+                        id="month"
+                        class="filter-control"
+                        value="{{ selected_month|default:'' }}"
+                    >
+
+                </div>
+
+
+                <!-- BUTTON -->
+
+                <button
+                    type="submit"
+                    class="btn-filter"
+                >
+
+                    <i class="fas fa-filter"></i>
+
+                    Filter History
+
+                </button>
+
+            </form>
+
+        </div>
+
+        <p class="student-note">
+            Eligible days: {{ history_summary.eligible_working_days }} ·
+            Approved leave: {{ history_summary.leave_days }} ·
+            Not submitted: {{ history_summary.unsubmitted_days }} ·
+            Rate: {% if history_summary.percentage != None %}{{ history_summary.percentage }}%{% else %}N/A{% endif %}
+        </p>
+
+
+        <!-- =================================================
+             HISTORY TABLE
+        ================================================== -->
+
+        {% if history_records %}
+
+            <div class="table-wrapper">
+
+                <table class="attendance-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Subject
+                            </th>
+
+                            <th>
+                                Subject Code
+                            </th>
+
+                            <th>
+                                Class
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Remarks
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for record in history_records %}
+
+                            <tr>
+
+                                <!-- DATE -->
+
+                                <td>
+
+                                    <strong>
+
+                                        {{ record.date|date:"d M Y" }}
+
+                                    </strong>
+
+                                    <div class="subject-code">
+
+                                        {{ record.date|date:"l" }}
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- SUBJECT -->
+
+                                <td>
+
+                                    <div class="subject-name">
+
+                                        {{ record.subject.subject_name }}
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- SUBJECT CODE -->
+
+                                <td>
+
+                                    <div class="subject-code">
+
+                                        {% if record.subject.subject_code %}
+
+                                            {{ record.subject.subject_code }}
+
+                                        {% else %}
+
+                                            -
+
+                                        {% endif %}
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- CLASS -->
+
+                                <td>
+
+                                    {% if record.class_section %}
+
+                                        {{ record.class_section.grade }}
+                                        -
+                                        {{ record.class_section.section }}
+
+                                    {% else %}
+
+                                        -
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <!-- STATUS -->
+
+                                <td>
+
+                                    {% if record.status == "Present" %}
+
+                                        <span class="status status-present">
+
+                                            <i class="fas fa-check"></i>
+
+                                            Present
+
+                                        </span>
+
+
+                                    {% elif record.status == "Absent" %}
+
+                                        <span class="status status-absent">
+
+                                            <i class="fas fa-xmark"></i>
+
+                                            Absent
+
+                                        </span>
+
+
+                                    {% elif record.status == "Late" %}
+
+                                        <span class="status status-late">
+
+                                            <i class="fas fa-clock"></i>
+
+                                            Late
+
+                                        </span>
+
+
+                                    {% elif record.status == "Leave" %}
+
+                                        <span class="status status-leave">
+
+                                            <i class="fas fa-calendar-minus"></i>
+
+                                            Leave
+
+                                        </span>
+
+
+                                    {% else %}
+
+                                        <span class="status">
+
+                                            {{ record.status }}
+
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <!-- REMARKS -->
+
+                                <td>
+
+                                    {% if record.remarks %}
+
+                                        {{ record.remarks }}
+
+                                    {% else %}
+
+                                        -
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+
+                    <i class="fas fa-calendar-times"></i>
+
+                </div>
+
+                <h3>
+                    No Attendance Records
+                </h3>
+
+                <p>
+                    Attendance records matching your filter
+                    will appear here.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+<script>
+document.querySelectorAll("[data-attendance-percentage]").forEach(function (bar) {
+    const percentage = Number(bar.dataset.attendancePercentage);
+    bar.style.width = `${Number.isFinite(percentage) ? Math.max(0, Math.min(100, percentage)) : 0}%`;
+});
+</script>
+
+{% endblock %}

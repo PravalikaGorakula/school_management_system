@@ -1,0 +1,665 @@
+
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+    Dashboard
+{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --orange-light: #FFF4E6;
+        --green: #25845A;
+        --green-light: #EAF7F0;
+        --purple: #7654A8;
+        --purple-light: #F2EDFA;
+        --red: #C74747;
+        --teal: #168A91;
+        --text-primary: #243447;
+        --text-secondary: #5F6F80;
+        --border-color: #E0E7EF;
+        --page-background: #F5F7FA;
+        --card-background: #FFFFFF;
+        --radius-small: 10px;
+        --radius-medium: 14px;
+        --radius-large: 18px;
+        --shadow-card: 0 4px 16px rgba(18, 59, 99, 0.07);
+        --shadow-hover: 0 10px 25px rgba(18, 59, 99, 0.13);
+    }
+
+    .dashboard-page {
+        width: 100%;
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 28px;
+        box-sizing: border-box;
+        color: var(--text-primary);
+        font-family: "Segoe UI", Arial, sans-serif;
+        font-size: 18px;
+        line-height: 1.6;
+    }
+
+    .dashboard-page *,
+    .dashboard-page *::before,
+    .dashboard-page *::after {
+        box-sizing: border-box;
+    }
+
+    /* HEADER - SAME AS NORMAL DASHBOARD */
+
+    .dashboard-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 24px;
+        background: linear-gradient(
+            120deg,
+            var(--deep-blue-dark),
+            var(--deep-blue)
+        );
+        color: #FFFFFF;
+        padding: 32px;
+        margin-bottom: 34px;
+        border-radius: var(--radius-large);
+        box-shadow: var(--shadow-card);
+    }
+
+    .dashboard-header h1 {
+        margin: 0 0 8px;
+        font-size: 30px;
+        font-weight: 700;
+        line-height: 1.35;
+    }
+
+    .dashboard-header p {
+        margin: 0 0 12px;
+        font-size: 18px;
+        color: #E5EDF5;
+    }
+
+    .dashboard-role {
+        display: inline-flex;
+        align-items: center;
+        padding: 7px 14px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.14);
+        color: #FFFFFF;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .dashboard-date {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 18px;
+        border-radius: var(--radius-small);
+        background: rgba(255, 255, 255, 0.12);
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .dashboard-date i {
+        color: #FFD19A;
+        font-size: 21px;
+    }
+
+    /* SECTION */
+
+    .dashboard-section {
+        margin-bottom: 38px;
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        margin: 0 0 24px;
+        padding: 0 0 14px;
+        color: var(--deep-blue-dark);
+        font-size: 23px;
+        font-weight: 700;
+        line-height: 1.5;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    .section-title i {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 43px;
+        height: 43px;
+        flex-shrink: 0;
+        background: var(--orange-light);
+        color: var(--orange-hover);
+        border-radius: 12px;
+        font-size: 20px;
+    }
+
+    /* OVERVIEW CARDS */
+
+    .dynamic-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 24px;
+        margin-bottom: 12px;
+    }
+
+    .dynamic-card {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        min-width: 0;
+        min-height: 140px;
+        padding: 26px 24px;
+        background: var(--card-background);
+        border: 1px solid var(--border-color);
+        border-left: 5px solid var(--deep-blue);
+        border-radius: var(--radius-medium);
+        box-shadow: var(--shadow-card);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .dynamic-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .dynamic-card.orange {
+        background: linear-gradient(135deg, #FFFFFF, #FFF8EF);
+        border-left-color: var(--orange);
+    }
+
+    .dynamic-card.green {
+        background: linear-gradient(135deg, #FFFFFF, #F0FAF4);
+        border-left-color: var(--green);
+    }
+
+    .dynamic-card.purple {
+        background: linear-gradient(135deg, #FFFFFF, #F7F3FC);
+        border-left-color: var(--purple);
+    }
+
+    .dynamic-card.red {
+        background: linear-gradient(135deg, #FFFFFF, #FFF4F4);
+        border-left-color: var(--red);
+    }
+
+    .dynamic-card.teal {
+        background: linear-gradient(135deg, #FFFFFF, #EFFAFA);
+        border-left-color: var(--teal);
+    }
+
+    .dynamic-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        min-width: 60px;
+        border-radius: 15px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        font-size: 25px;
+    }
+
+    .dynamic-card.orange .dynamic-icon {
+        background: var(--orange-light);
+        color: var(--orange-hover);
+    }
+
+    .dynamic-card.green .dynamic-icon {
+        background: var(--green-light);
+        color: var(--green);
+    }
+
+    .dynamic-card.purple .dynamic-icon {
+        background: var(--purple-light);
+        color: var(--purple);
+    }
+
+    .dynamic-card.red .dynamic-icon {
+        background: #FCEEEE;
+        color: var(--red);
+    }
+
+    .dynamic-card.teal .dynamic-icon {
+        background: #E8F7F7;
+        color: var(--teal);
+    }
+
+    .dynamic-info {
+        min-width: 0;
+        flex: 1;
+    }
+
+    .dynamic-label {
+        margin-bottom: 8px;
+        color: var(--text-secondary);
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+    }
+
+    .dynamic-value {
+        color: var(--deep-blue-dark);
+        font-size: 28px;
+        font-weight: 750;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+    }
+
+    /* QUICK ACTION CARDS */
+
+    .quick-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 210px));
+        gap: 22px;
+        margin-top: 24px;
+        justify-content: start;
+    }
+
+    .quick-card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        width: 100%;
+        min-width: 0;
+        min-height: 220px;
+        padding: 24px 20px;
+        color: var(--text-primary);
+        text-decoration: none;
+        background: var(--card-background);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-medium);
+        box-shadow: var(--shadow-card);
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease,
+                    border-color 0.2s ease;
+    }
+
+    .quick-card::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 4px;
+        background: var(--orange);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.2s ease;
+    }
+
+    .quick-card:hover {
+        color: var(--text-primary);
+        text-decoration: none;
+        transform: translateY(-5px);
+        border-color: #F5C38F;
+        box-shadow: var(--shadow-hover);
+    }
+
+    .quick-card:hover::after {
+        transform: scaleX(1);
+    }
+
+    .quick-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 62px;
+        height: 62px;
+        margin-bottom: 15px;
+        border-radius: 16px;
+        background: var(--orange-light);
+        color: var(--orange-hover);
+        font-size: 27px;
+    }
+
+    .quick-card:nth-child(4n + 2) .quick-icon {
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+    }
+
+    .quick-card:nth-child(4n + 3) .quick-icon {
+        background: var(--green-light);
+        color: var(--green);
+    }
+
+    .quick-card:nth-child(4n + 4) .quick-icon {
+        background: var(--purple-light);
+        color: var(--purple);
+    }
+
+    .quick-card h3 {
+        margin: 0 0 8px;
+        color: var(--deep-blue-dark);
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+    }
+
+    .quick-card p {
+        margin: 0;
+        color: var(--text-secondary);
+        font-size: 18px;
+        line-height: 1.6;
+        overflow-wrap: anywhere;
+    }
+
+    .dashboard-page a:focus-visible {
+        outline: 3px solid var(--orange);
+        outline-offset: 3px;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 1200px) {
+        .dynamic-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .quick-grid {
+            grid-template-columns: repeat(2, minmax(0, 210px));
+        }
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-page {
+            padding: 18px;
+        }
+
+        .dashboard-header {
+            padding: 24px;
+            margin-bottom: 28px;
+        }
+
+        .dashboard-header h1 {
+            font-size: 26px;
+        }
+
+        .section-title {
+            font-size: 21px;
+            margin-bottom: 20px;
+        }
+
+        .dynamic-grid,
+        .quick-grid {
+            grid-template-columns: 1fr;
+            gap: 18px;
+        }
+
+        .dynamic-card {
+            min-height: 120px;
+            padding: 22px;
+        }
+
+        .quick-card {
+            min-height: 190px;
+            padding: 24px;
+        }
+
+        .dashboard-section {
+            margin-bottom: 30px;
+        }
+    }
+
+    @media (max-width: 420px) {
+        .dashboard-page {
+            padding: 12px;
+        }
+
+        .dashboard-header {
+            padding: 20px;
+        }
+
+        .dynamic-card {
+            gap: 14px;
+            padding: 18px;
+        }
+
+        .dynamic-icon {
+            width: 52px;
+            height: 52px;
+            min-width: 52px;
+            font-size: 22px;
+        }
+
+        .dynamic-value {
+            font-size: 24px;
+        }
+    }
+</style>
+
+<div class="dashboard-page">
+
+    <!-- DASHBOARD HEADER -->
+
+    <div class="dashboard-header">
+        <div>
+            <h1>
+                Welcome,
+                {{ request.user.get_full_name|default:request.user.username }}
+            </h1>
+
+            <p>School Management System Dashboard</p>
+
+            <span class="dashboard-role">
+                {{ request.user.profile.get_role_display }}
+            </span>
+        </div>
+
+        <div class="dashboard-date">
+            <i class="fa-regular fa-calendar"></i>
+            <span>
+                {% if today %}
+                    {{ today|date:"d M Y" }}
+                {% else %}
+                    {% now "d M Y" %}
+                {% endif %}
+            </span>
+        </div>
+    </div>
+
+    <!-- OVERVIEW -->
+
+    <div class="dashboard-section">
+
+        <h2 class="section-title">
+            <i class="fa-solid fa-chart-simple"></i>
+            Overview
+        </h2>
+
+        <div class="dynamic-grid">
+
+            <div class="dynamic-card">
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-user-graduate"></i>
+                </div>
+                <div class="dynamic-info">
+                    <div class="dynamic-label">Total Students</div>
+                    <div class="dynamic-value">
+                        {{ student_count|default:0 }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="dynamic-card orange">
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <div class="dynamic-info">
+                    <div class="dynamic-label">Total Employees</div>
+                    <div class="dynamic-value">
+                        {{ employee_count|default:0 }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="dynamic-card green">
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-book-open"></i>
+                </div>
+                <div class="dynamic-info">
+                    <div class="dynamic-label">Active Subjects</div>
+                    <div class="dynamic-value">
+                        {{ subject_count|default:0 }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="dynamic-card purple">
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-bus"></i>
+                </div>
+                <div class="dynamic-info">
+                    <div class="dynamic-label">Total Buses</div>
+                    <div class="dynamic-value">
+                        {{ bus_count|default:0 }}
+                    </div>
+                </div>
+            </div>
+
+            {% if role == "chairman" %}
+            <div class="dynamic-card teal">
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-indian-rupee-sign"></i>
+                </div>
+                <div class="dynamic-info">
+                    <div class="dynamic-label">Approved Expenses</div>
+                    <div class="dynamic-value">
+                        ₹{{ expense_total|default:0|floatformat:2 }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="dynamic-card red">
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-clipboard-check"></i>
+                </div>
+                <div class="dynamic-info">
+                    <div class="dynamic-label">Pending Approvals</div>
+                    <div class="dynamic-value">
+                        {{ approval_count|default:0 }}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- QUICK ACTIONS -->
+
+    <div class="dashboard-section">
+
+        <h2 class="section-title">
+            <i class="fa-solid fa-bolt"></i>
+            Quick Actions
+        </h2>
+
+        <div class="quick-grid">
+
+            <a href="{% url 'dashboard:chairman_students' %}"
+               class="quick-card">
+                <div class="quick-icon">
+                    <i class="fa-solid fa-user-graduate"></i>
+                </div>
+                <h3>Students</h3>
+                <p>View student strength, admissions, attendance and fee information.</p>
+            </a>
+
+            <a href="{% url 'dashboard:chairman_employees' %}"
+               class="quick-card">
+                <div class="quick-icon">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <h3>Employees</h3>
+                <p>View teaching and non-teaching employee information.</p>
+            </a>
+
+            <a href="{% url 'dashboard:chairman_academics' %}"
+               class="quick-card">
+                <div class="quick-icon">
+                    <i class="fa-solid fa-book-open"></i>
+                </div>
+                <h3>Academics</h3>
+                <p>View classes, subjects, examinations and academic performance.</p>
+            </a>
+
+            {% if role == "chairman" %}
+            <a href="{% url 'dashboard:chairman_finance' %}"
+               class="quick-card">
+                <div class="quick-icon">
+                    <i class="fa-solid fa-indian-rupee-sign"></i>
+                </div>
+                <h3>Finance</h3>
+                <p>Review fee collections, salaries and approved expenses.</p>
+            </a>
+            {% endif %}
+
+            <a href="{% url 'dashboard:chairman_transport' %}"
+               class="quick-card">
+                <div class="quick-icon">
+                    <i class="fa-solid fa-bus"></i>
+                </div>
+                <h3>Transport</h3>
+                <p>Monitor school buses, drivers, routes and transport issues.</p>
+            </a>
+
+            <a href="{% url 'dashboard:chairman_approvals' %}"
+               class="quick-card">
+                <div class="quick-icon">
+                    <i class="fa-solid fa-check-double"></i>
+                </div>
+                <h3>Approvals</h3>
+                <p>Review pending management requests and approvals.</p>
+            </a>
+
+            <a href="{% url 'dashboard:chairman_reports' %}"
+               class="quick-card">
+                <div class="quick-icon">
+                    <i class="fa-solid fa-chart-column"></i>
+                </div>
+                <h3>Reports</h3>
+                <p>View management, academic and attendance reports.</p>
+            </a>
+
+            {% if role == "chairman" %}
+            <a href="{% url 'announcements:list' %}"
+               class="quick-card">
+                <div class="quick-icon">
+                    <i class="fa-solid fa-bullhorn"></i>
+                </div>
+                <h3>Announcements</h3>
+                <p>View school announcements and management updates.</p>
+            </a>
+
+            <a href="{% url 'notifications:list' %}"
+               class="quick-card">
+                <div class="quick-icon">
+                    <i class="fa-solid fa-bell"></i>
+                </div>
+                <h3>Notifications</h3>
+                <p>View important school and system notifications.</p>
+            </a>
+            {% endif %}
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

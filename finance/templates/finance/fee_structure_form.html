@@ -1,0 +1,11 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% block title %}{{ page_title }} | SMS{% endblock %}
+{% block page_title %}{{ page_title }}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'finance/css/finance.css' %}">{% endblock %}
+{% block content %}
+<div class="finance-page"><header class="finance-hero"><div><h2>{{ page_title }}</h2><p>Enter academic year, class, installment, amount and due date.</p></div></header>
+<section class="finance-panel"><form method="post" novalidate>{% csrf_token %}{% if form.non_field_errors %}<div class="finance-note">{{ form.non_field_errors }}</div>{% endif %}
+<div class="finance-form-grid">{% for field in form %}<div class="finance-field {% if field.name == 'description' %}finance-field-full{% endif %}"><label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span style="color:#b91c1c">*</span>{% endif %}</label>{{ field }}{% if field.help_text %}<div class="finance-help">{{ field.help_text }}</div>{% endif %}{% if field.errors %}<ul class="finance-errorlist">{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}</div>{% endfor %}</div>
+<div class="finance-actions" style="margin-top:24px"><button class="finance-btn finance-primary" type="submit">Save Fee Structure</button><a class="finance-btn finance-secondary" href="{% url 'finance:fee_structure_list' %}">Cancel</a></div></form></section></div>
+{% endblock %}

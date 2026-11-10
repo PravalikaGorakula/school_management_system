@@ -1,0 +1,977 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+Transport Overview
+{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --orange-light: #FFF4E6;
+        --green: #25845A;
+        --green-light: #EAF7F0;
+        --purple: #7654A8;
+        --purple-light: #F2EDFA;
+        --teal: #168A91;
+        --text-primary: #243447;
+        --text-secondary: #5F6F80;
+        --border-color: #E0E7EF;
+        --card-background: #FFFFFF;
+        --radius-small: 10px;
+        --radius-medium: 14px;
+        --radius-large: 18px;
+        --shadow-card: 0 4px 16px rgba(18, 59, 99, 0.07);
+        --shadow-hover: 0 10px 25px rgba(18, 59, 99, 0.13);
+    }
+
+    .transport-dashboard {
+        width: 100%;
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 28px;
+        box-sizing: border-box;
+        color: var(--text-primary);
+        font-family: "Segoe UI", Arial, sans-serif;
+        font-size: 18px;
+        line-height: 1.6;
+    }
+
+    .transport-dashboard *,
+    .transport-dashboard *::before,
+    .transport-dashboard *::after {
+        box-sizing: border-box;
+    }
+
+    /* PAGE HEADER */
+
+    .transport-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 24px;
+        padding: 32px;
+        margin-bottom: 34px;
+        border-radius: var(--radius-large);
+        color: #FFFFFF;
+        background: linear-gradient(
+            120deg,
+            var(--deep-blue-dark),
+            var(--deep-blue)
+        );
+        box-shadow: var(--shadow-card);
+    }
+
+    .transport-header h1 {
+        margin: 0 0 8px;
+        font-size: 30px;
+        font-weight: 700;
+        line-height: 1.35;
+    }
+
+    .transport-header p {
+        margin: 0;
+        color: #E5EDF5;
+        font-size: 18px;
+    }
+
+    .transport-date {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 18px;
+        border-radius: var(--radius-small);
+        background: rgba(255, 255, 255, 0.12);
+        font-size: 18px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .transport-date i {
+        color: #FFD19A;
+        font-size: 21px;
+    }
+
+    /* SECTION HEADING */
+
+    .transport-section {
+        margin-bottom: 38px;
+    }
+
+    .transport-section-title {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        margin: 0 0 24px;
+        padding: 0 0 14px;
+        color: var(--deep-blue-dark);
+        font-size: 23px;
+        font-weight: 700;
+        line-height: 1.5;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    .transport-section-title i {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 43px;
+        height: 43px;
+        flex-shrink: 0;
+        background: var(--orange-light);
+        color: var(--orange-hover);
+        border-radius: 12px;
+        font-size: 20px;
+    }
+
+    /* STATISTICS CARDS */
+
+    .transport-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 24px;
+    }
+
+    .transport-stat-card {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        min-width: 0;
+        min-height: 140px;
+        padding: 26px 24px;
+        background: var(--card-background);
+        border: 1px solid var(--border-color);
+        border-left: 5px solid var(--deep-blue);
+        border-radius: var(--radius-medium);
+        box-shadow: var(--shadow-card);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .transport-stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .transport-stat-card.orange {
+        background: linear-gradient(135deg, #FFFFFF, #FFF8EF);
+        border-left-color: var(--orange);
+    }
+
+    .transport-stat-card.green {
+        background: linear-gradient(135deg, #FFFFFF, #F0FAF4);
+        border-left-color: var(--green);
+    }
+
+    .transport-stat-card.purple {
+        background: linear-gradient(135deg, #FFFFFF, #F7F3FC);
+        border-left-color: var(--purple);
+    }
+
+    .transport-stat-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        min-width: 60px;
+        border-radius: 15px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        font-size: 25px;
+    }
+
+    .transport-stat-card.orange .transport-stat-icon {
+        background: var(--orange-light);
+        color: var(--orange-hover);
+    }
+
+    .transport-stat-card.green .transport-stat-icon {
+        background: var(--green-light);
+        color: var(--green);
+    }
+
+    .transport-stat-card.purple .transport-stat-icon {
+        background: var(--purple-light);
+        color: var(--purple);
+    }
+
+    .transport-stat-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .transport-stat-label {
+        margin-bottom: 8px;
+        color: var(--text-secondary);
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+    }
+
+    .transport-stat-value {
+        color: var(--deep-blue-dark);
+        font-size: 28px;
+        font-weight: 750;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+    }
+
+    /* CHARTS */
+
+    .transport-charts-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 24px;
+    }
+
+    .transport-chart-card {
+        min-width: 0;
+        padding: 26px;
+        background: var(--card-background);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-medium);
+        box-shadow: var(--shadow-card);
+        transition: box-shadow 0.2s ease;
+    }
+
+    .transport-chart-card:hover {
+        box-shadow: var(--shadow-hover);
+    }
+
+    .transport-chart-heading {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 8px;
+    }
+
+    .transport-chart-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        min-width: 48px;
+        border-radius: 12px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        font-size: 21px;
+    }
+
+    .transport-chart-card:nth-child(even) .transport-chart-icon {
+        background: var(--orange-light);
+        color: var(--orange-hover);
+    }
+
+    .transport-chart-heading h3 {
+        margin: 0;
+        color: var(--deep-blue-dark);
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 1.4;
+    }
+
+    .transport-chart-description {
+        margin: 0 0 24px;
+        color: var(--text-secondary);
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    .transport-chart-container {
+        position: relative;
+        width: 100%;
+        height: 340px;
+    }
+
+    .transport-chart-note {
+        margin: 18px 0 0;
+        padding: 12px 14px;
+        border-radius: var(--radius-small);
+        background: var(--deep-blue-light);
+        color: var(--text-secondary);
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    /* MANAGEMENT PANEL */
+
+    .transport-management-panel {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 20px;
+        padding: 28px;
+        color: #FFFFFF;
+        background: linear-gradient(
+            120deg,
+            var(--deep-blue-dark),
+            var(--deep-blue)
+        );
+        border-radius: var(--radius-large);
+        box-shadow: var(--shadow-card);
+    }
+
+    .transport-management-content {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        min-width: 0;
+    }
+
+    .transport-management-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        min-width: 60px;
+        background: rgba(255, 255, 255, 0.13);
+        color: #FFFFFF;
+        border-radius: 15px;
+        font-size: 25px;
+    }
+
+    .transport-management-title {
+        margin: 0 0 7px;
+        color: #FFFFFF;
+        font-size: 22px;
+        font-weight: 750;
+        line-height: 1.4;
+    }
+
+    .transport-management-description {
+        margin: 0;
+        color: #E5EDF5;
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    .transport-management-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 13px 20px;
+        background: var(--orange);
+        color: #FFFFFF;
+        border: 1px solid var(--orange);
+        border-radius: 10px;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: 700;
+        white-space: nowrap;
+        transition: all 0.2s ease;
+    }
+
+    .transport-management-btn:hover {
+        background: var(--orange-hover);
+        border-color: var(--orange-hover);
+        color: #FFFFFF;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 1200px) {
+        .transport-stats-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .transport-charts-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .transport-dashboard {
+            padding: 18px;
+        }
+
+        .transport-header {
+            padding: 24px;
+            margin-bottom: 28px;
+        }
+
+        .transport-header h1 {
+            font-size: 26px;
+        }
+
+        .transport-header p {
+            font-size: 16px;
+        }
+
+        .transport-section-title {
+            font-size: 21px;
+            margin-bottom: 20px;
+        }
+
+        .transport-stats-grid {
+            grid-template-columns: 1fr;
+            gap: 18px;
+        }
+
+        .transport-stat-card {
+            min-height: 120px;
+            padding: 22px;
+        }
+
+        .transport-chart-card {
+            padding: 22px;
+        }
+
+        .transport-chart-container {
+            height: 310px;
+        }
+
+        .transport-section {
+            margin-bottom: 30px;
+        }
+
+        .transport-management-panel {
+            padding: 24px;
+        }
+    }
+
+    @media (max-width: 420px) {
+        .transport-dashboard {
+            padding: 12px;
+        }
+
+        .transport-header {
+            padding: 20px;
+        }
+
+        .transport-date {
+            font-size: 15px;
+            padding: 10px 12px;
+        }
+
+        .transport-stat-card {
+            gap: 14px;
+            padding: 18px;
+        }
+
+        .transport-stat-icon {
+            width: 52px;
+            height: 52px;
+            min-width: 52px;
+            font-size: 22px;
+        }
+
+        .transport-stat-label {
+            font-size: 16px;
+        }
+
+        .transport-stat-value {
+            font-size: 24px;
+        }
+
+        .transport-chart-card {
+            padding: 16px;
+        }
+
+        .transport-chart-container {
+            height: 280px;
+        }
+
+        .transport-management-panel {
+            padding: 20px;
+        }
+
+        .transport-management-content {
+            align-items: flex-start;
+        }
+
+        .transport-management-title {
+            font-size: 19px;
+        }
+
+        .transport-management-description {
+            font-size: 14px;
+        }
+
+        .transport-management-btn {
+            width: 100%;
+            white-space: normal;
+        }
+    }
+</style>
+
+<div class="transport-dashboard">
+
+    <!-- PAGE HEADER -->
+
+    <div class="transport-header">
+        <div>
+            <h1>
+                <i class="fa-solid fa-bus" style="color: #F28C28;"></i>
+                Transport Overview
+            </h1>
+
+            <p>
+                Complete overview of school buses, drivers,
+                routes and transport operations.
+            </p>
+        </div>
+
+        <div class="transport-date">
+            <i class="fa-regular fa-calendar"></i>
+            <span>{% now "d M Y" %}</span>
+        </div>
+    </div>
+
+
+    <!-- TRANSPORT STATISTICS -->
+
+    <div class="transport-section">
+
+        <h2 class="transport-section-title">
+            <i class="fa-solid fa-chart-simple"></i>
+            Transport Statistics
+        </h2>
+
+        <div class="transport-stats-grid">
+
+            <!-- TOTAL BUSES -->
+
+            <div class="transport-stat-card">
+
+                <div class="transport-stat-icon">
+                    <i class="fa-solid fa-bus"></i>
+                </div>
+
+                <div class="transport-stat-info">
+                    <div class="transport-stat-label">
+                        Total Buses
+                    </div>
+
+                    <div class="transport-stat-value">
+                        {{ bus_count|default:"0" }}
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- ACTIVE BUSES -->
+
+            <div class="transport-stat-card green">
+
+                <div class="transport-stat-icon">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+
+                <div class="transport-stat-info">
+                    <div class="transport-stat-label">
+                        Active Buses
+                    </div>
+
+                    <div class="transport-stat-value">
+                        {{ active_bus_count|default:"0" }}
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- DRIVERS -->
+
+            <div class="transport-stat-card orange">
+
+                <div class="transport-stat-icon">
+                    <i class="fa-solid fa-id-card"></i>
+                </div>
+
+                <div class="transport-stat-info">
+                    <div class="transport-stat-label">
+                        Drivers
+                    </div>
+
+                    <div class="transport-stat-value">
+                        {{ driver_count|default:"0" }}
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- ROUTES -->
+
+            <div class="transport-stat-card purple">
+
+                <div class="transport-stat-icon">
+                    <i class="fa-solid fa-route"></i>
+                </div>
+
+                <div class="transport-stat-info">
+                    <div class="transport-stat-label">
+                        Routes
+                    </div>
+
+                    <div class="transport-stat-value">
+                        {{ route_count|default:"0" }}
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- TRANSPORT ANALYTICS -->
+
+    <div class="transport-section">
+
+        <h2 class="transport-section-title">
+            <i class="fa-solid fa-chart-pie"></i>
+            Transport Analytics
+        </h2>
+
+        <div class="transport-charts-grid">
+
+            <!-- BAR CHART -->
+
+            <div class="transport-chart-card">
+
+                <div class="transport-chart-heading">
+                    <div class="transport-chart-icon">
+                        <i class="fa-solid fa-chart-column"></i>
+                    </div>
+
+                    <h3>Transport Statistics</h3>
+                </div>
+
+                <p class="transport-chart-description">
+                    Comparison of buses, drivers and available routes.
+                </p>
+
+                <div class="transport-chart-container">
+                    <canvas id="transportBarChart"></canvas>
+                </div>
+
+                <p class="transport-chart-note">
+                    Counts are displayed using the transport data
+                    available in the system.
+                </p>
+
+            </div>
+
+
+            <!-- PIE CHART -->
+
+            <div class="transport-chart-card">
+
+                <div class="transport-chart-heading">
+                    <div class="transport-chart-icon">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </div>
+
+                    <h3>Bus Status Distribution</h3>
+                </div>
+
+                <p class="transport-chart-description">
+                    Distribution of active and inactive buses.
+                </p>
+
+                <div class="transport-chart-container">
+                    <canvas id="transportPieChart"></canvas>
+                </div>
+
+                <p class="transport-chart-note">
+                    Inactive buses are calculated as total buses
+                    minus active buses.
+                </p>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- TRANSPORT MANAGEMENT -->
+
+    <div class="transport-management-panel">
+
+        <div class="transport-management-content">
+
+            <div class="transport-management-icon">
+                <i class="fa-solid fa-gears"></i>
+            </div>
+
+            <div>
+                <h2 class="transport-management-title">
+                    Transport Management
+                </h2>
+
+                <p class="transport-management-description">
+                    Manage buses, driver assignments, routes,
+                    trip history and transport operations.
+                </p>
+            </div>
+
+        </div>
+
+        <a href="{% url 'transport:vp_buses_dashboard' %}"
+           class="transport-management-btn">
+
+            <i class="fa-solid fa-bus"></i>
+            Open Transport Management
+            <i class="fa-solid fa-arrow-right"></i>
+
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- CHART.JS -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const totalBuses = Number(
+        "{{ bus_count|default:'0' }}"
+    ) || 0;
+
+    const activeBuses = Number(
+        "{{ active_bus_count|default:'0' }}"
+    ) || 0;
+
+    const totalDrivers = Number(
+        "{{ driver_count|default:'0' }}"
+    ) || 0;
+
+    const totalRoutes = Number(
+        "{{ route_count|default:'0' }}"
+    ) || 0;
+
+    const inactiveBuses = Math.max(
+        0,
+        totalBuses - activeBuses
+    );
+
+    const navyBlue = "#123B63";
+    const orange = "#F28C28";
+    const green = "#25845A";
+    const purple = "#7654A8";
+    const chartText = "#5F6F80";
+    const chartGrid = "#E0E7EF";
+
+    if (typeof Chart === "undefined") {
+        console.error("Chart.js could not be loaded.");
+        return;
+    }
+
+    Chart.defaults.font.family = '"Segoe UI", Arial, sans-serif';
+    Chart.defaults.font.size = 14;
+    Chart.defaults.color = chartText;
+
+
+    // BAR CHART
+
+    const barCanvas = document.getElementById(
+        "transportBarChart"
+    );
+
+    if (barCanvas) {
+
+        new Chart(barCanvas, {
+            type: "bar",
+
+            data: {
+                labels: [
+                    "Total Buses",
+                    "Active Buses",
+                    "Drivers",
+                    "Routes"
+                ],
+
+                datasets: [{
+                    label: "Count",
+
+                    data: [
+                        totalBuses,
+                        activeBuses,
+                        totalDrivers,
+                        totalRoutes
+                    ],
+
+                    backgroundColor: [
+                        navyBlue,
+                        green,
+                        orange,
+                        purple
+                    ],
+
+                    borderRadius: 8,
+                    borderSkipped: false,
+                    maxBarThickness: 68
+                }]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+
+                    tooltip: {
+                        backgroundColor: "#0B2945",
+                        padding: 13,
+                        cornerRadius: 8
+                    }
+                },
+
+                scales: {
+                    y: {
+                        beginAtZero: true,
+
+                        ticks: {
+                            precision: 0,
+                            stepSize: 1,
+                            padding: 10
+                        },
+
+                        grid: {
+                            color: chartGrid
+                        },
+
+                        border: {
+                            display: false
+                        }
+                    },
+
+                    x: {
+                        grid: {
+                            display: false
+                        },
+
+                        border: {
+                            display: false
+                        },
+
+                        ticks: {
+                            color: navyBlue,
+                            maxRotation: 0,
+                            minRotation: 0
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+
+    // BUS STATUS PIE CHART
+
+    const pieCanvas = document.getElementById(
+        "transportPieChart"
+    );
+
+    if (pieCanvas) {
+
+        new Chart(pieCanvas, {
+            type: "doughnut",
+
+            data: {
+                labels: [
+                    "Active Buses",
+                    "Inactive Buses"
+                ],
+
+                datasets: [{
+                    data: [
+                        activeBuses,
+                        inactiveBuses
+                    ],
+
+                    backgroundColor: [
+                        green,
+                        orange
+                    ],
+
+                    borderColor: "#FFFFFF",
+                    borderWidth: 4,
+                    hoverOffset: 10
+                }]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: "60%",
+
+                plugins: {
+                    legend: {
+                        position: "bottom",
+
+                        labels: {
+                            color: "#243447",
+                            padding: 18,
+                            usePointStyle: true,
+                            pointStyle: "circle",
+                            boxWidth: 10,
+                            boxHeight: 10
+                        }
+                    },
+
+                    tooltip: {
+                        backgroundColor: "#0B2945",
+                        padding: 13,
+                        cornerRadius: 8,
+
+                        callbacks: {
+                            label: function (context) {
+
+                                const value = Number(
+                                    context.raw
+                                ) || 0;
+
+                                const total =
+                                    context.dataset.data.reduce(
+                                        function (sum, item) {
+                                            return sum +
+                                                Number(item || 0);
+                                        },
+                                        0
+                                    );
+
+                                const percentage = total > 0
+                                    ? (
+                                        value / total * 100
+                                      ).toFixed(1)
+                                    : "0.0";
+
+                                return context.label + ": " +
+                                    value + " (" +
+                                    percentage + "%)";
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+});
+</script>
+
+{% endblock %}

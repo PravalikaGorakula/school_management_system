@@ -1,0 +1,15 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% block title %}Bank Reconciliation | SMS{% endblock %}
+{% block page_title %}Bank Reconciliation{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'finance/css/finance.css' %}">{% endblock %}
+{% block content %}
+<div class="finance-page"><header class="finance-hero"><div><h2>Bank Reconciliation</h2><p>Add statement lines and match them to recorded fee payments using exact transaction reference and amount.</p></div><a class="finance-btn finance-primary" href="{% url 'finance:reconciliation_create' %}">+ Add Statement Entry</a></header>
+{% if messages %}{% for message in messages %}<div class="finance-message">{{ message }}</div>{% endfor %}{% endif %}
+<div class="finance-grid"><div class="finance-stat"><span>Unmatched Statement Entries</span><strong>{{ unmatched_count }}</strong><small>Require review or a matching payment</small></div><div class="finance-stat"><span>Matched Entries</span><strong>{{ matched_count }}</strong><small>Matched by amount and reference</small></div></div>
+<div class="finance-note">For reliable matching, the bank reference must exactly match the payment's transaction reference (or receipt number) and the amount must be identical. Ambiguous matches are deliberately not auto-approved.</div>
+<section class="finance-panel"><form method="get" class="finance-filters"><div class="finance-field"><label>Search reference / narration / receipt</label><input name="q" value="{{ query }}"></div><div class="finance-field"><label>Status</label><select name="status"><option value="">All</option><option value="unmatched" {% if status == "unmatched" %}selected{% endif %}>Unmatched</option><option value="matched" {% if status == "matched" %}selected{% endif %}>Matched</option></select></div><button class="finance-btn finance-primary">Filter</button><a class="finance-btn finance-secondary" href="{% url 'finance:reconciliation' %}">Reset</a></form>
+<div class="finance-table-wrap"><table class="finance-table"><thead><tr><th>Statement Date</th><th>Bank Reference</th><th>Description</th><th>Amount</th><th>Match Status</th><th>Matched Receipt</th><th>Action</th></tr></thead><tbody>
+{% for e in entries %}<tr><td>{{ e.statement_date|date:"d M Y" }}</td><td><strong>{{ e.bank_reference }}</strong></td><td>{{ e.description|default:"—" }}</td><td>₹{{ e.amount|floatformat:2 }}</td><td><span class="finance-badge badge-{{ e.status }}">{{ e.get_status_display }}</span></td><td>{% if e.matched_payment %}{{ e.matched_payment.receipt_number }}{% else %}—{% endif %}</td><td>{% if e.status == "unmatched" %}<form method="post" action="{% url 'finance:reconciliation_match' e.pk %}" onsubmit="return confirm('Try matching this bank entry to a payment with the same reference and amount?')">{% csrf_token %}<button class="finance-btn finance-success">Auto Match</button></form>{% else %}<span class="finance-badge badge-matched">Verified</span>{% endif %}</td></tr>{% empty %}<tr><td colspan="7" class="finance-empty">No bank statement entries yet.</td></tr>{% endfor %}
+</tbody></table></div></section></div>
+{% endblock %}

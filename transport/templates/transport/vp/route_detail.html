@@ -1,0 +1,1085 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+{{ route.route_name }}
+{% endblock %}
+
+{% block content %}
+
+
+<style>
+:root {
+    --deep-blue: #123B63;
+    --deep-blue-dark: #0B2945;
+    --deep-blue-light: #EAF2F8;
+    --orange: #F28C28;
+    --orange-hover: #D97706;
+    --orange-light: #FFF4E6;
+    --border: #D9E2EC;
+    --text: #243B53;
+    --muted: #627D98;
+    --white: #ffffff;
+    --danger: #dc3545;
+}
+
+/* ================= PAGE ================= */
+
+.route-detail-page {
+    width: 100%;
+    padding: 18px;
+    box-sizing: border-box;
+}
+
+/* ================= BACK LINK ================= */
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--deep-blue);
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    line-height: 1.4;
+}
+
+.back-link:hover {
+    color: var(--orange-hover);
+}
+
+/* ================= ROUTE HEADER ================= */
+
+.route-header {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 3px 12px rgba(18, 59, 99, 0.06);
+    margin-bottom: 16px;
+}
+
+.route-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.route-title {
+    margin: 0;
+    color: var(--deep-blue-dark);
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.route-code {
+    display: inline-block;
+    margin-top: 6px;
+    background: var(--deep-blue-light);
+    color: var(--deep-blue);
+    padding: 5px 9px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 1.4;
+}
+
+.route-status {
+    background: #eaf7ef;
+    color: #198754;
+    padding: 6px 10px;
+    border-radius: 7px;
+    font-size: 18px;
+    line-height: 1.4;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* ================= ROUTE INFORMATION ================= */
+
+.route-info {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.info-box {
+    background: var(--deep-blue-light);
+    border-radius: 9px;
+    padding: 12px;
+    min-width: 0;
+}
+
+.info-label {
+    color: var(--muted);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 4px;
+}
+
+.info-value {
+    color: var(--deep-blue-dark);
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+/* ================= BUS ASSIGNMENT ================= */
+
+.bus-section {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+}
+
+.bus-section-title {
+    color: var(--deep-blue-dark);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 8px;
+}
+
+.bus-section-title i {
+    color: var(--orange);
+    margin-right: 5px;
+}
+
+.bus-form {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.form-control {
+    box-sizing: border-box;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 8px 11px;
+    min-height: 42px;
+    font-size: 18px;
+    line-height: 1.4;
+    color: var(--text);
+    background: white;
+    min-width: 260px;
+    max-width: 100%;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--orange);
+    box-shadow: 0 0 0 3px rgba(242, 140, 40, 0.12);
+}
+
+/* ================= BUTTONS ================= */
+
+.btn {
+    border: none;
+    border-radius: 8px;
+    padding: 9px 15px;
+    min-height: 42px;
+    font-size: 18px;
+    line-height: 1.4;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.btn-primary {
+    background: var(--orange);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--orange-hover);
+}
+
+.btn-danger {
+    background: #fff0f0;
+    color: #dc3545;
+}
+
+.btn-danger:hover {
+    background: #ffe0e0;
+}
+
+/* ================= CARDS ================= */
+
+.card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 12px rgba(18, 59, 99, 0.06);
+    margin-bottom: 16px;
+}
+
+.card-header {
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-title {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.card-title h2 {
+    margin: 0;
+    color: var(--deep-blue-dark);
+    font-size: 22px;
+    line-height: 1.4;
+    font-weight: 700;
+}
+
+.card-title i {
+    color: var(--orange);
+    font-size: 20px;
+}
+
+/* ================= ADD STOP FORM ================= */
+
+.form-body {
+    padding: 14px 18px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 2fr 1fr 1fr;
+    column-gap: 12px;
+    row-gap: 8px;
+    align-items: start;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.form-group label {
+    color: var(--text);
+    font-size: 18px;
+    line-height: 1.3;
+    font-weight: 600;
+    margin: 0;
+}
+
+.form-group input,
+.form-group select {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: 40px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 7px 9px;
+    font-size: 18px;
+    line-height: 1.4;
+    color: var(--text);
+    background: white;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--orange);
+    box-shadow: 0 0 0 3px rgba(242, 140, 40, 0.12);
+}
+
+.form-actions {
+    margin-top: 12px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* ================= STOPS TABLE ================= */
+
+.table-wrapper {
+    overflow-x: auto;
+    width: 100%;
+}
+
+.stops-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.stops-table th {
+    background: var(--deep-blue);
+    color: white;
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+.stops-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    font-size: 18px;
+    line-height: 1.4;
+    vertical-align: middle;
+}
+
+.stops-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.stops-table tbody tr:hover {
+    background: var(--orange-light);
+}
+
+.order-badge {
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--deep-blue-light);
+    color: var(--deep-blue);
+    border-radius: 50%;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.stop-name {
+    font-weight: 700;
+    color: var(--deep-blue-dark);
+}
+
+.stops-table td form {
+    margin: 0;
+}
+
+/* ================= EMPTY STATE ================= */
+
+.no-stops {
+    padding: 28px 18px;
+    text-align: center;
+    color: var(--muted);
+}
+
+.no-stops > i {
+    font-size: 38px;
+    color: var(--deep-blue-light);
+    margin-bottom: 8px;
+}
+
+.no-stops h3 {
+    color: var(--deep-blue-dark);
+    font-size: 22px;
+    margin: 5px 0;
+}
+
+.no-stops p {
+    font-size: 18px;
+    line-height: 1.5;
+    margin: 5px 0 0;
+}
+
+/* ================= MESSAGES ================= */
+
+.message-box {
+    margin-bottom: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--orange-light);
+    color: var(--deep-blue-dark);
+    border-left: 4px solid var(--orange);
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+/* ================= DELETE ROUTE ================= */
+
+.route-detail-page > div:last-child {
+    margin-top: 12px;
+}
+
+/* ================= TABLET ================= */
+
+@media (max-width: 1000px) {
+    .route-detail-page {
+        padding: 16px;
+    }
+
+    .route-info {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+    }
+
+    .form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: 12px;
+        row-gap: 8px;
+    }
+
+    .form-control {
+        min-width: 0;
+    }
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 650px) {
+    .route-detail-page {
+        padding: 12px;
+    }
+
+    .route-header {
+        padding: 14px;
+        margin-bottom: 14px;
+    }
+
+    .route-title-row {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .route-title {
+        font-size: 28px;
+    }
+
+    .route-info {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        margin-top: 12px;
+    }
+
+    .info-box {
+        padding: 10px;
+    }
+
+    .bus-section {
+        margin-top: 12px;
+        padding-top: 12px;
+    }
+
+    .bus-form {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .bus-form .form-control,
+    .bus-form .btn {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .card {
+        margin-bottom: 14px;
+    }
+
+    .card-header {
+        padding: 11px 14px;
+    }
+
+    .card-title h2 {
+        font-size: 21px;
+    }
+
+    .form-body {
+        padding: 12px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        row-gap: 8px;
+    }
+
+    .form-group {
+        gap: 3px;
+    }
+
+    .form-group input,
+    .form-group select {
+        min-height: 40px;
+    }
+
+    .form-actions {
+        margin-top: 12px;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+    }
+
+    .stops-table th,
+    .stops-table td {
+        padding: 9px 10px;
+    }
+
+    .no-stops {
+        padding: 24px 12px;
+    }
+
+    .route-detail-page > div:last-child .btn {
+        width: 100%;
+    }
+}
+</style>
+
+
+<div class="route-detail-page">
+
+    <!-- BACK -->
+
+    <a
+        href="{% url 'transport:vp_bus_routes' %}"
+        class="back-link"
+    >
+
+        <i class="fa-solid fa-arrow-left"></i>
+
+        Back to Bus Routes
+
+    </a>
+
+
+    <!-- MESSAGES -->
+
+    {% if messages %}
+
+        {% for message in messages %}
+
+            <div class="message-box">
+
+                <i class="fa-solid fa-circle-check"></i>
+
+                {{ message }}
+
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+
+    <!-- ROUTE HEADER -->
+
+    <div class="route-header">
+
+        <div class="route-title-row">
+
+            <div>
+
+                <h1 class="route-title">
+                    {{ route.route_name }} <span class="route-code">
+                    {{ route.route_code }}
+                </span>
+                </h1>
+
+                
+
+            </div>
+
+
+            {% if route.is_active %}
+
+                <span class="route-status">
+                    Active
+                </span>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- ROUTE INFORMATION -->
+
+        <div class="route-info">
+
+            <div class="info-box">
+
+                <div class="info-label">
+                    Start Location
+                </div>
+
+                <div class="info-value">
+                    {{ route.start_location }}
+                </div>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <div class="info-label">
+                    End Location
+                </div>
+
+                <div class="info-value">
+                    {{ route.end_location }}
+                </div>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <div class="info-label">
+                    Distance
+                </div>
+
+                <div class="info-value">
+
+                    {% if route.total_distance_km %}
+                        {{ route.total_distance_km }} KM
+                    {% else %}
+                        —
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <div class="info-label">
+                    Duration
+                </div>
+
+                <div class="info-value">
+
+                    {% if route.estimated_duration_minutes %}
+                        {{ route.estimated_duration_minutes }} Minutes
+                    {% else %}
+                        —
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ASSIGNED BUS -->
+
+        <div class="bus-section">
+
+            <div class="bus-section-title">
+
+                <i class="fa-solid fa-bus"></i>
+
+                Assigned Bus
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+
+                    <i class="fa-solid fa-bus"></i>
+
+                    Save Bus Assignment
+
+                </button>
+
+            </div>
+            
+
+
+            <form
+                method="POST"
+                class="bus-form"
+            >
+
+                {% csrf_token %}
+
+                <input
+                    type="hidden"
+                    name="action"
+                    value="assign_bus"
+                >
+
+
+                <select
+                    name="assigned_bus"
+                    class="form-control"
+                >
+
+                    <option value="">
+                        No Bus Assigned
+                    </option>
+
+
+                    {% for bus in buses %}
+
+                        <option
+                            value="{{ bus.id }}"
+                            {% if assigned_bus and assigned_bus.id == bus.id %}
+                                selected
+                            {% endif %}
+                        >
+
+                            {{ bus.bus_number }}
+                            -
+                            {{ bus.registration_number }}
+
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+
+                
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- ADD STOP -->
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <div class="card-title">
+
+                <i class="fa-solid fa-location-dot"></i>
+
+                <h2>
+                    Add Route Stop
+                </h2>
+
+            </div>
+            <div class="form-actions">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+
+                        <i class="fa-solid fa-plus"></i>
+
+                        Add Stop
+
+                    </button>
+
+                </div>
+
+        </div>
+
+
+        <div class="form-body">
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <input
+                    type="hidden"
+                    name="action"
+                    value="add_stop"
+                >
+
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label>
+                            Stop Name
+                        </label>
+
+                        {{ stop_form.stop_name }}
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Order
+                        </label>
+
+                        {{ stop_form.stop_order }}
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Address
+                        </label>
+
+                        {{ stop_form.address }}
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Pickup Time
+                        </label>
+
+                        {{ stop_form.pickup_time }}
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Drop Time
+                        </label>
+
+                        {{ stop_form.drop_time }}
+
+                    </div>
+
+                </div>
+
+
+                
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- STOPS TABLE -->
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <div class="card-title">
+
+                <i class="fa-solid fa-list-ol"></i>
+
+                <h2>
+                    Route Stops
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        {% if stops %}
+
+        <div class="table-wrapper">
+
+            <table class="stops-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Order
+                        </th>
+
+                        <th>
+                            Stop
+                        </th>
+
+                        <th>
+                            Address
+                        </th>
+
+                        <th>
+                            Pickup
+                        </th>
+
+                        <th>
+                            Drop
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for stop in stops %}
+
+                    <tr>
+
+                        <td>
+
+                            <span class="order-badge">
+                                {{ stop.stop_order }}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="stop-name">
+                                {{ stop.stop_name }}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            {% if stop.address %}
+                                {{ stop.address }}
+                            {% else %}
+                                —
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if stop.pickup_time %}
+                                {{ stop.pickup_time|time:"h:i A" }}
+                            {% else %}
+                                —
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if stop.drop_time %}
+                                {{ stop.drop_time|time:"h:i A" }}
+                            {% else %}
+                                —
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if stop.is_active %}
+                                Active
+                            {% else %}
+                                Inactive
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            <form
+                                method="POST"
+                                action="{% url 'transport:vp_delete_stop' stop.id %}"
+                                onsubmit="return confirm('Delete this stop?');"
+                            >
+
+                                {% csrf_token %}
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-danger"
+                                >
+
+                                    <i class="fa-solid fa-trash"></i>
+
+                                    Delete
+
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+            <div class="no-stops">
+
+                <i class="fa-solid fa-location-dot"></i>
+
+                <h3>
+                    No Stops Added
+                </h3>
+
+                <p>
+                    Add the first stop for this route above.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- DELETE ROUTE -->
+
+    <div style="text-align:right;">
+
+        <form
+            method="POST"
+            action="{% url 'transport:vp_delete_route' route.id %}"
+            onsubmit="return confirm('Are you sure you want to delete this route? All stops will also be deleted.');"
+        >
+
+            {% csrf_token %}
+
+            <button
+                type="submit"
+                class="btn btn-danger"
+            >
+
+                <i class="fa-solid fa-trash"></i>
+
+                Delete Route
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

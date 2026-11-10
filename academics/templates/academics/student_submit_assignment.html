@@ -1,0 +1,437 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+Submit Assignment | SMS
+{% endblock %}
+
+{% block page_title %}
+Submit Assignment
+{% endblock %}
+
+{% block extra_css %}
+
+<style>
+
+    .student-page {
+        padding: 25px;
+        max-width: 950px;
+    }
+
+    .page-header {
+        margin-bottom: 25px;
+    }
+
+    .page-header h2 {
+        color: #123B63;
+        font-size: 30px;
+        margin: 0 0 8px;
+    }
+
+    .page-header p {
+        color: #64748B;
+        font-size: 18px;
+        margin: 0;
+    }
+
+    .assignment-info {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-left: 5px solid #F28C28;
+        border-radius: 10px;
+        padding: 22px;
+        margin-bottom: 25px;
+    }
+
+    .assignment-info h3 {
+        color: #123B63;
+        font-size: 23px;
+        margin: 0 0 15px;
+    }
+
+    .info-row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 8px;
+        font-size: 18px;
+    }
+
+    .info-label {
+        color: #123B63;
+        font-weight: 600;
+        min-width: 130px;
+    }
+
+    .info-value {
+        color: #475569;
+    }
+
+    .form-card {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        padding: 25px;
+    }
+
+    .card-title {
+        color: #123B63;
+        font-size: 23px;
+        font-weight: 700;
+        margin-bottom: 22px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        color: #123B63;
+        font-weight: 600;
+        font-size: 18px;
+        margin-bottom: 8px;
+    }
+
+    .file-input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 14px;
+        border: 1px solid #CBD5E1;
+        border-radius: 7px;
+        font-size: 17px;
+        background: #F8FAFC;
+    }
+
+    .file-input:focus {
+        outline: none;
+        border-color: #123B63;
+    }
+
+    .form-control {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 13px 15px;
+        border: 1px solid #CBD5E1;
+        border-radius: 7px;
+        font-size: 18px;
+    }
+
+    textarea.form-control {
+        min-height: 140px;
+        resize: vertical;
+    }
+
+    .help-text {
+        display: block;
+        margin-top: 7px;
+        color: #64748B;
+        font-size: 15px;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 12px;
+        margin-top: 25px;
+    }
+
+    .submit-btn {
+        background: #F28C28;
+        color: #FFFFFF;
+        border: none;
+        padding: 13px 23px;
+        border-radius: 7px;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .submit-btn:hover {
+        background: #D97706;
+    }
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #123B63;
+        color: #FFFFFF;
+        padding: 13px 23px;
+        border-radius: 7px;
+        text-decoration: none;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .back-btn:hover {
+        background: #0B2945;
+    }
+
+    .existing-submission {
+        background: #F0FDF4;
+        border: 1px solid #BBF7D0;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        color: #166534;
+        font-size: 17px;
+    }
+
+    @media(max-width: 700px) {
+
+        .student-page {
+            padding: 15px;
+        }
+
+        .info-row {
+            display: block;
+        }
+
+        .info-label {
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .button-group {
+            flex-direction: column;
+        }
+
+        .submit-btn,
+        .back-btn {
+            text-align: center;
+            justify-content: center;
+        }
+
+    }
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="student-page">
+
+    <div class="page-header">
+
+        <h2>
+            <i class="fa-solid fa-upload"></i>
+            Submit Assignment
+        </h2>
+
+        <p>
+            Upload your completed assignment.
+        </p>
+
+    </div>
+
+
+    <div class="assignment-info">
+
+        <h3>
+            {{ assignment.title }}
+        </h3>
+
+
+        <div class="info-row">
+
+            <span class="info-label">
+                Subject:
+            </span>
+
+            <span class="info-value">
+                {{ assignment.subject.subject_name }}
+                ({{ assignment.subject.subject_code }})
+            </span>
+
+        </div>
+
+
+        <div class="info-row">
+
+            <span class="info-label">
+                Teacher:
+            </span>
+
+            <span class="info-value">
+
+                {% if assignment.teacher.get_full_name %}
+
+                    {{ assignment.teacher.get_full_name }}
+
+                {% else %}
+
+                    {{ assignment.teacher.username }}
+
+                {% endif %}
+
+            </span>
+
+        </div>
+
+
+        <div class="info-row">
+
+            <span class="info-label">
+                Due Date:
+            </span>
+
+            <span class="info-value">
+
+                {% if assignment.due_date %}
+
+                    {{ assignment.due_date|date:"d M Y" }}
+
+                {% else %}
+
+                    No due date
+
+                {% endif %}
+
+            </span>
+
+        </div>
+
+
+        {% if assignment.description %}
+
+        <div class="info-row">
+
+            <span class="info-label">
+                Description:
+            </span>
+
+            <span class="info-value">
+                {{ assignment.description }}
+            </span>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <div class="form-card">
+
+        <div class="card-title">
+
+            <i class="fa-solid fa-file-arrow-up"></i>
+
+            Upload Your Submission
+
+        </div>
+
+
+        {% if assignment.student_submission %}
+
+        <div class="existing-submission">
+
+            <i class="fa-solid fa-circle-check"></i>
+
+            You have already submitted this assignment.
+
+            Uploading another file will
+            <strong>replace your previous submission.</strong>
+
+        </div>
+
+        {% endif %}
+
+
+        <form
+            method="POST"
+            enctype="multipart/form-data"
+        >
+
+            {% csrf_token %}
+
+
+            <div class="form-group">
+
+                <label for="submission_file">
+
+                    Select Assignment File
+
+                </label>
+
+                <input
+                    type="file"
+                    name="submission_file"
+                    id="submission_file"
+                    class="file-input"
+                    required
+                >
+
+                <span class="help-text">
+
+                    Select the completed assignment file
+                    from your computer.
+
+                </span>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="comment">
+
+                    Comment
+                    <span style="font-weight:400;color:#64748B;">
+                        (Optional)
+                    </span>
+
+                </label>
+
+                <textarea
+                    name="comment"
+                    id="comment"
+                    class="form-control"
+                    placeholder="Add any comment for your teacher..."
+                ></textarea>
+
+            </div>
+
+
+            <div class="button-group">
+
+                <button
+                    type="submit"
+                    class="submit-btn"
+                >
+
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                    {% if assignment.student_submission %}
+
+                        Update Submission
+
+                    {% else %}
+
+                        Upload Submission
+
+                    {% endif %}
+
+                </button>
+
+
+                <a
+                    href="{% url 'academics:student_assignments' %}"
+                    class="back-btn"
+                >
+
+                    <i class="fa-solid fa-arrow-left"></i>
+
+                    Back to Assignments
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

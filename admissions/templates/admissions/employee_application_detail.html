@@ -1,0 +1,734 @@
+
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Employee Application Details{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'admissions/css/admissions.css' %}">
+
+<style>
+.employee-detail-page {
+    --deep-blue: #123B63;
+    --deep-blue-dark: #0B2945;
+    --deep-blue-light: #EAF2F8;
+    --orange: #F28C28;
+    --orange-hover: #D97706;
+    --orange-light: #FFF4E6;
+    --text-dark: #263445;
+    --text-muted: #64748B;
+    --border-color: #DCE5EE;
+
+    width: 100%;
+    padding: 16px;
+    color: var(--text-dark);
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+.employee-detail-page *,
+.employee-detail-page *::before,
+.employee-detail-page *::after {
+    box-sizing: border-box;
+}
+
+.employee-detail-page .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 16px 20px;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--orange);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(18, 59, 99, .05);
+}
+
+.employee-detail-page .page-header h1 {
+    margin: 0 0 4px;
+    color: var(--deep-blue);
+    font-size: 25px;
+    font-weight: 750;
+}
+
+.employee-detail-page .page-header h1 i {
+    margin-right: 5px;
+    color: var(--orange);
+}
+
+.employee-detail-page .page-header p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 16px;
+}
+
+.employee-detail-page .btn-secondary,
+.employee-detail-page .btn-edit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 9px 16px;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.employee-detail-page .btn-secondary {
+    color: var(--deep-blue);
+    background: #fff;
+    border-color: #C9D7E5;
+}
+
+.employee-detail-page .btn-secondary:hover {
+    color: #fff;
+    background: var(--deep-blue);
+}
+
+.employee-detail-page .btn-edit {
+    color: #fff;
+    background: var(--orange);
+}
+
+.employee-detail-page .btn-edit:hover {
+    color: #fff;
+    background: var(--orange-hover);
+}
+
+.employee-detail-page .detail-card {
+    width: 100%;
+    min-width: 0;
+    padding: 18px;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(18, 59, 99, .05);
+}
+
+.employee-detail-page .detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 15px 18px;
+    background: var(--deep-blue-light);
+    border: 1px solid #D4E3F0;
+    border-left: 4px solid var(--orange);
+    border-radius: 8px;
+}
+
+.employee-detail-page .application-heading {
+    flex: 1 1 200px;
+    min-width: 0;
+}
+
+.employee-detail-page .detail-label {
+    display: block;
+    margin-bottom: 3px;
+    color: var(--text-muted);
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.employee-detail-page .detail-header h2 {
+    margin: 0;
+    color: var(--deep-blue);
+    font-size: 22px;
+    font-weight: 750;
+    overflow-wrap: anywhere;
+}
+
+.employee-detail-page .detail-header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-left: auto;
+}
+
+.employee-detail-page .status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 100%;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 15px;
+    font-weight: 750;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.employee-detail-page .status-pending,
+.employee-detail-page .status-system_admin_pending,
+.employee-detail-page .status-vp_pending,
+.employee-detail-page .status-under_review {
+    color: #92400E;
+    background: #FFF4E6;
+    border: 1px solid #F8D7A8;
+}
+
+.employee-detail-page .status-approved,
+.employee-detail-page .status-accepted,
+.employee-detail-page .status-account_created {
+    color: #166534;
+    background: #E7F6EC;
+    border: 1px solid #B7E4C7;
+}
+
+.employee-detail-page .status-rejected,
+.employee-detail-page .status-system_admin_rejected,
+.employee-detail-page .status-vp_rejected {
+    color: #991B1B;
+    background: #FDECEC;
+    border: 1px solid #F5C2C2;
+}
+
+.employee-detail-page .status-verified {
+    color: var(--deep-blue);
+    background: #EAF2F8;
+    border: 1px solid #C7DCEC;
+}
+
+.employee-detail-page .detail-section {
+    margin-top: 15px;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.employee-detail-page .detail-section h3 {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 13px;
+    padding-bottom: 10px;
+    color: var(--deep-blue);
+    border-bottom: 1px solid #E7EDF4;
+    font-size: 19px;
+    font-weight: 750;
+}
+
+.employee-detail-page .detail-section h3 i {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    color: #fff;
+    background: var(--deep-blue);
+    border-radius: 7px;
+    font-size: 15px;
+}
+
+.employee-detail-page .detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 14px;
+}
+
+.employee-detail-page .detail-grid > div {
+    min-width: 0;
+    padding: 10px 12px;
+    background: #F8FAFC;
+    border: 1px solid #E7EDF4;
+    border-radius: 7px;
+    transition: .2s ease;
+}
+
+.employee-detail-page .detail-grid > div:hover {
+    background: #F1F6FB;
+    border-color: #C9DCEB;
+}
+
+.employee-detail-page .detail-grid > div > span {
+    display: block;
+    margin-bottom: 3px;
+    color: var(--text-muted);
+    font-size: 15px;
+}
+
+.employee-detail-page .detail-grid > div > strong {
+    display: block;
+    color: var(--text-dark);
+    font-size: 17px;
+    font-weight: 650;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.employee-detail-page .detail-grid .detail-full {
+    grid-column: 1 / -1;
+}
+
+.employee-detail-page .document-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.employee-detail-page .document-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    min-height: 50px;
+    padding: 10px 12px;
+    color: var(--deep-blue);
+    background: #F8FAFC;
+    border: 1px solid #DCE5EE;
+    border-radius: 7px;
+    font-size: 16px;
+    font-weight: 650;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+    transition: .2s ease;
+}
+
+.employee-detail-page .document-item i {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    color: #fff;
+    background: var(--deep-blue);
+    border-radius: 7px;
+}
+
+.employee-detail-page .document-item:hover {
+    color: var(--deep-blue-dark);
+    background: var(--orange-light);
+    border-color: var(--orange);
+    transform: translateY(-1px);
+}
+
+.employee-detail-page .document-item:hover i {
+    background: var(--orange);
+}
+
+.employee-detail-page .no-documents {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px;
+    color: var(--text-muted);
+    background: #F8FAFC;
+    border: 1px dashed #C9D5E2;
+    border-radius: 7px;
+    font-size: 16px;
+}
+
+.employee-detail-page .no-documents i {
+    color: var(--orange);
+    font-size: 21px;
+}
+
+.employee-detail-page .message-alert {
+    margin-bottom: 15px;
+    padding: 12px 16px;
+    border: 1px solid #DCE5EE;
+    border-radius: 8px;
+    background: #F8FAFC;
+}
+
+.employee-detail-page .message-alert.success {
+    color: #166534;
+    background: #F0FDF4;
+    border-color: #BBF7D0;
+}
+
+.employee-detail-page .message-alert.error {
+    color: #991B1B;
+    background: #FEF2F2;
+    border-color: #FECACA;
+}
+
+@media (max-width: 768px) {
+    .employee-detail-page {
+        padding: 12px;
+    }
+
+    .employee-detail-page .detail-card {
+        padding: 12px;
+    }
+
+    .employee-detail-page .detail-section {
+        padding: 13px;
+    }
+}
+
+@media (max-width: 520px) {
+    .employee-detail-page {
+        padding: 8px;
+    }
+
+    .employee-detail-page .page-header {
+        align-items: stretch;
+        flex-direction: column;
+        padding: 14px;
+    }
+
+    .employee-detail-page .page-header h1 {
+        font-size: 22px;
+    }
+
+    .employee-detail-page .page-header .btn-secondary {
+        width: 100%;
+    }
+
+    .employee-detail-page .detail-card {
+        padding: 9px;
+    }
+
+    .employee-detail-page .detail-header {
+        align-items: stretch;
+        flex-direction: column;
+        padding: 13px;
+    }
+
+    .employee-detail-page .application-heading {
+        flex-basis: auto;
+    }
+
+    .employee-detail-page .detail-header-actions {
+        width: 100%;
+        margin-left: 0;
+        justify-content: stretch;
+    }
+
+    .employee-detail-page .detail-header-actions > * {
+        flex: 1 1 auto;
+    }
+
+    .employee-detail-page .detail-section {
+        padding: 12px;
+    }
+
+    .employee-detail-page .detail-section h3 {
+        font-size: 18px;
+    }
+
+    .employee-detail-page .detail-grid,
+    .employee-detail-page .document-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 8px;
+    }
+
+    .employee-detail-page .detail-grid .detail-full {
+        grid-column: auto;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="employee-detail-page">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+        <div>
+            <h1>
+                <i class="fas fa-user-tie"></i>
+                Employee Application Details
+            </h1>
+            <p>View complete employee admission application.</p>
+        </div>
+
+        <a href="{% url 'admissions:employee_applications' %}"
+           class="btn-secondary">
+            <i class="fas fa-arrow-left"></i>
+            Back
+        </a>
+    </div>
+
+    <!-- MESSAGES -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="message-alert
+                {% if message.tags == 'success' %}success
+                {% elif message.tags == 'error' %}error
+                {% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="detail-card">
+
+        <!-- APPLICATION HEADER -->
+        <div class="detail-header">
+            <div class="application-heading">
+                <span class="detail-label">Application ID</span>
+                <h2>{{ application.application_id|default:"Not Generated" }}</h2>
+            </div>
+
+            <div class="detail-header-actions">
+                <span class="status-badge status-{{ application.status }}">
+                    {{ application.get_status_display|default:application.status|title }}
+                </span>
+
+                {% if application.status != "account_created" %}
+                    <a href="{% url 'admissions:employee_application_edit' application.id %}"
+                       class="btn-edit">
+                        <i class="fas fa-edit"></i>
+                        Edit Application
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- PERSONAL DETAILS -->
+        <div class="detail-section">
+            <h3><i class="fas fa-user"></i> Personal Details</h3>
+            <div class="detail-grid">
+                <div>
+                    <span>First Name</span>
+                    <strong>{{ application.first_name|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>Last Name</span>
+                    <strong>{{ application.last_name|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>Date of Birth</span>
+                    <strong>{{ application.date_of_birth|date:"d M Y"|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>Gender</span>
+                    <strong>{{ application.get_gender_display|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>Marital Status</span>
+                    <strong>{{ application.get_marital_status_display|default:"-" }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTACT DETAILS -->
+        <div class="detail-section">
+            <h3><i class="fas fa-phone"></i> Contact Details</h3>
+            <div class="detail-grid">
+                <div>
+                    <span>Email</span>
+                    <strong>{{ application.email|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>Phone</span>
+                    <strong>{{ application.phone|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>Alternate Phone</span>
+                    <strong>{{ application.alternate_phone|default:"-" }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROFESSIONAL DETAILS -->
+        <div class="detail-section">
+            <h3><i class="fas fa-briefcase"></i> Professional Details</h3>
+            <div class="detail-grid">
+                <div>
+                    <span>Designation</span>
+                    <strong>{{ application.designation|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>Department</span>
+                    <strong>{{ application.department|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>Joining Date</span>
+                    <strong>{{ application.joining_date|date:"d M Y"|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>Qualification</span>
+                    <strong>{{ application.qualification|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>Specialization</span>
+                    <strong>{{ application.specialization|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>Experience</span>
+                    <strong>
+                        {% if application.experience_years != None %}
+                            {{ application.experience_years }} years
+                        {% else %}
+                            -
+                        {% endif %}
+                    </strong>
+                </div>
+                <div>
+                    <span>Previous Organization</span>
+                    <strong>{{ application.previous_organization|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>Previous Salary</span>
+                    <strong>
+                        {% if application.previous_salary %}
+                            ₹{{ application.previous_salary }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADDRESS DETAILS -->
+        <div class="detail-section">
+            <h3><i class="fas fa-map-marker-alt"></i> Address Details</h3>
+            <div class="detail-grid">
+                <div class="detail-full">
+                    <span>Address</span>
+                    <strong>{{ application.address|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>City</span>
+                    <strong>{{ application.city|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>State</span>
+                    <strong>{{ application.state|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>Pincode</span>
+                    <strong>{{ application.pincode|default:"-" }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- EMERGENCY CONTACT -->
+        <div class="detail-section">
+            <h3><i class="fas fa-phone-square-alt"></i> Emergency Contact</h3>
+            <div class="detail-grid">
+                <div>
+                    <span>Name</span>
+                    <strong>{{ application.emergency_contact_name|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>Phone</span>
+                    <strong>{{ application.emergency_contact_phone|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>Relation</span>
+                    <strong>{{ application.emergency_contact_relation|default:"-" }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- DOCUMENTS -->
+        <div class="detail-section">
+            <h3><i class="fas fa-file-alt"></i> Employee Documents</h3>
+
+            <div class="document-grid">
+                {% if application.employee_photo %}
+                    <a href="{{ application.employee_photo.url }}"
+                       target="_blank" rel="noopener noreferrer"
+                       class="document-item">
+                        <i class="fas fa-image"></i> Employee Photo
+                    </a>
+                {% endif %}
+
+                {% if application.aadhaar_card %}
+                    <a href="{{ application.aadhaar_card.url }}"
+                       target="_blank" rel="noopener noreferrer"
+                       class="document-item">
+                        <i class="fas fa-id-card"></i> Aadhaar Card
+                    </a>
+                {% endif %}
+
+                {% if application.pan_card %}
+                    <a href="{{ application.pan_card.url }}"
+                       target="_blank" rel="noopener noreferrer"
+                       class="document-item">
+                        <i class="fas fa-file"></i> PAN Card
+                    </a>
+                {% endif %}
+
+                {% if application.educational_certificate %}
+                    <a href="{{ application.educational_certificate.url }}"
+                       target="_blank" rel="noopener noreferrer"
+                       class="document-item">
+                        <i class="fas fa-graduation-cap"></i>
+                        Educational Certificate
+                    </a>
+                {% endif %}
+
+                {% if application.experience_certificate %}
+                    <a href="{{ application.experience_certificate.url }}"
+                       target="_blank" rel="noopener noreferrer"
+                       class="document-item">
+                        <i class="fas fa-briefcase"></i>
+                        Experience Certificate
+                    </a>
+                {% endif %}
+
+                {% if application.resume %}
+                    <a href="{{ application.resume.url }}"
+                       target="_blank" rel="noopener noreferrer"
+                       class="document-item">
+                        <i class="fas fa-file-pdf"></i> Resume
+                    </a>
+                {% endif %}
+
+                {% if application.joining_document %}
+                    <a href="{{ application.joining_document.url }}"
+                       target="_blank" rel="noopener noreferrer"
+                       class="document-item">
+                        <i class="fas fa-file-signature"></i>
+                        Joining Document
+                    </a>
+                {% endif %}
+            </div>
+
+            {% if not application.employee_photo and not application.aadhaar_card and not application.pan_card and not application.educational_certificate and not application.experience_certificate and not application.resume and not application.joining_document %}
+                <div class="no-documents">
+                    <i class="fas fa-folder-open"></i>
+                    <span>No documents have been uploaded for this application.</span>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- SUBMISSION INFORMATION -->
+        <div class="detail-section">
+            <h3><i class="fas fa-clock"></i> Submission Information</h3>
+            <div class="detail-grid">
+                <div>
+                    <span>Submitted By</span>
+                    <strong>
+                        {% if application.submitted_by %}
+                            {{ application.submitted_by.username }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </strong>
+                </div>
+                <div>
+                    <span>Submitted At</span>
+                    <strong>{{ application.submitted_at|date:"d M Y, h:i A"|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>Last Updated</span>
+                    <strong>{{ application.updated_at|date:"d M Y, h:i A"|default:"-" }}</strong>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

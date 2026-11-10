@@ -1,0 +1,917 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}
+Profile
+{% endblock %}
+
+{% block content %}
+
+<style>
+/* =====================================================
+   PROFESSIONAL PROFILE PAGE - NAVY BLUE + ORANGE
+===================================================== */
+
+:root {
+    --deep-blue: #123B63;
+    --deep-blue-dark: #0B2945;
+    --deep-blue-light: #EAF2F8;
+
+    --orange: #F28C28;
+    --orange-hover: #D97706;
+    --orange-light: #FFF4E6;
+
+    --green: #25845A;
+    --green-light: #EAF7F0;
+
+    --red: #C74747;
+    --red-light: #FCEEEE;
+
+    --text-primary: #243447;
+    --text-secondary: #5F6F80;
+    --border-color: #E0E7EF;
+    --card-background: #FFFFFF;
+
+    --radius-small: 10px;
+    --radius-medium: 14px;
+    --radius-large: 18px;
+
+    --shadow-card: 0 4px 16px rgba(18, 59, 99, 0.07);
+    --shadow-hover: 0 10px 25px rgba(18, 59, 99, 0.13);
+}
+
+/* =====================================================
+   MAIN PROFILE CONTAINER
+===================================================== */
+
+.profile-view {
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 28px;
+    box-sizing: border-box;
+
+    color: var(--text-primary);
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.profile-view *,
+.profile-view *::before,
+.profile-view *::after {
+    box-sizing: border-box;
+}
+
+/* =====================================================
+   PAGE HEADER
+===================================================== */
+
+.profile-view .page-head {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+
+    margin: 0 0 32px;
+    padding: 0 0 20px;
+
+    border-bottom: 2px solid var(--border-color);
+}
+
+.profile-view .page-head h1 {
+    margin: 0 0 8px;
+    padding: 0;
+
+    color: var(--deep-blue-dark);
+    font-size: 30px;
+    font-weight: 750;
+    line-height: 1.4;
+}
+
+.profile-view .page-head .sub {
+    margin: 0;
+    padding: 0;
+
+    color: var(--text-secondary);
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+/* =====================================================
+   PROFILE GRID - DESKTOP 2 x 2
+===================================================== */
+
+.profile-view .profile-grid {
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px;
+
+    align-items: stretch;
+}
+
+/* =====================================================
+   PROFILE CARDS
+===================================================== */
+
+.profile-view .profile-card {
+    width: 100%;
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-medium);
+
+    overflow: hidden;
+
+    box-shadow: var(--shadow-card);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+}
+
+.profile-view .profile-card:hover {
+    transform: translateY(-4px);
+    border-color: #F5C38F;
+    box-shadow: var(--shadow-hover);
+}
+
+/* =====================================================
+   CARD HEADER
+===================================================== */
+
+.profile-view .card-header {
+    width: 100%;
+    min-height: 82px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 18px 26px;
+
+    background: linear-gradient(
+        120deg,
+        #F8FAFC,
+        #FFFFFF
+    );
+
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* =====================================================
+   ICON + HEADING ON SAME LINE
+===================================================== */
+
+.profile-view .card-heading {
+    width: 100%;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+
+    gap: 15px;
+    margin: 0;
+    padding: 0;
+
+    min-width: 0;
+}
+
+/* =====================================================
+   CARD ICON
+===================================================== */
+
+.profile-view .card-icon {
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    flex: 0 0 50px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 13px;
+
+    font-size: 23px;
+}
+
+/* NAVY BLUE ICON */
+
+.profile-view .card-icon.blue {
+    background: var(--deep-blue-light);
+    color: var(--deep-blue);
+}
+
+/* ORANGE ICON */
+
+.profile-view .card-icon.orange {
+    background: var(--orange-light);
+    color: var(--orange-hover);
+}
+
+/* =====================================================
+   CARD HEADING
+===================================================== */
+
+.profile-view .card-heading h3 {
+    min-width: 0;
+
+    margin: 0;
+    padding: 0;
+
+    color: var(--deep-blue-dark);
+    font-size: 21px;
+    font-weight: 750;
+    line-height: 1.5;
+
+    overflow-wrap: anywhere;
+}
+
+/* =====================================================
+   CARD BODY
+===================================================== */
+
+.profile-view .card-body {
+    width: 100%;
+    flex: 1;
+
+    padding: 12px 26px 20px;
+}
+
+/* =====================================================
+   INFORMATION ROW
+===================================================== */
+
+.profile-view .info-row {
+    width: 100%;
+    min-height: 66px;
+
+    display: grid;
+    grid-template-columns: minmax(130px, 0.9fr) minmax(0, 1.1fr);
+
+    align-items: center;
+    gap: 18px;
+
+    padding: 12px 0;
+
+    border-bottom: 1px solid #EDF2F7;
+}
+
+.profile-view .info-row:last-child {
+    border-bottom: none;
+}
+
+/* =====================================================
+   LABEL
+===================================================== */
+
+.profile-view .info-row .label {
+    min-width: 0;
+
+    color: var(--text-secondary);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.5;
+
+    overflow-wrap: anywhere;
+}
+
+/* =====================================================
+   VALUE
+===================================================== */
+
+.profile-view .info-row .value {
+    min-width: 0;
+
+    color: var(--text-primary);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.5;
+
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+
+/* =====================================================
+   STATUS BADGES
+===================================================== */
+
+.profile-view .status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    min-width: 95px;
+    min-height: 36px;
+
+    padding: 6px 13px;
+
+    border-radius: 20px;
+
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.3;
+
+    white-space: nowrap;
+}
+
+/* ACTIVE */
+
+.profile-view .status.active {
+    background: var(--green-light);
+    color: var(--green);
+}
+
+/* INACTIVE */
+
+.profile-view .status.inactive {
+    background: var(--red-light);
+    color: var(--red);
+}
+
+/* =====================================================
+   SECURITY BODY
+===================================================== */
+
+.profile-view .security-body {
+    width: 100%;
+    min-height: 190px;
+    flex: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 24px;
+    padding: 28px 26px;
+}
+
+/* SECURITY INFORMATION */
+
+.profile-view .security-info {
+    min-width: 0;
+
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.profile-view .security-info-icon {
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 13px;
+
+    background: var(--orange-light);
+    color: var(--orange-hover);
+
+    font-size: 22px;
+}
+
+.profile-view .security-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    min-width: 0;
+}
+
+.profile-view .security-label {
+    color: var(--deep-blue-dark);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+.profile-view .security-value {
+    color: var(--text-secondary);
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+/* =====================================================
+   CHANGE PASSWORD BUTTON
+===================================================== */
+
+.profile-view .change-password-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    min-height: 50px;
+    padding: 13px 20px;
+
+    border: 1px solid var(--orange);
+    border-radius: 10px;
+
+    background: var(--orange);
+    color: #FFFFFF;
+
+    text-decoration: none;
+    text-align: center;
+
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.4;
+
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    box-shadow: 0 4px 10px rgba(242, 140, 40, 0.18);
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.profile-view .change-password-btn i {
+    font-size: 19px;
+}
+
+.profile-view .change-password-btn:hover {
+    background: var(--orange-hover);
+    border-color: var(--orange-hover);
+    color: #FFFFFF;
+
+    text-decoration: none;
+
+    transform: translateY(-2px);
+    box-shadow: 0 7px 16px rgba(217, 119, 6, 0.25);
+}
+
+/* =====================================================
+   ACCESSIBILITY
+===================================================== */
+
+.profile-view a:focus-visible {
+    outline: 3px solid var(--orange);
+    outline-offset: 4px;
+}
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media (max-width: 1100px) {
+    .profile-view {
+        padding: 22px;
+    }
+
+    .profile-view .profile-grid {
+        gap: 22px;
+    }
+
+    .profile-view .card-header {
+        padding: 18px 20px;
+    }
+
+    .profile-view .card-body {
+        padding: 12px 20px 18px;
+    }
+
+    .profile-view .info-row {
+        grid-template-columns: minmax(110px, 0.9fr) minmax(0, 1.1fr);
+        gap: 12px;
+    }
+
+    .profile-view .security-body {
+        padding: 24px 20px;
+        flex-wrap: wrap;
+    }
+}
+
+/* =====================================================
+   SMALL TABLET
+===================================================== */
+
+@media (max-width: 850px) {
+    .profile-view .profile-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-view .info-row {
+        grid-template-columns: minmax(150px, 0.8fr) minmax(0, 1.2fr);
+        gap: 18px;
+    }
+
+    .profile-view .security-body {
+        justify-content: space-between;
+    }
+}
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 600px) {
+    .profile-view {
+        padding: 14px;
+    }
+
+    .profile-view .page-head {
+        margin-bottom: 24px;
+        padding-bottom: 18px;
+    }
+
+    .profile-view .page-head h1 {
+        font-size: 27px;
+    }
+
+    .profile-view .page-head .sub {
+        font-size: 18px;
+    }
+
+    .profile-view .profile-grid {
+        grid-template-columns: 1fr;
+        gap: 22px;
+    }
+
+    .profile-view .card-header {
+        min-height: 76px;
+        padding: 15px 18px;
+    }
+
+    .profile-view .card-heading {
+        gap: 12px;
+    }
+
+    .profile-view .card-icon {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        flex-basis: 44px;
+
+        border-radius: 11px;
+        font-size: 20px;
+    }
+
+    .profile-view .card-heading h3 {
+        font-size: 20px;
+    }
+
+    .profile-view .card-body {
+        padding: 10px 18px 16px;
+    }
+
+    .profile-view .info-row {
+        grid-template-columns: 1fr;
+        gap: 5px;
+        padding: 13px 0;
+        min-height: auto;
+    }
+
+    .profile-view .info-row .label {
+        font-size: 18px;
+    }
+
+    .profile-view .info-row .value {
+        font-size: 18px;
+        text-align: left;
+    }
+
+    .profile-view .status {
+        min-height: 34px;
+        font-size: 18px;
+    }
+
+    .profile-view .security-body {
+        min-height: auto;
+
+        flex-direction: column;
+        align-items: stretch;
+
+        gap: 24px;
+        padding: 22px 18px;
+    }
+
+    .profile-view .security-info {
+        align-items: center;
+    }
+
+    .profile-view .security-label {
+        font-size: 20px;
+    }
+
+    .profile-view .security-value {
+        font-size: 18px;
+    }
+
+    .profile-view .change-password-btn {
+        width: 100%;
+        min-height: 50px;
+        white-space: normal;
+    }
+}
+
+/* =====================================================
+   SMALL MOBILE
+===================================================== */
+
+@media (max-width: 360px) {
+    .profile-view {
+        padding: 10px;
+    }
+
+    .profile-view .card-header {
+        padding: 14px;
+    }
+
+    .profile-view .card-body {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .profile-view .card-heading h3 {
+        font-size: 18px;
+    }
+
+    .profile-view .security-body {
+        padding: 18px 14px;
+    }
+}
+</style>
+
+<section class="profile-view">
+
+    <!-- PAGE HEADER -->
+
+    <div class="page-head">
+        <div>
+            <h1>
+                <i class="fa-solid fa-user-circle"
+                   style="color: #F28C28; margin-right: 10px;"></i>
+                Profile
+            </h1>
+
+            <p class="sub">
+                Manage your personal and account information.
+            </p>
+        </div>
+    </div>
+
+    <!-- PROFILE GRID -->
+
+    <div class="profile-grid">
+
+        <!-- ==========================================
+             PERSONAL INFORMATION
+        =========================================== -->
+
+        <div class="profile-card">
+
+            <div class="card-header">
+                <div class="card-heading">
+
+                    <div class="card-icon blue">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+
+                    <h3>Personal Information</h3>
+
+                </div>
+            </div>
+
+            <div class="card-body">
+
+                <div class="info-row">
+                    <span class="label">First Name</span>
+                    <span class="value">
+                        {{ user.first_name|default:"—" }}
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Last Name</span>
+                    <span class="value">
+                        {{ user.last_name|default:"—" }}
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Username</span>
+                    <span class="value">
+                        {{ user.username|default:"—" }}
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Email Address</span>
+                    <span class="value">
+                        {{ user.email|default:"—" }}
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Phone Number</span>
+                    <span class="value">
+                        {{ profile.phone|default:"—" }}
+                    </span>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ==========================================
+             ACCOUNT INFORMATION
+        =========================================== -->
+
+        <div class="profile-card">
+
+            <div class="card-header">
+                <div class="card-heading">
+
+                    <div class="card-icon orange">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+
+                    <h3>Account Information</h3>
+
+                </div>
+            </div>
+
+            <div class="card-body">
+
+                <div class="info-row">
+                    <span class="label">Role</span>
+                    <span class="value">
+                        {{ profile.role|default:"—"|title }}
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Account Status</span>
+                    <span class="value">
+                        {% if user.is_active %}
+                            <span class="status active">
+                                <i class="fa-solid fa-circle-check"></i>
+                                Active
+                            </span>
+                        {% else %}
+                            <span class="status inactive">
+                                <i class="fa-solid fa-circle-xmark"></i>
+                                Inactive
+                            </span>
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Login Status</span>
+                    <span class="value">
+                        {% if user.is_active %}
+                            <span class="status active">Enabled</span>
+                        {% else %}
+                            <span class="status inactive">Disabled</span>
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Staff Access</span>
+                    <span class="value">
+                        {% if user.is_staff %}
+                            <span class="status active">Yes</span>
+                        {% else %}
+                            <span class="status inactive">No</span>
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Administrator Access</span>
+                    <span class="value">
+                        {% if user.is_superuser %}
+                            <span class="status active">Yes</span>
+                        {% else %}
+                            <span class="status inactive">No</span>
+                        {% endif %}
+                    </span>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ==========================================
+             ACCOUNT RECORD
+        =========================================== -->
+
+        <div class="profile-card">
+
+            <div class="card-header">
+                <div class="card-heading">
+
+                    <div class="card-icon blue">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </div>
+
+                    <h3>Account Record</h3>
+
+                </div>
+            </div>
+
+            <div class="card-body">
+
+                <div class="info-row">
+                    <span class="label">Account Created</span>
+                    <span class="value">
+                        {{ user.date_joined|date:"d M Y, h:i A"|default:"—" }}
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Profile Updated</span>
+                    <span class="value">
+                        {{ profile.updated_at|date:"d M Y, h:i A"|default:"—" }}
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Last Login</span>
+                    <span class="value">
+                        {{ user.last_login|date:"d M Y, h:i A"|default:"Never" }}
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Registration Date</span>
+                    <span class="value">
+                        {{ user.date_joined|date:"d M Y"|default:"—" }}
+                    </span>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SECURITY
+        =========================================== -->
+
+        <div class="profile-card">
+
+            <div class="card-header">
+                <div class="card-heading">
+
+                    <div class="card-icon orange">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+
+                    <h3>Security</h3>
+
+                </div>
+            </div>
+
+            <div class="security-body">
+
+                <div class="security-info">
+
+                    <div class="security-info-icon">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+
+                    <div class="security-item">
+                        <span class="security-label">
+                            Password
+                        </span>
+
+                        <span class="security-value">
+                            Keep your account secure by updating your password.
+                        </span>
+                    </div>
+
+                </div>
+
+                <a
+                    href="{% url 'accounts:change_password' %}"
+                    class="change-password-btn"
+                >
+                    <i class="fa-solid fa-key"></i>
+                    <span>Change Password</span>
+                </a>
+
+            </div>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

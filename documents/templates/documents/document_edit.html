@@ -1,0 +1,409 @@
+
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}
+Edit {{ document_label }}
+{% endblock %}
+
+{% block extra_css %}
+<link
+    rel="stylesheet"
+    href="{% static 'documents/css/documents.css' %}"
+>
+
+<style>
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --orange-light: #FFF4E6;
+        --text-color: #263445;
+        --muted-color: #64748B;
+        --border-color: #D8E1EA;
+        --white: #FFFFFF;
+    }
+
+    .edit-document-page,
+    .edit-document-page * {
+        box-sizing: border-box;
+    }
+
+    .edit-document-page {
+        width: 100%;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 28px 24px;
+        color: var(--text-color);
+        font-size: 18px;
+    }
+
+    .edit-card {
+        width: 100%;
+        max-width: 850px;
+        margin: 10px auto;
+        background: var(--white);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 5px 18px rgba(11, 41, 69, 0.08);
+    }
+
+    .edit-header {
+        padding: 28px 32px;
+        background: var(--deep-blue);
+        border-bottom: 4px solid var(--orange);
+    }
+
+    .edit-header h2 {
+        margin: 0 0 10px;
+        color: var(--white);
+        font-size: 28px;
+        font-weight: 700;
+        line-height: 1.4;
+    }
+
+    .edit-header p {
+        margin: 0;
+        color: #EAF2F8;
+        font-size: 18px;
+        line-height: 1.6;
+    }
+
+    .edit-body {
+        padding: 32px;
+    }
+
+    .current-file {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 28px;
+        padding: 20px;
+        background: var(--deep-blue-light);
+        border: 1px solid #C9D9E8;
+        border-left: 5px solid var(--orange);
+        border-radius: 10px;
+    }
+
+    .current-file-label {
+        color: var(--deep-blue);
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    .current-file-name {
+        display: block;
+        overflow-wrap: anywhere;
+        color: var(--deep-blue-dark);
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 1.6;
+    }
+
+    .edit-document-page .form-label {
+        display: block;
+        margin-bottom: 12px;
+        color: var(--deep-blue-dark);
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .edit-document-page .file-input {
+        display: block;
+        width: 100%;
+        min-height: 58px;
+        padding: 10px;
+        color: var(--text-color);
+        background: var(--white);
+        border: 1.5px solid var(--border-color);
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 17px;
+        cursor: pointer;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .edit-document-page .file-input:hover {
+        border-color: var(--deep-blue);
+    }
+
+    .edit-document-page .file-input:focus {
+        outline: none;
+        border-color: var(--orange);
+        box-shadow: 0 0 0 3px rgba(242, 140, 40, 0.18);
+    }
+
+    .edit-document-page .file-input::file-selector-button {
+        margin-right: 14px;
+        padding: 10px 16px;
+        color: var(--white);
+        background: var(--deep-blue);
+        border: none;
+        border-radius: 6px;
+        font-family: inherit;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .edit-document-page .file-input::file-selector-button:hover {
+        background: var(--deep-blue-dark);
+    }
+
+    .edit-document-page .help-text {
+        display: block;
+        margin-top: 12px;
+        color: var(--muted-color);
+        font-size: 16px;
+        line-height: 1.7;
+    }
+
+    .edit-document-page .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 32px;
+        padding-top: 24px;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .edit-document-page .cancel-btn,
+    .edit-document-page .update-btn {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        min-height: 48px;
+        padding: 12px 22px;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 17px;
+        font-weight: 700;
+        line-height: 1.4;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.2s, color 0.2s,
+                    border-color 0.2s, transform 0.2s;
+    }
+
+    .edit-document-page .cancel-btn {
+        color: var(--deep-blue);
+        background: var(--white);
+        border: 1.5px solid var(--deep-blue);
+    }
+
+    .edit-document-page .cancel-btn:hover {
+        color: var(--white);
+        background: var(--deep-blue);
+        text-decoration: none;
+    }
+
+    .edit-document-page .update-btn {
+        color: var(--white);
+        background: var(--orange);
+        border: 1.5px solid var(--orange);
+    }
+
+    .edit-document-page .update-btn:hover {
+        background: var(--orange-hover);
+        border-color: var(--orange-hover);
+        transform: translateY(-1px);
+    }
+
+    .edit-document-page .cancel-btn:focus-visible,
+    .edit-document-page .update-btn:focus-visible {
+        outline: 3px solid rgba(242, 140, 40, 0.35);
+        outline-offset: 3px;
+    }
+
+    @media (max-width: 768px) {
+        .edit-document-page {
+            padding: 18px 14px;
+        }
+
+        .edit-header {
+            padding: 24px 22px;
+        }
+
+        .edit-header h2 {
+            font-size: 24px;
+        }
+
+        .edit-header p {
+            font-size: 17px;
+        }
+
+        .edit-body {
+            padding: 24px 22px;
+        }
+
+        .edit-document-page .form-actions {
+            justify-content: stretch;
+        }
+
+        .edit-document-page .cancel-btn,
+        .edit-document-page .update-btn {
+            flex: 1 1 180px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .edit-document-page {
+            padding: 12px 8px;
+            font-size: 16px;
+        }
+
+        .edit-header {
+            padding: 20px 16px;
+        }
+
+        .edit-header h2 {
+            font-size: 22px;
+        }
+
+        .edit-header p {
+            font-size: 16px;
+        }
+
+        .edit-body {
+            padding: 20px 16px;
+        }
+
+        .current-file {
+            padding: 16px;
+        }
+
+        .current-file-name {
+            font-size: 16px;
+        }
+
+        .edit-document-page .file-input {
+            font-size: 15px;
+        }
+
+        .edit-document-page .help-text {
+            font-size: 15px;
+        }
+
+        .edit-document-page .form-actions {
+            flex-direction: column-reverse;
+            align-items: stretch;
+            gap: 12px;
+        }
+
+        .edit-document-page .cancel-btn,
+        .edit-document-page .update-btn {
+            width: 100%;
+            flex: auto;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="edit-document-page">
+
+    <div class="edit-card">
+
+        <div class="edit-header">
+            <h2>
+                <i class="fa-solid fa-file-pen"></i>
+                Edit {{ document_label }}
+            </h2>
+
+            <p>
+                Replace the existing document with a new file.
+            </p>
+        </div>
+
+        <div class="edit-body">
+
+            <div class="current-file">
+                <span class="current-file-label">
+                    <i class="fa-solid fa-file-lines"></i>
+                    Current File
+                </span>
+
+                <span class="current-file-name">
+                    {{ file_field.name|cut:"/" }}
+                </span>
+            </div>
+
+            <form
+                method="POST"
+                enctype="multipart/form-data"
+            >
+                {% csrf_token %}
+
+                <label
+                    for="document_file"
+                    class="form-label"
+                >
+                    Select New File
+                </label>
+
+                <input
+                    type="file"
+                    id="document_file"
+                    name="document_file"
+                    class="file-input"
+                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
+                    required
+                >
+
+                <small class="help-text">
+                    <i class="fa-solid fa-circle-info"></i>
+                    Maximum 10 MB. Supported formats:
+                    PDF, JPG, JPEG, PNG, DOC, DOCX, XLS and XLSX.
+                </small>
+
+                <div class="form-actions">
+
+                    {% if category == "student" %}
+
+                        <a
+                            href="{% url 'documents:student_documents' %}"
+                            class="cancel-btn"
+                        >
+                            <i class="fa-solid fa-arrow-left"></i>
+                            Cancel
+                        </a>
+
+                    {% else %}
+
+                        <a
+                            href="{% url 'documents:employee_documents' %}"
+                            class="cancel-btn"
+                        >
+                            <i class="fa-solid fa-arrow-left"></i>
+                            Cancel
+                        </a>
+
+                    {% endif %}
+
+                    <button
+                        type="submit"
+                        class="update-btn"
+                    >
+                        <i class="fa-solid fa-pen"></i>
+                        Update Document
+                    </button>
+
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

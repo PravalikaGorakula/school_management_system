@@ -1,0 +1,1589 @@
+
+{% extends "dashboard/base.html" %}
+
+{% block title %}Student Bus Assignments{% endblock %}
+
+{% block content %}
+
+
+<style>
+/* =========================================================
+   STUDENT BUS ASSIGNMENTS — COMPLETE STYLESHEET
+   Theme: Navy Blue + Orange
+   ========================================================= */
+
+.bus-page {
+    --deep-blue: #123B63;
+    --deep-blue-dark: #0B2945;
+    --deep-blue-light: #EAF2F8;
+
+    --orange: #F28C28;
+    --orange-hover: #D97706;
+    --orange-light: #FFF4E6;
+
+    --text-primary: #243447;
+    --text-secondary: #5F6F80;
+
+    --border-color: #DCE4ED;
+    --page-background: #F5F7FA;
+    --card-background: #FFFFFF;
+
+    --success: #15803D;
+    --success-bg: #F0FDF4;
+
+    --danger: #B91C1C;
+    --danger-bg: #FEF2F2;
+
+    --warning: #92400E;
+    --warning-bg: #FFFBEB;
+
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 28px;
+
+    color: var(--text-primary);
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.bus-page *,
+.bus-page *::before,
+.bus-page *::after {
+    box-sizing: border-box;
+}
+
+.bus-page button,
+.bus-page input,
+.bus-page select,
+.bus-page textarea {
+    font: inherit;
+}
+
+.bus-page a {
+    color: var(--deep-blue);
+    text-decoration: none;
+}
+
+.bus-page a:hover {
+    color: var(--orange-hover);
+}
+
+.bus-page :focus-visible {
+    outline: 3px solid rgba(242, 140, 40, 0.65);
+    outline-offset: 3px;
+}
+
+/* ================= PAGE HEADER ================= */
+
+.bus-page .bus-header {
+    position: relative;
+    overflow: hidden;
+    padding: 34px;
+    margin-bottom: 30px;
+
+    background: linear-gradient(
+        135deg,
+        var(--deep-blue-dark) 0%,
+        var(--deep-blue) 65%,
+        #1D527E 100%
+    );
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 18px;
+
+    box-shadow: 0 8px 24px rgba(11, 41, 69, 0.14);
+}
+
+.bus-page .bus-header::after {
+    content: "";
+    position: absolute;
+    right: -55px;
+    top: -90px;
+
+    width: 230px;
+    height: 230px;
+
+    border: 35px solid rgba(255, 255, 255, 0.055);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.bus-page .bus-header h1 {
+    position: relative;
+    z-index: 1;
+
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+
+    margin: 0;
+
+    color: #FFFFFF;
+    font-size: 30px;
+    font-weight: 750;
+    line-height: 1.4;
+    letter-spacing: 0.2px;
+}
+
+.bus-page .bus-header h1 i {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 48px;
+    height: 48px;
+
+    color: var(--orange);
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+}
+
+.bus-page .bus-header p {
+    position: relative;
+    z-index: 1;
+
+    max-width: 850px;
+    margin: 12px 0 0;
+
+    color: #EAF2F8;
+    font-size: 18px;
+    line-height: 1.7;
+}
+
+/* ================= CARDS ================= */
+
+.bus-page .bus-card {
+    min-width: 0;
+    margin-bottom: 28px;
+    overflow: hidden;
+
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+
+    box-shadow: 0 4px 16px rgba(18, 59, 99, 0.055);
+
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.bus-page .bus-card:hover {
+    border-color: #CBD9E7;
+    box-shadow: 0 7px 22px rgba(18, 59, 99, 0.085);
+}
+
+.bus-page .bus-card-title {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    padding: 21px 26px;
+
+    color: var(--deep-blue-dark);
+    background: linear-gradient(90deg, #EAF2F8 0%, #F6F9FC 100%);
+
+    border-bottom: 1px solid var(--border-color);
+
+    font-size: 23px;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+.bus-page .bus-card-title i {
+    color: var(--orange);
+    font-size: 22px;
+}
+
+.bus-page .bus-card-body {
+    padding: 28px;
+}
+
+/* ================= FORM LAYOUT ================= */
+
+.bus-page .bus-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 25px 28px;
+}
+
+.bus-page .field {
+    min-width: 0;
+}
+
+.bus-page .field label {
+    display: block;
+    margin-bottom: 9px;
+
+    color: var(--deep-blue-dark);
+    font-size: 18px;
+    font-weight: 650;
+    line-height: 1.5;
+}
+
+.bus-page .field label i {
+    margin-right: 7px;
+    color: var(--orange);
+}
+
+.bus-page .field select,
+.bus-page .field input,
+.bus-page .field textarea {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    min-height: 50px;
+
+    padding: 11px 15px;
+
+    color: var(--text-primary);
+    background: #FFFFFF;
+
+    border: 1px solid #C9D5E2;
+    border-radius: 9px;
+
+    font-family: inherit;
+    font-size: 18px;
+    line-height: 1.5;
+
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bus-page .field textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.bus-page .field select:hover,
+.bus-page .field input:hover,
+.bus-page .field textarea:hover {
+    border-color: #91A9BF;
+}
+
+.bus-page .field select:focus,
+.bus-page .field input:focus,
+.bus-page .field textarea:focus {
+    outline: none;
+    border-color: var(--orange);
+    box-shadow: 0 0 0 4px rgba(242, 140, 40, 0.13);
+}
+
+.bus-page .field select:disabled,
+.bus-page .field input:disabled,
+.bus-page .field textarea:disabled {
+    color: #64748B;
+    background: #F1F5F9;
+    cursor: not-allowed;
+}
+
+.bus-page .field select option {
+    padding: 10px;
+    font-size: 18px;
+}
+
+.bus-page .field.full,
+.bus-page .form-actions {
+    grid-column: 1 / -1;
+}
+
+.bus-page .field-help {
+    display: block;
+    margin-top: 8px;
+
+    color: var(--text-secondary);
+    font-size: 18px;
+    line-height: 1.55;
+}
+
+/* ================= CHECKBOX SECTION ================= */
+
+.bus-page .checkbox-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 28px;
+
+    padding: 20px;
+
+    background: #F8FAFC;
+    border: 1px solid var(--border-color);
+    border-radius: 11px;
+}
+
+.bus-page .checkbox-row label {
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
+
+    margin: 0;
+
+    color: var(--text-primary);
+    font-size: 18px;
+    font-weight: 500;
+
+    cursor: pointer;
+}
+
+.bus-page .checkbox-row input[type="checkbox"] {
+    flex: 0 0 20px;
+    width: 20px;
+    height: 20px;
+
+    margin: 0;
+    accent-color: var(--orange);
+    cursor: pointer;
+}
+
+/* ================= BUTTONS ================= */
+
+.bus-page .form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+
+    margin-top: 5px;
+    padding-top: 8px;
+}
+
+.bus-page .bus-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    min-height: 50px;
+    padding: 12px 23px;
+
+    border: 1px solid transparent;
+    border-radius: 9px;
+
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 650;
+    line-height: 1.45;
+    text-align: center;
+    text-decoration: none;
+
+    cursor: pointer;
+    user-select: none;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.bus-page .bus-btn i {
+    font-size: 18px;
+}
+
+.bus-page .bus-btn:hover {
+    transform: translateY(-2px);
+}
+
+.bus-page .bus-btn:active {
+    transform: translateY(0);
+}
+
+.bus-page .bus-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.bus-page .bus-btn-primary {
+    color: #FFFFFF;
+    background: var(--orange);
+    border-color: var(--orange);
+    box-shadow: 0 3px 8px rgba(242, 140, 40, 0.17);
+}
+
+.bus-page .bus-btn-primary:hover {
+    color: #FFFFFF;
+    background: var(--orange-hover);
+    border-color: var(--orange-hover);
+    box-shadow: 0 5px 13px rgba(217, 119, 6, 0.22);
+}
+
+.bus-page .bus-btn-edit {
+    color: #FFFFFF;
+    background: var(--deep-blue);
+    border-color: var(--deep-blue);
+}
+
+.bus-page .bus-btn-edit:hover {
+    color: #FFFFFF;
+    background: var(--deep-blue-dark);
+    border-color: var(--deep-blue-dark);
+}
+
+.bus-page .bus-btn-light {
+    color: var(--deep-blue);
+    background: #FFFFFF;
+    border-color: #CBD5E1;
+}
+
+.bus-page .bus-btn-light:hover {
+    color: var(--deep-blue-dark);
+    background: var(--deep-blue-light);
+    border-color: #AFC4D8;
+}
+
+.bus-page .bus-btn-danger {
+    color: #FFFFFF;
+    background: #DC2626;
+    border-color: #DC2626;
+}
+
+.bus-page .bus-btn-danger:hover {
+    color: #FFFFFF;
+    background: #B91C1C;
+    border-color: #B91C1C;
+}
+
+/* ================= DJANGO MESSAGES ================= */
+
+.bus-page .bus-message {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+
+    margin-bottom: 20px;
+    padding: 17px 21px;
+
+    border: 1px solid transparent;
+    border-radius: 10px;
+
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.bus-page .bus-message.success {
+    color: #166534;
+    background: var(--success-bg);
+    border-color: #BBF7D0;
+}
+
+.bus-page .bus-message.error {
+    color: #991B1B;
+    background: var(--danger-bg);
+    border-color: #FECACA;
+}
+
+.bus-page .bus-message.warning {
+    color: #92400E;
+    background: var(--warning-bg);
+    border-color: #FDE68A;
+}
+
+.bus-page .bus-message.info {
+    color: var(--deep-blue);
+    background: var(--deep-blue-light);
+    border-color: #C8DCEC;
+}
+
+/* ================= TABLE SCROLL ================= */
+
+.bus-page .table-scroll {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    border-radius: 0 0 13px 13px;
+
+    scrollbar-width: thin;
+    scrollbar-color: #9BAFC2 #F1F5F9;
+}
+
+.bus-page .table-scroll::-webkit-scrollbar {
+    height: 9px;
+}
+
+.bus-page .table-scroll::-webkit-scrollbar-track {
+    background: #F1F5F9;
+}
+
+.bus-page .table-scroll::-webkit-scrollbar-thumb {
+    background: #A8BACB;
+    border-radius: 20px;
+}
+
+.bus-page .table-scroll::-webkit-scrollbar-thumb:hover {
+    background: #7892AA;
+}
+
+/* ================= ASSIGNMENTS TABLE ================= */
+
+.bus-page .bus-table {
+    width: max-content;
+    min-width: 100%;
+
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: auto;
+
+    background: #FFFFFF;
+    font-size: 18px;
+}
+
+/* Keep all headings on one line */
+
+.bus-page .bus-table th {
+    padding: 17px 19px;
+
+    color: var(--deep-blue-dark);
+    background: #EAF2F8;
+
+    border-bottom: 1px solid #D4E0EB;
+
+    text-align: left;
+    white-space: nowrap;
+    vertical-align: middle;
+
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+/* Keep names, IDs, driver, route and stops on one line */
+
+.bus-page .bus-table td {
+    padding: 17px 19px;
+
+    color: var(--text-primary);
+    background: #FFFFFF;
+
+    border-bottom: 1px solid #E8EDF3;
+
+    text-align: left;
+    vertical-align: middle;
+
+    font-size: 18px;
+    line-height: 1.6;
+    white-space: nowrap;
+}
+
+.bus-page .bus-table tbody tr {
+    transition: background-color 0.18s ease;
+}
+
+.bus-page .bus-table tbody tr:hover td {
+    background: #FFF9F2;
+}
+
+.bus-page .bus-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.bus-page .bus-table td strong {
+    color: var(--deep-blue-dark);
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.bus-page .bus-table td a {
+    font-size: 18px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.bus-page .bus-table td .bus-btn {
+    white-space: nowrap;
+}
+
+/* ================= GRADE / ROUTE / ID TAGS ================= */
+
+.bus-page .grade-tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 6px 12px;
+
+    color: var(--deep-blue);
+    background: var(--deep-blue-light);
+
+    border: 1px solid #D1E1EF;
+    border-radius: 7px;
+
+    font-size: 18px;
+    font-weight: 650;
+    line-height: 1.45;
+    white-space: nowrap;
+}
+
+/* ================= STATUS BADGES ================= */
+
+.bus-page .active-tag,
+.bus-page .inactive-tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 7px 13px;
+
+    border: 1px solid transparent;
+    border-radius: 30px;
+
+    font-size: 18px;
+    font-weight: 650;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+.bus-page .active-tag {
+    color: #166534;
+    background: #DCFCE7;
+    border-color: #BBF7D0;
+}
+
+.bus-page .inactive-tag {
+    color: #991B1B;
+    background: #FEE2E2;
+    border-color: #FECACA;
+}
+
+/* ================= EMPTY STATE ================= */
+
+.bus-page .empty {
+    padding: 48px 24px;
+
+    color: var(--text-secondary);
+    background: #FFFFFF;
+
+    text-align: center;
+    font-size: 18px;
+    line-height: 1.7;
+}
+
+.bus-page .empty > i {
+    display: block;
+    margin-bottom: 16px;
+
+    color: #9BB2C8;
+    font-size: 44px;
+}
+
+.bus-page .empty p {
+    margin: 9px 0 0;
+    color: var(--text-secondary);
+    font-size: 18px;
+}
+
+.bus-page .empty strong {
+    color: var(--deep-blue);
+}
+
+/* ================= SEARCH / FILTERS ================= */
+
+.bus-page .bus-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 18px;
+
+    padding: 22px 26px;
+
+    background: #FFFFFF;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.bus-page .bus-filters .field {
+    flex: 1 1 230px;
+}
+
+.bus-page .bus-filters .bus-btn {
+    flex: 0 0 auto;
+}
+
+/* ================= SUMMARY CARDS ================= */
+
+.bus-page .bus-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+    margin-bottom: 28px;
+}
+
+.bus-page .bus-stat-card {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+
+    min-width: 0;
+    padding: 24px;
+
+    background: #FFFFFF;
+    border: 1px solid var(--border-color);
+    border-radius: 13px;
+
+    box-shadow: 0 4px 14px rgba(18, 59, 99, 0.045);
+}
+
+.bus-page .bus-stat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 56px;
+    width: 56px;
+    height: 56px;
+
+    color: var(--orange);
+    background: var(--orange-light);
+    border-radius: 12px;
+
+    font-size: 24px;
+}
+
+.bus-page .bus-stat-card h3 {
+    margin: 0 0 5px;
+
+    color: var(--text-secondary);
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.bus-page .bus-stat-card p {
+    margin: 0;
+
+    color: var(--deep-blue-dark);
+    font-size: 26px;
+    font-weight: 750;
+    line-height: 1.4;
+}
+
+/* ================= VALIDATION ERRORS ================= */
+
+.bus-page .errorlist {
+    margin: 8px 0 0;
+    padding: 0;
+
+    color: var(--danger);
+    list-style: none;
+
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+.bus-page .field-error {
+    display: block;
+    margin-top: 8px;
+
+    color: var(--danger);
+    font-size: 18px;
+}
+
+/* ================= SMALL DESKTOP ================= */
+
+@media (max-width: 1100px) {
+    .bus-page {
+        padding: 24px;
+    }
+
+    .bus-page .bus-card-body {
+        padding: 24px;
+    }
+
+    .bus-page .bus-form {
+        gap: 22px;
+    }
+
+    .bus-page .bus-stats {
+        gap: 16px;
+    }
+}
+
+/* ================= TABLET ================= */
+
+@media (max-width: 768px) {
+    .bus-page {
+        padding: 18px;
+    }
+
+    .bus-page .bus-header {
+        padding: 26px;
+        margin-bottom: 24px;
+    }
+
+    .bus-page .bus-header h1 {
+        font-size: 27px;
+    }
+
+    .bus-page .bus-card-title {
+        padding: 19px 21px;
+        font-size: 22px;
+    }
+
+    .bus-page .bus-card-body {
+        padding: 21px;
+    }
+
+    .bus-page .bus-form {
+        grid-template-columns: 1fr;
+        gap: 21px;
+    }
+
+    .bus-page .field.full,
+    .bus-page .form-actions {
+        grid-column: auto;
+    }
+
+    .bus-page .bus-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .bus-page .bus-table th,
+    .bus-page .bus-table td {
+        padding: 15px 16px;
+    }
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 480px) {
+    .bus-page {
+        padding: 12px;
+    }
+
+    .bus-page .bus-header {
+        padding: 21px;
+        border-radius: 13px;
+    }
+
+    .bus-page .bus-header h1 {
+        gap: 11px;
+        font-size: 24px;
+    }
+
+    .bus-page .bus-header h1 i {
+        width: 42px;
+        height: 42px;
+    }
+
+    .bus-page .bus-header p {
+        font-size: 18px;
+    }
+
+    .bus-page .bus-card {
+        margin-bottom: 20px;
+        border-radius: 11px;
+    }
+
+    .bus-page .bus-card-title {
+        padding: 17px;
+        font-size: 21px;
+    }
+
+    .bus-page .bus-card-body {
+        padding: 17px;
+    }
+
+    .bus-page .checkbox-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        padding: 16px;
+    }
+
+    .bus-page .form-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .bus-page .form-actions .bus-btn {
+        width: 100%;
+    }
+
+    .bus-page .bus-filters {
+        padding: 17px;
+    }
+
+    .bus-page .bus-filters .field,
+    .bus-page .bus-filters .bus-btn {
+        width: 100%;
+        flex-basis: 100%;
+    }
+
+    .bus-page .bus-stats {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .bus-page .bus-stat-card {
+        padding: 19px;
+    }
+
+    .bus-page .empty {
+        padding: 35px 17px;
+    }
+
+    /* Preserve one-line table content on mobile */
+    .bus-page .table-scroll {
+        overflow-x: auto;
+    }
+
+    .bus-page .bus-table {
+        width: max-content;
+        min-width: 1150px;
+    }
+
+    .bus-page .bus-table th,
+    .bus-page .bus-table td {
+        padding: 12px 15px;
+        white-space: nowrap;
+    }
+}
+
+/* ================= REDUCED MOTION ================= */
+
+@media (prefers-reduced-motion: reduce) {
+    .bus-page *,
+    .bus-page *::before,
+    .bus-page *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+        animation: none !important;
+    }
+}
+</style>
+
+
+<div class="bus-page">
+
+    <div class="bus-header">
+        <h1>
+            <i class="fas fa-bus"></i>
+            Student Bus Assignments
+        </h1>
+        <p>Assign and manage student transportation during the academic year.</p>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="bus-message
+                {% if 'success' in message.tags %}success
+                {% elif 'error' in message.tags %}error
+                {% else %}warning{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <section class="bus-card">
+        <div class="bus-card-title">
+            {% if editing %}
+                Edit Student Assignment
+            {% else %}
+                Assign Student to Bus
+            {% endif %}
+        </div>
+
+        <div class="bus-card-body">
+
+            <form method="post"
+                  class="bus-form"
+                  id="studentBusForm"
+                  data-assignment-id="{{ assignment.pk|default:'' }}"
+                  data-selected-student="{{ assignment.student_id|default:'' }}"
+                  data-selected-pickup="{{ assignment.pickup_stop_id|default:'' }}"
+                  data-selected-drop="{{ assignment.drop_stop_id|default:'' }}"
+                  data-selected-bus="{{ assignment.bus_id|default:'' }}">
+
+                {% csrf_token %}
+
+                <!-- GRADE -->
+                <div class="field">
+                    <label for="grade">Grade / Class *</label>
+
+                    <select name="grade" id="grade" required>
+                        <option value="">Select Grade</option>
+
+                        {% for grade in grades %}
+                            <option value="{{ grade }}"
+                                {% if assignment and assignment.student.applying_class == grade %}
+                                    selected
+                                {% endif %}>
+                                {{ grade }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- STUDENT -->
+                <div class="field">
+                    <label for="student">Student Name *</label>
+
+                    <select name="student" id="student" required>
+                        <option value="">Select Grade First</option>
+                    </select>
+                </div>
+
+                <!-- ROUTE -->
+                <div class="field">
+                    <label for="route">Route *</label>
+
+                    <select name="route" id="route" required>
+                        <option value="">Select Route</option>
+
+                        {% for route in routes %}
+                            <option value="{{ route.pk }}"
+                                {% if assignment and assignment.route_id == route.pk %}
+                                    selected
+                                {% endif %}>
+                                {{ route.route_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- BUS -->
+                <div class="field">
+                    <label for="bus">Bus *</label>
+
+                    <select name="bus" id="bus" required>
+                        <option value="">Select Route First</option>
+
+                        {% for bus in buses %}
+                            {% if bus.route_id %}
+                                <option value="{{ bus.pk }}"
+                                        data-route="{{ bus.route_id }}"
+                                    {% if assignment and assignment.bus_id == bus.pk %}
+                                        selected
+                                    {% endif %}>
+                                    {{ bus.bus_number }} — {{ bus.registration_number }}
+                                </option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- PICKUP STOP -->
+                <div class="field">
+                    <label for="pickup_stop">Pickup Stop</label>
+
+                    <select name="pickup_stop" id="pickup_stop">
+                        <option value="">Select Route First</option>
+
+                        {% for stop in stops %}
+                            <option value="{{ stop.pk }}"
+                                    data-route="{{ stop.route_id }}"
+                                {% if assignment and assignment.pickup_stop_id == stop.pk %}
+                                    selected
+                                {% endif %}>
+                                {{ stop.stop_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <small class="field-help">
+                        Select a route to see its pickup stops.
+                    </small>
+                </div>
+
+                <!-- DROP STOP -->
+                <div class="field">
+                    <label for="drop_stop">Drop Stop</label>
+
+                    <select name="drop_stop" id="drop_stop">
+                        <option value="">Select Route First</option>
+
+                        {% for stop in stops %}
+                            <option value="{{ stop.pk }}"
+                                    data-route="{{ stop.route_id }}"
+                                {% if assignment and assignment.drop_stop_id == stop.pk %}
+                                    selected
+                                {% endif %}>
+                                {{ stop.stop_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <small class="field-help">
+                        Select a route to see its drop stops.
+                    </small>
+                </div>
+
+                <!-- REQUIREMENTS -->
+                <div class="field full">
+                    <label>Transport Requirements</label>
+
+                    <div class="checkbox-row">
+                        <label>
+                            <input type="checkbox"
+                                   name="pickup_required"
+                                   id="pickup_required"
+                                   {% if assignment and assignment.pickup_required %}
+                                       checked
+                                   {% endif %}>
+                            Pickup Required
+                        </label>
+
+                        <label>
+                            <input type="checkbox"
+                                   name="drop_required"
+                                   id="drop_required"
+                                   {% if assignment and assignment.drop_required %}
+                                       checked
+                                   {% endif %}>
+                            Drop Required
+                        </label>
+
+                        <label>
+                            <input type="checkbox"
+                                   name="is_active"
+                                   id="is_active"
+                                   {% if not assignment or assignment.is_active %}
+                                       checked
+                                   {% endif %}>
+                            Active Assignment
+                        </label>
+                    </div>
+                </div>
+
+                <!-- BUTTONS -->
+                <div class="form-actions">
+                    <button type="submit" class="bus-btn bus-btn-primary">
+                        <i class="fas fa-save"></i>
+                        {% if editing %}
+                            Update Assignment
+                        {% else %}
+                            Assign Student
+                        {% endif %}
+                    </button>
+
+                    {% if editing %}
+                        <a href="{% url 'transport:vp_student_assignment' %}"
+                           class="bus-btn bus-btn-light">
+                            Cancel
+                        </a>
+                    {% else %}
+                        <button type="reset"
+                                class="bus-btn bus-btn-light"
+                                id="clearForm">
+                            Clear Form
+                        </button>
+                    {% endif %}
+                </div>
+
+            </form>
+        </div>
+    </section>
+
+    <!-- ASSIGNMENTS TABLE -->
+    <section class="bus-card">
+        <div class="bus-card-title">
+            All Student Bus Assignments
+        </div>
+
+        {% if assignments %}
+            <div class="table-scroll">
+                <table class="bus-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Student Name</th>
+                            <th>Grade / Class</th>
+                            <th>Application ID</th>
+                            <th>Bus</th>
+                            <th>Driver</th>
+                            <th>Route</th>
+                            <th>Pickup Stop</th>
+                            <th>Drop Stop</th>
+                            <th>Pickup</th>
+                            <th>Drop</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for item in assignments %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+
+                                <td>
+                                    <strong>
+                                        {{ item.student.first_name }}
+                                        {{ item.student.last_name }}
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    <span class="grade-tag">
+                                        {{ item.student.applying_class|default:"—" }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    {{ item.student.application_id|default:"—" }}
+                                </td>
+
+                                <td>
+                                    {{ item.bus.bus_number }}<br>
+                                    {{ item.bus.registration_number }}
+                                </td>
+
+                                <td>
+                                    {% if item.bus.driver %}
+                                        {{ item.bus.driver }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+
+                                <td>{{ item.route.route_name|default:"—" }}</td>
+
+                                <td>
+                                    {{ item.pickup_stop.stop_name|default:"—" }}
+                                </td>
+
+                                <td>
+                                    {{ item.drop_stop.stop_name|default:"—" }}
+                                </td>
+
+                                <td>
+                                    {% if item.pickup_required %}Yes{% else %}No{% endif %}
+                                </td>
+
+                                <td>
+                                    {% if item.drop_required %}Yes{% else %}No{% endif %}
+                                </td>
+
+                                <td>
+                                    {% if item.is_active %}
+                                        <span class="active-tag">Active</span>
+                                    {% else %}
+                                        <span class="inactive-tag">Inactive</span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    <a class="bus-btn bus-btn-edit"
+                                       href="{% url 'transport:vp_student_assignment_edit' item.pk %}">
+                                        <i class="fas fa-edit"></i>
+                                        Edit
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty">
+                <i class="fas fa-bus fa-2x"></i>
+                <p>No student bus assignments found.</p>
+            </div>
+        {% endif %}
+    </section>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("studentBusForm");
+
+    if (!form) return;
+
+    const grade = document.getElementById("grade");
+    const student = document.getElementById("student");
+    const route = document.getElementById("route");
+    const bus = document.getElementById("bus");
+    const pickup = document.getElementById("pickup_stop");
+    const drop = document.getElementById("drop_stop");
+
+    const pickupRequired = document.getElementById("pickup_required");
+    const dropRequired = document.getElementById("drop_required");
+
+    const assignmentId = form.dataset.assignmentId || "";
+    const selectedStudent = form.dataset.selectedStudent || "";
+    const selectedPickup = form.dataset.selectedPickup || "";
+    const selectedDrop = form.dataset.selectedDrop || "";
+    const selectedBus = form.dataset.selectedBus || "";
+
+    /*
+     * Filter bus and stop options using the selected route ID.
+     * Hidden options cannot be selected by the user.
+     */
+    function filterRouteOptions(select, routeId, placeholder, preferredValue) {
+        const previousValue = preferredValue || select.value;
+
+        Array.from(select.options).forEach(function (option, index) {
+            if (index === 0) {
+                option.hidden = false;
+                option.disabled = false;
+                option.textContent = placeholder;
+                return;
+            }
+
+            const optionRoute = String(option.dataset.route || "");
+            const matches = routeId !== "" && optionRoute === String(routeId);
+
+            option.hidden = !matches;
+            option.disabled = !matches;
+        });
+
+        const validSelection = Array.from(select.options).find(function (option) {
+            return option.value !== "" &&
+                   option.value === String(previousValue) &&
+                   !option.disabled &&
+                   !option.hidden;
+        });
+
+        select.value = validSelection ? validSelection.value : "";
+    }
+
+    function filterRouteFields(preserveEditSelections) {
+        const selectedRouteId = String(route.value || "");
+
+        filterRouteOptions(
+            bus,
+            selectedRouteId,
+            selectedRouteId ? "Select Bus" : "Select Route First",
+            preserveEditSelections ? selectedBus : ""
+        );
+
+        filterRouteOptions(
+            pickup,
+            selectedRouteId,
+            selectedRouteId ? "Select Pickup Stop" : "Select Route First",
+            preserveEditSelections ? selectedPickup : ""
+        );
+
+        filterRouteOptions(
+            drop,
+            selectedRouteId,
+            selectedRouteId ? "Select Drop Stop" : "Select Route First",
+            preserveEditSelections ? selectedDrop : ""
+        );
+    }
+
+    /*
+     * Load eligible students for the selected grade.
+     */
+    async function loadStudents(preserveCurrentSelection) {
+        const wantedStudent = preserveCurrentSelection
+            ? (student.value || selectedStudent)
+            : "";
+
+        if (!grade.value) {
+            student.innerHTML =
+                '<option value="">Select Grade First</option>';
+            return;
+        }
+
+        student.innerHTML =
+            '<option value="">Loading students...</option>';
+
+        const params = new URLSearchParams({
+            grade: grade.value
+        });
+
+        if (assignmentId) {
+            params.set("assignment_id", assignmentId);
+        }
+
+        try {
+            const response = await fetch(
+                "{% url 'transport:students_by_grade' %}?" +
+                params.toString(),
+                {
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest"
+                    }
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("HTTP " + response.status);
+            }
+
+            const data = await response.json();
+            student.innerHTML = "";
+
+            const placeholder = document.createElement("option");
+            placeholder.value = "";
+            placeholder.textContent = data.students.length
+                ? "Select Student"
+                : "No eligible students found";
+
+            student.appendChild(placeholder);
+
+            data.students.forEach(function (item) {
+                const option = document.createElement("option");
+                option.value = String(item.id);
+
+                option.textContent =
+                    item.name +
+                    (item.application_id
+                        ? " (" + item.application_id + ")"
+                        : "");
+
+                if (String(item.id) === String(wantedStudent)) {
+                    option.selected = true;
+                }
+
+                student.appendChild(option);
+            });
+
+        } catch (error) {
+            student.innerHTML =
+                '<option value="">Could not load students</option>';
+
+            console.error("Student loading error:", error);
+        }
+    }
+
+    /*
+     * Make stop selection required only when its checkbox is checked.
+     */
+    function updateRequirements() {
+        pickup.required = pickupRequired.checked;
+        drop.required = dropRequired.checked;
+
+        pickup.disabled = !route.value;
+        drop.disabled = !route.value;
+        bus.disabled = !route.value;
+    }
+
+    /*
+     * Before submitting, check that the selected bus and stops
+     * actually belong to the selected route.
+     */
+    form.addEventListener("submit", function (event) {
+        const routeId = String(route.value || "");
+
+        if (!routeId) {
+            event.preventDefault();
+            alert("Please select a route.");
+            route.focus();
+            return;
+        }
+
+        const selectedBusOption = bus.options[bus.selectedIndex];
+
+        if (
+            !bus.value ||
+            !selectedBusOption ||
+            selectedBusOption.disabled ||
+            String(selectedBusOption.dataset.route || "") !== routeId
+        ) {
+            event.preventDefault();
+            alert("Please select a bus belonging to the selected route.");
+            bus.focus();
+            return;
+        }
+
+        if (pickupRequired.checked) {
+            const selectedPickupOption = pickup.options[pickup.selectedIndex];
+
+            if (
+                !pickup.value ||
+                !selectedPickupOption ||
+                selectedPickupOption.disabled ||
+                String(selectedPickupOption.dataset.route || "") !== routeId
+            ) {
+                event.preventDefault();
+                alert("Please select a pickup stop belonging to the selected route.");
+                pickup.focus();
+                return;
+            }
+        }
+
+        if (dropRequired.checked) {
+            const selectedDropOption = drop.options[drop.selectedIndex];
+
+            if (
+                !drop.value ||
+                !selectedDropOption ||
+                selectedDropOption.disabled ||
+                String(selectedDropOption.dataset.route || "") !== routeId
+            ) {
+                event.preventDefault();
+                alert("Please select a drop stop belonging to the selected route.");
+                drop.focus();
+            }
+        }
+    });
+
+    /*
+     * Grade changed: reload students.
+     */
+    grade.addEventListener("change", function () {
+        loadStudents(false);
+    });
+
+    /*
+     * Route changed: clear old selections and show only matching
+     * bus and stop options.
+     */
+    route.addEventListener("change", function () {
+        filterRouteOptions(
+            bus,
+            String(route.value || ""),
+            route.value ? "Select Bus" : "Select Route First",
+            ""
+        );
+
+        filterRouteOptions(
+            pickup,
+            String(route.value || ""),
+            route.value ? "Select Pickup Stop" : "Select Route First",
+            ""
+        );
+
+        filterRouteOptions(
+            drop,
+            String(route.value || ""),
+            route.value ? "Select Drop Stop" : "Select Route First",
+            ""
+        );
+
+        updateRequirements();
+    });
+
+    pickupRequired.addEventListener("change", updateRequirements);
+    dropRequired.addEventListener("change", updateRequirements);
+
+    /*
+     * Initial load and Edit page selections.
+     */
+    filterRouteFields(true);
+    updateRequirements();
+
+    if (grade.value) {
+        loadStudents(true);
+    }
+
+    /*
+     * Clear form.
+     */
+    const clearButton = document.getElementById("clearForm");
+
+    if (clearButton) {
+        clearButton.addEventListener("click", function () {
+            setTimeout(function () {
+                student.innerHTML =
+                    '<option value="">Select Grade First</option>';
+
+                filterRouteOptions(bus, "", "Select Route First", "");
+                filterRouteOptions(pickup, "", "Select Route First", "");
+                filterRouteOptions(drop, "", "Select Route First", "");
+
+                updateRequirements();
+            }, 0);
+        });
+    }
+});
+</script>
+
+{% endblock %}

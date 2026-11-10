@@ -1,0 +1,422 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login | School Management System</title>
+
+    <link rel="stylesheet" href="{% static 'accounts/css/auth.css' %}">
+    <link rel="stylesheet" href="{% static 'accounts/css/login.css' %}">
+
+    <style>
+        /* Login page layout */
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: #EAF2F8;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 1250px;
+            min-height: 650px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: #ffffff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 45px rgba(11, 41, 69, 0.12);
+        }
+
+        /* LEFT SIDE CLASSROOM IMAGE */
+        .login-brand {
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            padding: 45px;
+            min-height: 650px;
+            background-image:
+                linear-gradient(
+                    to top,
+                    rgba(11, 41, 69, 0.92) 0%,
+                    rgba(11, 41, 69, 0.50) 38%,
+                    rgba(11, 41, 69, 0.05) 75%
+                ),
+                url("{% static 'accounts/images/school-classroom.png' %}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #ffffff;
+        }
+
+        .login-brand-content {
+            position: relative;
+            z-index: 1;
+            max-width: 480px;
+        }
+
+        .login-brand-logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 65px;
+            height: 65px;
+            margin-bottom: 20px;
+            border-radius: 14px;
+            background: #F28C28;
+            color: #ffffff;
+            font-size: 23px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .login-brand-title {
+            margin: 0 0 16px;
+            font-size: clamp(28px, 3vw, 38px);
+            line-height: 1.25;
+            font-weight: 750;
+        }
+
+        .login-brand-description {
+            margin: 0;
+            font-size: 16px;
+            line-height: 1.8;
+            color: #f1f5f9;
+        }
+
+        /* RIGHT SIDE LOGIN FORM */
+        .login-form-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 55px;
+            background: #ffffff;
+        }
+
+        .login-header {
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            margin: 0 0 10px;
+            color: #123B63;
+            font-size: 32px;
+        }
+
+        .login-header p {
+            margin: 0;
+            color: #64748b;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .auth-form-group {
+            margin-bottom: 22px;
+        }
+
+        .auth-label {
+            display: block;
+            margin-bottom: 9px;
+            color: #123B63;
+            font-weight: 600;
+        }
+
+        .auth-input-wrapper {
+            position: relative;
+        }
+
+        .auth-input {
+            width: 100%;
+            min-height: 48px;
+            box-sizing: border-box;
+            border: 1px solid #cbd5e1;
+            border-radius: 9px;
+            padding: 12px 14px;
+            outline: none;
+            font-size: 15px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .auth-input:focus {
+            border-color: #123B63;
+            box-shadow: 0 0 0 3px rgba(18, 59, 99, 0.10);
+        }
+
+        .auth-password-input {
+            padding-right: 70px;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: #123B63;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .auth-options {
+            display: flex;
+            justify-content: flex-end;
+            margin: 4px 0 24px;
+        }
+
+        .auth-link {
+            color: #123B63;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .auth-link:hover {
+            color: #D97706;
+            text-decoration: underline;
+        }
+
+        .auth-button {
+            width: 100%;
+            min-height: 50px;
+            border: none;
+            border-radius: 9px;
+            background: #F28C28;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .auth-button:hover {
+            background: #D97706;
+            transform: translateY(-1px);
+        }
+
+        .auth-error {
+            margin-bottom: 20px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            background: #fef2f2;
+            color: #b91c1c;
+            font-size: 14px;
+        }
+
+        .login-footer {
+            margin-top: 32px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            color: #64748b;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        /* MOBILE RESPONSIVE */
+        @media (max-width: 850px) {
+            .login-page {
+                padding: 15px;
+            }
+
+            .login-container {
+                max-width: 520px;
+                grid-template-columns: 1fr;
+            }
+
+            .login-brand {
+                min-height: 320px;
+                padding: 30px;
+                background-position: center 40%;
+            }
+
+            .login-brand-logo {
+                width: 50px;
+                height: 50px;
+                font-size: 19px;
+                margin-bottom: 12px;
+            }
+
+            .login-brand-title {
+                font-size: 27px;
+            }
+
+            .login-brand-description {
+                font-size: 14px;
+            }
+
+            .login-form-section {
+                padding: 35px 28px;
+            }
+
+            .login-header h1 {
+                font-size: 27px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-brand {
+                min-height: 280px;
+                padding: 24px;
+            }
+
+            .login-form-section {
+                padding: 28px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-page">
+
+    <div class="login-container">
+
+        <!-- LEFT SIDE: CLASSROOM IMAGE -->
+
+        <section class="login-brand">
+
+            <div class="login-brand-content">
+
+                <div class="login-brand-logo">
+                    SMS
+                </div>
+
+                <h1 class="login-brand-title">
+                    School Management System
+                </h1>
+
+                <p class="login-brand-description">
+                    Manage academics, attendance,
+                    communication, administration and
+                    school operations from one centralized
+                    platform.
+                </p>
+
+            </div>
+
+        </section>
+
+        <!-- RIGHT SIDE: LOGIN FORM -->
+
+        <section class="login-form-section">
+
+            <div class="login-header">
+
+                <h1>Welcome Back!</h1>
+
+                <p>
+                    Sign in to access your dashboard.
+                </p>
+
+            </div>
+
+            {% if error %}
+                <div class="auth-error">
+                    {{ error }}
+                </div>
+            {% endif %}
+
+            <form method="POST" autocomplete="on">
+
+                {% csrf_token %}
+
+                <!-- USERNAME / EMAIL -->
+
+                <div class="auth-form-group">
+
+                    <label for="login" class="auth-label">
+                        Username or Email
+                    </label>
+
+                    <input
+                        type="text"
+                        id="login"
+                        name="login"
+                        class="auth-input"
+                        placeholder="Enter username or email"
+                        value="{{ login_value|default:'' }}"
+                        autocomplete="username"
+                        required
+                    >
+
+                </div>
+
+                <!-- PASSWORD -->
+
+                <div class="auth-form-group">
+
+                    <label for="login-password" class="auth-label">
+                        Password
+                    </label>
+
+                    <div class="auth-input-wrapper">
+
+                        <input
+                            type="password"
+                            id="login-password"
+                            name="password"
+                            class="auth-input auth-password-input"
+                            placeholder="Enter password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            id="login-password-toggle"
+                            class="password-toggle"
+                            onclick="togglePassword(
+                                'login-password',
+                                'login-password-toggle'
+                            )"
+                        >
+                            Show
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <!-- FORGOT PASSWORD -->
+
+                <div class="auth-options">
+
+                    <a
+                        href="{% url 'accounts:password_reset' %}"
+                        class="auth-link"
+                    >
+                        Forgot Password?
+                    </a>
+
+                </div>
+
+                <!-- LOGIN BUTTON -->
+
+                <button type="submit" class="auth-button">
+                    Sign In
+                </button>
+
+            </form>
+
+            <div class="login-footer">
+                School Management System
+            </div>
+
+        </section>
+
+    </div>
+
+</div>
+
+<script src="{% static 'accounts/js/auth.js' %}"></script>
+
+</body>
+</html>

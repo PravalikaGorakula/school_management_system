@@ -1,0 +1,1638 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}
+Report Expense
+{% endblock %}
+
+{% block extra_css %}
+<style>
+
+:root {
+    --deep-blue: #123B63;
+    --deep-blue-dark: #0B2945;
+    --deep-blue-light: #EAF2F8;
+
+    --orange: #F28C28;
+    --orange-hover: #D97706;
+    --orange-light: #FFF4E6;
+
+    --light-blue: #EEF6FF;
+    --light-green: #ECFDF5;
+    --light-purple: #F5F3FF;
+    --light-yellow: #FFFBEB;
+    --light-red: #FEF2F2;
+
+    --white: #FFFFFF;
+    --light-gray: #F8FAFC;
+
+    --text-primary: #1F2937;
+    --text-secondary: #64748B;
+    --text-light: #94A3B8;
+
+    --border: #E2E8F0;
+
+    --radius-sm: 8px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+
+    --shadow-card:
+        0 10px 35px rgba(15, 23, 42, 0.08);
+}
+
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+.expense-page {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.expense-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    padding: 24px 28px;
+    margin-bottom: 24px;
+
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+
+    box-shadow: var(--shadow-card);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 17px;
+}
+
+.header-icon {
+    width: 58px;
+    height: 58px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--orange-light);
+    color: var(--orange-hover);
+
+    border-radius: 16px;
+
+    font-size: 25px;
+}
+
+.page-title {
+    margin: 0;
+
+    color: var(--deep-blue-dark);
+
+    font-size: 28px;
+    font-weight: 800;
+}
+
+.page-subtitle {
+    margin: 4px 0 0;
+
+    color: var(--text-secondary);
+
+    font-size: 16px;
+}
+
+.bus-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+
+    padding: 11px 17px;
+
+    background: var(--deep-blue-light);
+    color: var(--deep-blue);
+
+    border: 1px solid #D6E5F2;
+    border-radius: 11px;
+
+    font-size: 14px;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   MAIN GRID
+========================================================= */
+
+.expense-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 380px;
+    gap: 22px;
+}
+
+
+/* =========================================================
+   FORM CARD
+========================================================= */
+
+.form-card,
+.history-card,
+.info-card {
+    background: var(--white);
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+
+    box-shadow: var(--shadow-card);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 20px 23px;
+
+    background: var(--deep-blue-light);
+
+    border-bottom: 1px solid var(--border);
+
+    color: var(--deep-blue-dark);
+
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.card-header i {
+    color: var(--orange);
+}
+
+.form-body {
+    padding: 25px;
+}
+
+
+/* =========================================================
+   FORM GRID
+========================================================= */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 19px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.form-group.full {
+    grid-column: span 2;
+}
+
+.form-label {
+    color: var(--text-primary);
+
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.required {
+    color: #DC2626;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+    width: 100%;
+
+    padding: 12px 14px;
+
+    background: var(--white);
+
+    border: 1px solid var(--border);
+    border-radius: 9px;
+
+    color: var(--text-primary);
+
+    font-size: 15px;
+
+    outline: none;
+
+    transition: all .25s ease;
+}
+
+.form-input,
+.form-select {
+    height: 47px;
+}
+
+.form-textarea {
+    min-height: 125px;
+
+    resize: vertical;
+
+    line-height: 1.6;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    border-color: var(--deep-blue);
+
+    box-shadow:
+        0 0 0 3px rgba(18, 59, 99, .10);
+}
+
+.form-help {
+    color: var(--text-light);
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   FILE UPLOAD
+========================================================= */
+
+.file-upload {
+    position: relative;
+
+    width: 100%;
+}
+
+.file-upload input[type="file"] {
+    position: absolute;
+
+    width: 1px;
+    height: 1px;
+
+    opacity: 0;
+}
+
+.file-label {
+    min-height: 115px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    padding: 20px;
+
+    background: var(--light-gray);
+
+    border: 2px dashed #CBD5E1;
+    border-radius: 12px;
+
+    color: var(--text-secondary);
+
+    cursor: pointer;
+
+    text-align: center;
+
+    transition: all .25s ease;
+}
+
+.file-label:hover {
+    background: var(--deep-blue-light);
+    border-color: var(--deep-blue);
+}
+
+.file-label i {
+    margin-bottom: 8px;
+
+    color: var(--deep-blue);
+
+    font-size: 27px;
+}
+
+.file-main-text {
+    color: var(--deep-blue-dark);
+
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.file-sub-text {
+    margin-top: 3px;
+
+    color: var(--text-light);
+
+    font-size: 12px;
+}
+
+.file-name {
+    display: none;
+
+    margin-top: 7px;
+
+    color: #047857;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   FORM FOOTER
+========================================================= */
+
+.form-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+
+    padding-top: 23px;
+    margin-top: 23px;
+
+    border-top: 1px solid var(--border);
+}
+
+.reset-btn,
+.submit-btn {
+    min-height: 45px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 0 19px;
+
+    border-radius: 9px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+    font-weight: 800;
+
+    transition: all .25s ease;
+}
+
+.reset-btn {
+    background: var(--light-gray);
+
+    color: var(--text-secondary);
+
+    border: 1px solid var(--border);
+}
+
+.reset-btn:hover {
+    background: #E2E8F0;
+}
+
+.submit-btn {
+    background: var(--deep-blue);
+
+    color: var(--white);
+}
+
+.submit-btn:hover {
+    background: var(--deep-blue-dark);
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   RIGHT SIDEBAR
+========================================================= */
+
+.right-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+
+/* =========================================================
+   BUS INFO
+========================================================= */
+
+.info-body {
+    padding: 20px;
+}
+
+.bus-profile {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    padding-bottom: 17px;
+    margin-bottom: 16px;
+
+    border-bottom: 1px solid var(--border);
+}
+
+.bus-icon {
+    width: 50px;
+    height: 50px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--deep-blue);
+    color: var(--white);
+
+    border-radius: 13px;
+
+    font-size: 20px;
+}
+
+.bus-number {
+    color: var(--deep-blue-dark);
+
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.bus-registration {
+    margin-top: 2px;
+
+    color: var(--text-secondary);
+
+    font-size: 13px;
+}
+
+.info-list {
+    display: grid;
+    gap: 10px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+
+    padding: 11px;
+
+    background: var(--light-gray);
+
+    border: 1px solid #EEF2F7;
+    border-radius: 9px;
+}
+
+.info-label {
+    color: var(--text-secondary);
+
+    font-size: 13px;
+}
+
+.info-value {
+    color: var(--deep-blue-dark);
+
+    font-size: 13px;
+    font-weight: 800;
+
+    text-align: right;
+}
+
+
+/* =========================================================
+   EXPENSE GUIDELINES
+========================================================= */
+
+.guideline-list {
+    display: grid;
+    gap: 12px;
+}
+
+.guideline-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+}
+
+.guideline-icon {
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--light-blue);
+    color: var(--deep-blue);
+
+    border-radius: 8px;
+
+    flex-shrink: 0;
+}
+
+.guideline-text {
+    color: var(--text-secondary);
+
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+
+/* =========================================================
+   ALERT
+========================================================= */
+
+.notice-box {
+    padding: 15px;
+
+    background: var(--orange-light);
+
+    border: 1px solid #FED7AA;
+    border-radius: 11px;
+
+    color: #92400E;
+
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.notice-box strong {
+    color: #78350F;
+}
+
+
+/* =========================================================
+   RECENT HISTORY
+========================================================= */
+
+.history-card {
+    margin-top: 22px;
+}
+
+.history-body {
+    padding: 0;
+}
+
+.history-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.history-table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    min-width: 800px;
+}
+
+.history-table th {
+    padding: 14px 18px;
+
+    background: var(--light-gray);
+
+    border-bottom: 1px solid var(--border);
+
+    color: var(--text-secondary);
+
+    font-size: 12px;
+    font-weight: 800;
+
+    text-align: left;
+
+    text-transform: uppercase;
+}
+
+.history-table td {
+    padding: 15px 18px;
+
+    border-bottom: 1px solid #EEF2F7;
+
+    color: var(--text-primary);
+
+    font-size: 14px;
+}
+
+.history-table tr:last-child td {
+    border-bottom: none;
+}
+
+.history-table tbody tr:hover {
+    background: #FAFCFE;
+}
+
+.amount {
+    color: var(--deep-blue-dark);
+
+    font-weight: 800;
+}
+
+.expense-type {
+    display: inline-flex;
+
+    padding: 6px 10px;
+
+    background: var(--deep-blue-light);
+    color: var(--deep-blue);
+
+    border-radius: 7px;
+
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.expense-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 6px 10px;
+
+    border-radius: 7px;
+
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.status-submitted {
+    background: var(--light-yellow);
+    color: #92400E;
+}
+
+.status-approved {
+    background: var(--light-green);
+    color: #047857;
+}
+
+.status-rejected {
+    background: var(--light-red);
+    color: #B91C1C;
+}
+
+.no-history {
+    padding: 45px 20px;
+
+    text-align: center;
+
+    color: var(--text-secondary);
+}
+
+.no-history i {
+    display: block;
+
+    margin-bottom: 10px;
+
+    color: var(--text-light);
+
+    font-size: 30px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .expense-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .right-sidebar {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 800px) {
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-group.full {
+        grid-column: auto;
+    }
+
+    .right-sidebar {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .expense-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .bus-badge {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .page-title {
+        font-size: 23px;
+    }
+
+    .form-body {
+        padding: 18px;
+    }
+
+    .form-footer {
+        flex-direction: column;
+    }
+
+    .reset-btn,
+    .submit-btn {
+        width: 100%;
+    }
+}
+
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="expense-page">
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <div class="expense-header">
+
+        <div class="header-left">
+
+            <div class="header-icon">
+                <i class="fa-solid fa-receipt"></i>
+            </div>
+
+            <div>
+
+                <h1 class="page-title">
+                    Report Expense
+                </h1>
+
+                <p class="page-subtitle">
+                    Submit fuel, maintenance, repair and other bus expenses.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        {% if bus %}
+
+        <div class="bus-badge">
+
+            <i class="fa-solid fa-bus"></i>
+
+            {{ bus.bus_number }}
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- =====================================================
+         MAIN LAYOUT
+    ====================================================== -->
+
+    <div class="expense-layout">
+
+
+        <!-- =================================================
+             LEFT - FORM
+        ================================================== -->
+
+        <div>
+
+            <div class="form-card">
+
+                <div class="card-header">
+
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+
+                    Expense Details
+
+                </div>
+
+
+                <div class="form-body">
+
+                    <form
+                        method="POST"
+                        enctype="multipart/form-data"
+                        id="expenseForm"
+                    >
+
+                        {% csrf_token %}
+
+
+                        <div class="form-grid">
+
+
+                            <!-- EXPENSE TYPE -->
+
+                            <div class="form-group">
+
+                                <label
+                                    class="form-label"
+                                    for="expense_type"
+                                >
+
+                                    Expense Type
+
+                                    <span class="required">
+                                        *
+                                    </span>
+
+                                </label>
+
+                                <select
+                                    name="expense_type"
+                                    id="expense_type"
+                                    class="form-select"
+                                    required
+                                >
+
+                                    <option value="">
+                                        Select expense type
+                                    </option>
+
+                                    <option value="fuel">
+                                        Fuel
+                                    </option>
+
+                                    <option value="maintenance">
+                                        Maintenance
+                                    </option>
+
+                                    <option value="repair">
+                                        Repair
+                                    </option>
+
+                                    <option value="tyre">
+                                        Tyre
+                                    </option>
+
+                                    <option value="service">
+                                        Service
+                                    </option>
+
+                                    <option value="other">
+                                        Other
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <!-- AMOUNT -->
+
+                            <div class="form-group">
+
+                                <label
+                                    class="form-label"
+                                    for="amount"
+                                >
+
+                                    Amount
+
+                                    <span class="required">
+                                        *
+                                    </span>
+
+                                </label>
+
+                                <input
+                                    type="number"
+                                    name="amount"
+                                    id="amount"
+                                    class="form-input"
+                                    placeholder="Enter amount"
+                                    min="0"
+                                    step="0.01"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <!-- DATE -->
+
+                            <div class="form-group">
+
+                                <label
+                                    class="form-label"
+                                    for="expense_date"
+                                >
+
+                                    Expense Date
+
+                                    <span class="required">
+                                        *
+                                    </span>
+
+                                </label>
+
+                                <input
+                                    type="date"
+                                    name="expense_date"
+                                    id="expense_date"
+                                    class="form-input"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <!-- BUS -->
+
+                            <div class="form-group">
+
+                                <label class="form-label">
+                                    Bus
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="form-input"
+                                    value="{% if bus %}{{ bus.bus_number }} - {{ bus.registration_number }}{% else %}No bus assigned{% endif %}"
+                                    readonly
+                                >
+
+                            </div>
+
+
+                            <!-- DESCRIPTION -->
+
+                            <div class="form-group full">
+
+                                <label
+                                    class="form-label"
+                                    for="description"
+                                >
+
+                                    Description
+
+                                    <span class="required">
+                                        *
+                                    </span>
+
+                                </label>
+
+                                <textarea
+                                    name="description"
+                                    id="description"
+                                    class="form-textarea"
+                                    placeholder="Enter expense details, reason, location, service details etc..."
+                                    required
+                                ></textarea>
+
+                                <span class="form-help">
+                                    Provide clear information about the expense.
+                                </span>
+
+                            </div>
+
+
+                            <!-- BILL -->
+
+                            <div class="form-group full">
+
+                                <label class="form-label">
+                                    Bill / Receipt
+                                </label>
+
+                                <div class="file-upload">
+
+                                    <input
+                                        type="file"
+                                        name="bill"
+                                        id="bill"
+                                        accept=".jpg,.jpeg,.png,.pdf"
+                                    >
+
+                                    <label
+                                        for="bill"
+                                        class="file-label"
+                                    >
+
+                                        <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                                        <span class="file-main-text">
+                                            Upload Bill or Receipt
+                                        </span>
+
+                                        <span class="file-sub-text">
+                                            JPG, PNG or PDF up to 5 MB
+                                        </span>
+
+                                        <span
+                                            class="file-name"
+                                            id="fileName"
+                                        ></span>
+
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- FORM FOOTER -->
+
+                        <div class="form-footer">
+
+                            <button
+                                type="reset"
+                                class="reset-btn"
+                                onclick="resetFileName()"
+                            >
+
+                                <i class="fa-solid fa-rotate-left"></i>
+
+                                Reset
+
+                            </button>
+
+
+                            <button
+                                type="submit"
+                                class="submit-btn"
+                            >
+
+                                <i class="fa-solid fa-paper-plane"></i>
+
+                                Submit Expense
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 RECENT EXPENSES
+            ================================================== -->
+
+            <div class="history-card">
+
+                <div class="card-header">
+
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+
+                    Recent Expense Reports
+
+                </div>
+
+
+                <div class="history-body">
+
+                    {% if expenses %}
+
+                    <div class="history-table-wrapper">
+
+                        <table class="history-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        Date
+                                    </th>
+
+                                    <th>
+                                        Type
+                                    </th>
+
+                                    <th>
+                                        Amount
+                                    </th>
+
+                                    <th>
+                                        Description
+                                    </th>
+
+                                    <th>
+                                        Status
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                {% for expense in expenses %}
+
+                                <tr>
+
+                                    <td>
+                                        {{ expense.expense_date|date:"d M Y" }}
+                                    </td>
+
+                                    <td>
+
+                                        <span class="expense-type">
+
+                                            {{ expense.get_expense_type_display }}
+
+                                        </span>
+
+                                    </td>
+
+                                    <td>
+
+                                        <span class="amount">
+
+                                            ₹{{ expense.amount }}
+
+                                        </span>
+
+                                    </td>
+
+                                    <td>
+
+                                        {{ expense.description|truncatechars:50 }}
+
+                                    </td>
+
+                                    <td>
+
+                                        {% if expense.status == "submitted" %}
+
+                                            <span class="expense-status status-submitted">
+
+                                                <i class="fa-regular fa-clock"></i>
+
+                                                Submitted
+
+                                            </span>
+
+                                        {% elif expense.status == "approved" %}
+
+                                            <span class="expense-status status-approved">
+
+                                                <i class="fa-solid fa-circle-check"></i>
+
+                                                Approved
+
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="expense-status status-rejected">
+
+                                                <i class="fa-solid fa-circle-xmark"></i>
+
+                                                Rejected
+
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+                                </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                    {% else %}
+
+                    <div class="no-history">
+
+                        <i class="fa-solid fa-receipt"></i>
+
+                        No expense reports submitted yet.
+
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             RIGHT SIDEBAR
+        ================================================== -->
+
+        <div class="right-sidebar">
+
+
+            <!-- BUS INFORMATION -->
+
+            <div class="info-card">
+
+                <div class="card-header">
+
+                    <i class="fa-solid fa-bus"></i>
+
+                    Bus Information
+
+                </div>
+
+
+                <div class="info-body">
+
+                    {% if bus %}
+
+                    <div class="bus-profile">
+
+                        <div class="bus-icon">
+
+                            <i class="fa-solid fa-bus-simple"></i>
+
+                        </div>
+
+                        <div>
+
+                            <div class="bus-number">
+                                {{ bus.bus_number }}
+                            </div>
+
+                            <div class="bus-registration">
+                                {{ bus.registration_number }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-list">
+
+                        <div class="info-row">
+
+                            <span class="info-label">
+                                Route
+                            </span>
+
+                            <span class="info-value">
+
+                                {% if bus.route %}
+                                    {{ bus.route.route_name }}
+                                {% else %}
+                                    Not Assigned
+                                {% endif %}
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="info-row">
+
+                            <span class="info-label">
+                                Capacity
+                            </span>
+
+                            <span class="info-value">
+                                {{ bus.capacity }}
+                            </span>
+
+                        </div>
+
+
+                        <div class="info-row">
+
+                            <span class="info-label">
+                                Fuel Type
+                            </span>
+
+                            <span class="info-value">
+                                {{ bus.get_fuel_type_display }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    {% else %}
+
+                    <div class="no-history">
+                        No bus assigned.
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- GUIDELINES -->
+
+            <div class="info-card">
+
+                <div class="card-header">
+
+                    <i class="fa-solid fa-circle-info"></i>
+
+                    Expense Guidelines
+
+                </div>
+
+
+                <div class="info-body">
+
+                    <div class="guideline-list">
+
+
+                        <div class="guideline-item">
+
+                            <div class="guideline-icon">
+
+                                <i class="fa-solid fa-receipt"></i>
+
+                            </div>
+
+                            <div class="guideline-text">
+
+                                Upload the original bill or receipt whenever available.
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="guideline-item">
+
+                            <div class="guideline-icon">
+
+                                <i class="fa-solid fa-indian-rupee-sign"></i>
+
+                            </div>
+
+                            <div class="guideline-text">
+
+                                Enter the exact amount shown on the bill.
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="guideline-item">
+
+                            <div class="guideline-icon">
+
+                                <i class="fa-solid fa-calendar-check"></i>
+
+                            </div>
+
+                            <div class="guideline-text">
+
+                                Select the actual date when the expense occurred.
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="guideline-item">
+
+                            <div class="guideline-icon">
+
+                                <i class="fa-solid fa-file-lines"></i>
+
+                            </div>
+
+                            <div class="guideline-text">
+
+                                Give enough description for the administrator to verify the expense.
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- NOTICE -->
+
+            <div class="info-card">
+
+                <div class="info-body">
+
+                    <div class="notice-box">
+
+                        <strong>
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            Important:
+                        </strong>
+
+                        All submitted expenses will be reviewed by the authorized school administrator before approval.
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   DEFAULT DATE
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const dateInput =
+            document.getElementById(
+                "expense_date"
+            );
+
+        if (dateInput && !dateInput.value) {
+
+            const today =
+                new Date();
+
+            const year =
+                today.getFullYear();
+
+            const month =
+                String(
+                    today.getMonth() + 1
+                ).padStart(2, "0");
+
+            const day =
+                String(
+                    today.getDate()
+                ).padStart(2, "0");
+
+            dateInput.value =
+                `${year}-${month}-${day}`;
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   FILE NAME
+========================================================= */
+
+const billInput =
+    document.getElementById("bill");
+
+const fileName =
+    document.getElementById("fileName");
+
+
+if (billInput) {
+
+    billInput.addEventListener(
+        "change",
+        function () {
+
+            if (
+                this.files &&
+                this.files.length > 0
+            ) {
+
+                const file =
+                    this.files[0];
+
+                const maxSize =
+                    5 * 1024 * 1024;
+
+
+                if (file.size > maxSize) {
+
+                    alert(
+                        "File size must be less than 5 MB."
+                    );
+
+                    this.value = "";
+
+                    fileName.style.display =
+                        "none";
+
+                    return;
+
+                }
+
+
+                fileName.textContent =
+                    "Selected: " + file.name;
+
+                fileName.style.display =
+                    "block";
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   RESET FILE
+========================================================= */
+
+function resetFileName() {
+
+    setTimeout(function () {
+
+        if (fileName) {
+
+            fileName.textContent = "";
+
+            fileName.style.display =
+                "none";
+
+        }
+
+    }, 50);
+
+}
+
+
+/* =========================================================
+   FORM SUBMIT
+========================================================= */
+
+const expenseForm =
+    document.getElementById(
+        "expenseForm"
+    );
+
+
+if (expenseForm) {
+
+    expenseForm.addEventListener(
+        "submit",
+        function () {
+
+            const submitButton =
+                this.querySelector(
+                    ".submit-btn"
+                );
+
+
+            if (submitButton) {
+
+                submitButton.innerHTML = `
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    Submitting...
+                `;
+
+                submitButton.disabled =
+                    true;
+
+            }
+
+        }
+    );
+
+}
+
+</script>
+
+{% endblock %}

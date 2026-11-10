@@ -1,0 +1,783 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Academic Overview{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --orange-light: #FFF4E6;
+
+        --green: #25845A;
+        --green-light: #EAF7F0;
+
+        --purple: #7654A8;
+        --purple-light: #F2EDFA;
+
+        --teal: #168A91;
+        --text-primary: #243447;
+        --text-secondary: #5F6F80;
+        --border-color: #E0E7EF;
+        --card-background: #FFFFFF;
+
+        --radius-medium: 14px;
+        --radius-large: 18px;
+
+        --shadow-card: 0 4px 16px rgba(18, 59, 99, 0.07);
+        --shadow-hover: 0 10px 25px rgba(18, 59, 99, 0.13);
+    }
+
+    .academic-dashboard {
+        width: 100%;
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 28px;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Arial, sans-serif;
+        font-size: 18px;
+        line-height: 1.6;
+        color: var(--text-primary);
+    }
+
+    /* PAGE HEADER */
+
+    .academic-header {
+        background: linear-gradient(
+            135deg,
+            var(--deep-blue-dark),
+            var(--deep-blue)
+        );
+        color: #FFFFFF;
+        padding: 28px 32px;
+        border-radius: var(--radius-large);
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 20px;
+        box-shadow: var(--shadow-card);
+    }
+
+    .academic-header h1 {
+        margin: 0 0 8px;
+        font-size: 30px;
+        font-weight: 700;
+        line-height: 1.3;
+        color: #FFFFFF;
+    }
+
+    .academic-header p {
+        margin: 0;
+        font-size: 18px;
+        color: #EAF2F8;
+    }
+
+    .academic-header-icon {
+        width: 66px;
+        height: 66px;
+        min-width: 66px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.13);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        color: #FFFFFF;
+    }
+
+    /* SECTION TITLE */
+
+    .academic-section {
+        margin-bottom: 32px;
+    }
+
+    .academic-section-title {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin: 0 0 22px;
+        font-size: 23px;
+        font-weight: 700;
+        color: var(--deep-blue);
+    }
+
+    .academic-section-title .title-icon {
+        width: 43px;
+        height: 43px;
+        min-width: 43px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: var(--orange-light);
+        color: var(--orange);
+        font-size: 21px;
+    }
+
+    /* STATISTIC CARDS */
+
+    .academic-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 22px;
+    }
+
+    .academic-stat-card {
+        min-width: 0;
+        min-height: 140px;
+        padding: 24px;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        background: var(--card-background);
+        border: 1px solid var(--border-color);
+        border-left: 5px solid var(--deep-blue);
+        border-radius: var(--radius-medium);
+        box-shadow: var(--shadow-card);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        overflow: hidden;
+    }
+
+    .academic-stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .academic-stat-card.orange {
+        border-left-color: var(--orange);
+    }
+
+    .academic-stat-card.green {
+        border-left-color: var(--green);
+    }
+
+    .academic-stat-card.purple {
+        border-left-color: var(--purple);
+    }
+
+    .academic-stat-icon {
+        width: 60px;
+        height: 60px;
+        min-width: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 15px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        font-size: 25px;
+    }
+
+    .academic-stat-card.orange .academic-stat-icon {
+        background: var(--orange-light);
+        color: var(--orange);
+    }
+
+    .academic-stat-card.green .academic-stat-icon {
+        background: var(--green-light);
+        color: var(--green);
+    }
+
+    .academic-stat-card.purple .academic-stat-icon {
+        background: var(--purple-light);
+        color: var(--purple);
+    }
+
+    .academic-stat-info {
+        min-width: 0;
+        flex: 1;
+    }
+
+    .academic-stat-label {
+        margin: 0 0 7px;
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 1.4;
+        color: var(--text-secondary);
+    }
+
+    .academic-stat-value {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 750;
+        line-height: 1.3;
+        color: var(--deep-blue);
+        overflow-wrap: anywhere;
+    }
+
+    .academic-stat-card.orange .academic-stat-value {
+        color: var(--orange-hover);
+    }
+
+    .academic-stat-card.green .academic-stat-value {
+        color: var(--green);
+    }
+
+    .academic-stat-card.purple .academic-stat-value {
+        color: var(--purple);
+    }
+
+    /* CHART GRID */
+
+    .academic-charts-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 24px;
+    }
+
+    .academic-chart-card {
+        min-width: 0;
+        padding: 26px;
+        background: var(--card-background);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-medium);
+        box-shadow: var(--shadow-card);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .academic-chart-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .academic-chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 22px;
+    }
+
+    .academic-chart-header h3 {
+        margin: 0 0 6px;
+        color: var(--deep-blue);
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .academic-chart-header p {
+        margin: 0;
+        color: var(--text-secondary);
+        font-size: 15px;
+    }
+
+    .academic-chart-icon {
+        width: 46px;
+        height: 46px;
+        min-width: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        font-size: 21px;
+    }
+
+    .academic-chart-icon.orange {
+        background: var(--orange-light);
+        color: var(--orange);
+    }
+
+    .academic-chart-container {
+        position: relative;
+        width: 100%;
+        height: 320px;
+    }
+
+    /* ACADEMIC INFORMATION */
+
+    .academic-info-card {
+        padding: 26px;
+        background: var(--card-background);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-medium);
+        box-shadow: var(--shadow-card);
+    }
+
+    .academic-info-card h3 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0 0 14px;
+        color: var(--deep-blue);
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .academic-info-card h3 i {
+        color: var(--orange);
+    }
+
+    .academic-info-card p {
+        margin: 0;
+        font-size: 17px;
+        color: var(--text-secondary);
+    }
+
+    /* RESPONSIVE DESIGN */
+
+    @media (max-width: 1200px) {
+        .academic-stats-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 1000px) {
+        .academic-charts-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .academic-dashboard {
+            padding: 18px;
+        }
+
+        .academic-header {
+            padding: 22px;
+        }
+
+        .academic-header h1 {
+            font-size: 26px;
+        }
+
+        .academic-header p {
+            font-size: 16px;
+        }
+
+        .academic-section-title {
+            font-size: 21px;
+        }
+
+        .academic-stat-card {
+            padding: 18px;
+            gap: 12px;
+        }
+
+        .academic-stat-icon {
+            width: 50px;
+            height: 50px;
+            min-width: 50px;
+            font-size: 21px;
+        }
+
+        .academic-stat-label {
+            font-size: 16px;
+        }
+
+        .academic-stat-value {
+            font-size: 24px;
+        }
+
+        .academic-chart-card {
+            padding: 18px;
+        }
+
+        .academic-chart-container {
+            height: 280px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .academic-stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .academic-header-icon {
+            display: none;
+        }
+
+        .academic-dashboard {
+            padding: 12px;
+        }
+    }
+</style>
+
+<div class="academic-dashboard">
+
+    <!-- PAGE HEADER -->
+
+    <div class="academic-header">
+        <div>
+            <h1>Academic Overview</h1>
+            <p>School academic structure and performance.</p>
+        </div>
+
+        <div class="academic-header-icon">
+            <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+    </div>
+
+    <!-- ACADEMIC STATISTICS -->
+
+    <div class="academic-section">
+
+        <h2 class="academic-section-title">
+            <span class="title-icon">
+                <i class="fa-solid fa-chart-column"></i>
+            </span>
+            Academic Statistics
+        </h2>
+
+        <div class="academic-stats-grid">
+
+            <!-- CLASSES AND SECTIONS -->
+
+            <div class="academic-stat-card">
+                <div class="academic-stat-icon">
+                    <i class="fa-solid fa-school"></i>
+                </div>
+
+                <div class="academic-stat-info">
+                    <p class="academic-stat-label">Classes &amp; Sections</p>
+                    <h3 class="academic-stat-value">
+                        {{ class_section_count|default:"0" }}
+                    </h3>
+                </div>
+            </div>
+
+            <!-- SUBJECTS -->
+
+            <div class="academic-stat-card orange">
+                <div class="academic-stat-icon">
+                    <i class="fa-solid fa-book-open"></i>
+                </div>
+
+                <div class="academic-stat-info">
+                    <p class="academic-stat-label">Subjects</p>
+                    <h3 class="academic-stat-value">
+                        {{ subject_count|default:"0" }}
+                    </h3>
+                </div>
+            </div>
+
+            <!-- EXAMINATIONS -->
+
+            <div class="academic-stat-card green">
+                <div class="academic-stat-icon">
+                    <i class="fa-solid fa-file-pen"></i>
+                </div>
+
+                <div class="academic-stat-info">
+                    <p class="academic-stat-label">Examinations</p>
+                    <h3 class="academic-stat-value">
+                        {{ exam_count|default:"0" }}
+                    </h3>
+                </div>
+            </div>
+
+            <!-- OVERALL PERFORMANCE -->
+
+            <div class="academic-stat-card purple">
+                <div class="academic-stat-icon">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+
+                <div class="academic-stat-info">
+                    <p class="academic-stat-label">Overall Performance</p>
+                    <h3 class="academic-stat-value">
+                        {{ academic_percentage|default:"0" }}%
+                    </h3>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ACADEMIC ANALYTICS -->
+
+    <div class="academic-section">
+
+        <h2 class="academic-section-title">
+            <span class="title-icon">
+                <i class="fa-solid fa-chart-pie"></i>
+            </span>
+            Academic Analytics
+        </h2>
+
+        <div class="academic-charts-grid">
+
+            <!-- BAR CHART -->
+
+            <div class="academic-chart-card">
+
+                <div class="academic-chart-header">
+                    <div>
+                        <h3>Academic Statistics</h3>
+                        <p>Classes, subjects, exams and performance</p>
+                    </div>
+
+                    <span class="academic-chart-icon">
+                        <i class="fa-solid fa-chart-column"></i>
+                    </span>
+                </div>
+
+                <div class="academic-chart-container">
+                    <canvas id="academicBarChart"></canvas>
+                </div>
+
+            </div>
+
+            <!-- PIE CHART -->
+
+            <div class="academic-chart-card">
+
+                <div class="academic-chart-header">
+                    <div>
+                        <h3>Academic Structure</h3>
+                        <p>Distribution of classes, subjects and exams</p>
+                    </div>
+
+                    <span class="academic-chart-icon orange">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </span>
+                </div>
+
+                <div class="academic-chart-container">
+                    <canvas id="academicPieChart"></canvas>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ACADEMIC INFORMATION -->
+
+    <div class="academic-section">
+
+        <h2 class="academic-section-title">
+            <span class="title-icon">
+                <i class="fa-solid fa-circle-info"></i>
+            </span>
+            Academic Information
+        </h2>
+
+        <div class="academic-info-card">
+            <h3>
+                <i class="fa-solid fa-book-open-reader"></i>
+                Academic Summary
+            </h3>
+
+            <p>
+                This section presents the available class and section count,
+                subject count, examination count, and overall academic
+                performance recorded in your School Management System.
+            </p>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- CHART.JS LIBRARY -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const classSectionCount = Number(
+        "{{ class_section_count|default:'0' }}"
+    );
+
+    const subjectCount = Number(
+        "{{ subject_count|default:'0' }}"
+    );
+
+    const examCount = Number(
+        "{{ exam_count|default:'0' }}"
+    );
+
+    const academicPercentage = Number(
+        "{{ academic_percentage|default:'0' }}"
+    );
+
+    /* BAR CHART */
+
+    const barCanvas = document.getElementById("academicBarChart");
+
+    if (barCanvas && typeof Chart !== "undefined") {
+
+        new Chart(barCanvas, {
+            type: "bar",
+
+            data: {
+                labels: [
+                    "Classes & Sections",
+                    "Subjects",
+                    "Examinations",
+                    "Performance (%)"
+                ],
+
+                datasets: [{
+                    label: "Academic Statistics",
+
+                    data: [
+                        classSectionCount,
+                        subjectCount,
+                        examCount,
+                        academicPercentage
+                    ],
+
+                    backgroundColor: [
+                        "#123B63",
+                        "#F28C28",
+                        "#25845A",
+                        "#7654A8"
+                    ],
+
+                    borderRadius: 8,
+                    borderSkipped: false,
+                    maxBarThickness: 55
+                }]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || "";
+                                const value = Number(context.raw);
+
+                                if (label === "Performance (%)") {
+                                    return value.toFixed(1) + "%";
+                                }
+
+                                return value.toLocaleString("en-IN");
+                            }
+                        }
+                    }
+                },
+
+                scales: {
+                    y: {
+                        beginAtZero: true,
+
+                        ticks: {
+                            precision: 0,
+                            color: "#5F6F80"
+                        },
+
+                        grid: {
+                            color: "#E0E7EF"
+                        }
+                    },
+
+                    x: {
+                        ticks: {
+                            color: "#5F6F80",
+                            maxRotation: 25,
+                            minRotation: 0
+                        },
+
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    /* PIE CHART */
+
+    const pieCanvas = document.getElementById("academicPieChart");
+
+    if (pieCanvas && typeof Chart !== "undefined") {
+
+        new Chart(pieCanvas, {
+            type: "pie",
+
+            data: {
+                labels: [
+                    "Classes & Sections",
+                    "Subjects",
+                    "Examinations"
+                ],
+
+                datasets: [{
+                    data: [
+                        classSectionCount,
+                        subjectCount,
+                        examCount
+                    ],
+
+                    backgroundColor: [
+                        "#123B63",
+                        "#F28C28",
+                        "#25845A"
+                    ],
+
+                    borderColor: "#FFFFFF",
+                    borderWidth: 4,
+                    hoverOffset: 10
+                }]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                plugins: {
+                    legend: {
+                        position: "bottom",
+
+                        labels: {
+                            padding: 20,
+                            color: "#243447",
+
+                            font: {
+                                size: 14
+                            }
+                        }
+                    },
+
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const value = Number(context.raw);
+
+                                const total = context.dataset.data.reduce(
+                                    (sum, item) => sum + Number(item),
+                                    0
+                                );
+
+                                const percentage = total > 0
+                                    ? ((value / total) * 100).toFixed(1)
+                                    : "0.0";
+
+                                return context.label + ": " +
+                                    value.toLocaleString("en-IN") +
+                                    " (" + percentage + "%)";
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+});
+</script>
+
+{% endblock %}

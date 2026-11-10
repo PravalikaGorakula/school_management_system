@@ -1,0 +1,2314 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block content %}
+
+<style>
+/* =====================================================
+   PROFESSIONAL SMS DASHBOARD THEME
+===================================================== */
+
+:root {
+    --deep-blue: #123B63;
+    --deep-blue-dark: #0B2945;
+    --deep-blue-light: #EAF2F8;
+
+    --orange: #F28C28;
+    --orange-hover: #D97706;
+    --orange-light: #FFF4E6;
+
+    --green: #25845A;
+    --green-light: #EAF7F0;
+
+    --purple: #7654A8;
+    --purple-light: #F2EDFA;
+
+    --red: #C74747;
+    --red-light: #FCEEEE;
+
+    --teal: #168A91;
+    --teal-light: #E8F7F7;
+
+    --text-primary: #243447;
+    --text-secondary: #5F6F80;
+    --border-color: #E0E7EF;
+    --page-background: #F5F7FA;
+    --card-background: #FFFFFF;
+
+    --radius-small: 10px;
+    --radius-medium: 14px;
+    --radius-large: 18px;
+
+    --shadow-card: 0 4px 16px rgba(18, 59, 99, 0.07);
+    --shadow-hover: 0 10px 25px rgba(18, 59, 99, 0.13);
+}
+
+/* MAIN DASHBOARD */
+
+.dashboard-page {
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 28px;
+    box-sizing: border-box;
+    color: var(--text-primary);
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.dashboard-page *,
+.dashboard-page *::before,
+.dashboard-page *::after {
+    box-sizing: border-box;
+}
+
+/* HEADER */
+
+.dashboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 24px;
+
+    background: linear-gradient(
+        120deg,
+        var(--deep-blue-dark),
+        var(--deep-blue)
+    );
+
+    color: #FFFFFF;
+    padding: 32px;
+    margin-bottom: 34px;
+    border-radius: var(--radius-large);
+    box-shadow: var(--shadow-card);
+}
+
+.dashboard-header h1 {
+    margin: 0 0 8px;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: 0.2px;
+}
+
+.dashboard-header p {
+    margin: 0 0 12px;
+    font-size: 18px;
+    color: #E5EDF5;
+}
+
+.dashboard-role {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 14px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.14);
+    color: #FFFFFF;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.dashboard-date {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 18px;
+    border-radius: var(--radius-small);
+    background: rgba(255, 255, 255, 0.12);
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.dashboard-date i {
+    color: #FFD19A;
+    font-size: 21px;
+}
+
+/* SECTION */
+
+.dashboard-section {
+    margin-bottom: 38px;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    margin: 0 0 24px;
+    padding: 0 0 14px;
+
+    color: var(--deep-blue-dark);
+    font-size: 23px;
+    font-weight: 700;
+    line-height: 1.5;
+
+    border-bottom: 2px solid var(--border-color);
+}
+
+.section-title i {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 43px;
+    height: 43px;
+    flex-shrink: 0;
+
+    background: var(--orange-light);
+    color: var(--orange-hover);
+    border-radius: 12px;
+    font-size: 20px;
+}
+
+/* OVERVIEW CARDS */
+
+.dynamic-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
+    margin-bottom: 12px;
+}
+
+.dynamic-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+
+    min-width: 0;
+    min-height: 140px;
+    padding: 26px 24px;
+
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-left: 5px solid var(--deep-blue);
+    border-radius: var(--radius-medium);
+    box-shadow: var(--shadow-card);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.dynamic-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+    border-bottom-color: var(--orange);
+}
+
+.dynamic-card.orange {
+    background: linear-gradient(135deg, #FFFFFF, #FFF8EF);
+    border-left-color: var(--orange);
+}
+
+.dynamic-card.green {
+    background: linear-gradient(135deg, #FFFFFF, #F0FAF4);
+    border-left-color: var(--green);
+}
+
+.dynamic-card.purple {
+    background: linear-gradient(135deg, #FFFFFF, #F7F3FC);
+    border-left-color: var(--purple);
+}
+
+.dynamic-card.red {
+    background: linear-gradient(135deg, #FFFFFF, #FFF4F4);
+    border-left-color: var(--red);
+}
+
+.dynamic-card.teal {
+    background: linear-gradient(135deg, #FFFFFF, #EFFAFA);
+    border-left-color: var(--teal);
+}
+
+/* CARD ICONS */
+
+.dynamic-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 60px;
+    height: 60px;
+    min-width: 60px;
+
+    border-radius: 15px;
+    background: var(--deep-blue-light);
+    color: var(--deep-blue);
+    font-size: 25px;
+}
+
+.dynamic-card.orange .dynamic-icon {
+    background: var(--orange-light);
+    color: var(--orange-hover);
+}
+
+.dynamic-card.green .dynamic-icon {
+    background: var(--green-light);
+    color: var(--green);
+}
+
+.dynamic-card.purple .dynamic-icon {
+    background: var(--purple-light);
+    color: var(--purple);
+}
+
+.dynamic-card.red .dynamic-icon {
+    background: var(--red-light);
+    color: var(--red);
+}
+
+.dynamic-card.teal .dynamic-icon {
+    background: var(--teal-light);
+    color: var(--teal);
+}
+
+/* CARD TEXT */
+
+.dynamic-info {
+    min-width: 0;
+    flex: 1;
+}
+
+.dynamic-label {
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.dynamic-value {
+    color: var(--deep-blue-dark);
+    font-size: 28px;
+    font-weight: 750;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+/* QUICK ACTION GRID - WIDTH DECREASED */
+
+.quick-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 210px));
+    gap: 22px;
+    margin-top: 24px;
+    justify-content: start;
+}
+
+/* QUICK ACTION CARD */
+
+.quick-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 15px;
+
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: 220px;
+    padding: 24px 20px;
+
+    color: var(--text-primary);
+    text-decoration: none;
+
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-medium);
+    box-shadow: var(--shadow-card);
+
+    overflow: hidden;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.quick-card::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 4px;
+
+    background: var(--orange);
+    transform: scaleX(0);
+    transform-origin: left;
+
+    transition: transform 0.2s ease;
+}
+
+.quick-card:hover {
+    color: var(--text-primary);
+    text-decoration: none;
+    transform: translateY(-5px);
+    border-color: #F5C38F;
+    box-shadow: var(--shadow-hover);
+}
+
+.quick-card:hover::after {
+    transform: scaleX(1);
+}
+
+/* QUICK ACTION ICON */
+
+.quick-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 62px;
+    height: 62px;
+    flex-shrink: 0;
+
+    border-radius: 16px;
+    background: var(--orange-light);
+    color: var(--orange-hover);
+    font-size: 27px;
+}
+
+/* SOFT ALTERNATING ICON COLORS */
+
+.quick-card:nth-child(4n + 2) .quick-icon {
+    background: var(--deep-blue-light);
+    color: var(--deep-blue);
+}
+
+.quick-card:nth-child(4n + 3) .quick-icon {
+    background: var(--green-light);
+    color: var(--green);
+}
+
+.quick-card:nth-child(4n + 4) .quick-icon {
+    background: var(--purple-light);
+    color: var(--purple);
+}
+
+/* QUICK ACTION TEXT */
+
+.quick-card h3 {
+    margin: 0;
+    color: var(--deep-blue-dark);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.quick-card p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+/* EMPTY STATE */
+
+.empty-dashboard {
+    padding: 48px 28px;
+    text-align: center;
+    background: #FFFFFF;
+    border: 1px dashed #C8D4E0;
+    border-radius: var(--radius-large);
+}
+
+.empty-dashboard > i {
+    margin-bottom: 18px;
+    color: var(--orange);
+    font-size: 48px;
+}
+
+.empty-dashboard h2 {
+    margin: 0 0 12px;
+    color: var(--deep-blue-dark);
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.empty-dashboard p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 18px;
+}
+
+/* LINKS AND BUTTONS INSIDE DASHBOARD */
+
+.dashboard-page button,
+.dashboard-page .btn,
+.dashboard-page input[type="submit"] {
+    min-height: 46px;
+    padding: 11px 20px;
+    border-radius: 9px;
+    font-size: 18px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.dashboard-page button:focus-visible,
+.dashboard-page a:focus-visible {
+    outline: 3px solid #F28C28;
+    outline-offset: 3px;
+}
+
+/* TABLES INSIDE DASHBOARD */
+
+.dashboard-page table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 18px;
+}
+
+.dashboard-page th {
+    padding: 16px 18px;
+    background: var(--deep-blue-light);
+    color: var(--deep-blue-dark);
+    font-size: 18px;
+    font-weight: 700;
+    text-align: left;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.dashboard-page td {
+    padding: 16px 18px;
+    font-size: 18px;
+    line-height: 1.6;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.dashboard-page tbody tr:hover {
+    background: #FFF9F2;
+}
+
+/* RESPONSIVE LAYOUT */
+
+@media (max-width: 1200px) {
+    .dynamic-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .quick-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-page {
+        padding: 18px;
+    }
+
+    .dashboard-header {
+        padding: 24px;
+        margin-bottom: 28px;
+    }
+
+    .dashboard-header h1 {
+        font-size: 26px;
+    }
+
+    .section-title {
+        font-size: 21px;
+        margin-bottom: 20px;
+    }
+
+    .dynamic-grid,
+    .quick-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .dynamic-card {
+        min-height: 120px;
+        padding: 22px;
+    }
+
+    .quick-card {
+        min-height: 190px;
+        padding: 24px;
+    }
+
+    .dashboard-section {
+        margin-bottom: 30px;
+    }
+}
+
+@media (max-width: 420px) {
+    .dashboard-page {
+        padding: 12px;
+    }
+
+    .dashboard-header {
+        padding: 20px;
+    }
+
+    .dynamic-card {
+        gap: 14px;
+        padding: 18px;
+    }
+
+    .dynamic-icon {
+        width: 52px;
+        height: 52px;
+        min-width: 52px;
+        font-size: 22px;
+    }
+
+    .dynamic-value {
+        font-size: 24px;
+    }
+
+    .dynamic-label,
+    .quick-card p {
+        font-size: 18px;
+    }
+}
+</style>
+<div class="dashboard-page">
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <div class="dashboard-header">
+
+        <div class="dashboard-header-left">
+
+            <h1>
+                Welcome,
+                {{ request.user.get_full_name|default:request.user.username }}
+            </h1>
+
+            <p>
+                School Management System Dashboard
+            </p>
+
+            {% if request.user.profile %}
+            <span class="dashboard-role">
+                {{ request.user.profile.get_role_display }}
+            </span>
+            {% endif %}
+
+        </div>
+
+
+        <div class="dashboard-date">
+
+            <i class="fa-regular fa-calendar"></i>
+
+            <span id="dashboardDate"></span>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         ADMISSION STAFF
+    ====================================================== -->
+
+    {% if request.user.profile.role == "admission_staff" %}
+
+    <!-- DYNAMIC INFORMATION FIRST -->
+
+    <div class="dashboard-section">
+
+        <h2 class="section-title">
+            <i class="fa-solid fa-chart-simple"></i>
+            Overview
+        </h2>
+
+
+        <div class="dynamic-grid">
+
+            <div class="dynamic-card orange">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-file-circle-check"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Pending Approvals
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ pending_approvals|default:"0" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="dynamic-card green">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-user-check"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Today's Attendance
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ attendance_percentage|default:"0" }}%
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="dynamic-card purple">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-bullhorn"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Announcements
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ active_announcements|default:"0" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="dynamic-card orange">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-calendar-days"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Events
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ event_count|default:"0" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="dynamic-card">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-file-lines"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Applications
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ application_count|default:"0" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- QUICK ACTIONS BELOW -->
+
+    <div class="dashboard-section">
+
+        <h2 class="section-title">
+            <i class="fa-solid fa-bolt"></i>
+            Quick Actions
+        </h2>
+
+
+        <div class="quick-grid">
+
+
+            <a href="{% url 'admissions:home' %}" class="quick-card">
+
+                <div>
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-user-plus"></i>
+                    </div>
+
+                    <h3>
+                        Admissions
+                    </h3>
+
+                    <p>
+                        Manage student and employee admissions.
+                    </p>
+
+                </div>
+
+            </a>
+
+
+            <a href="{% url 'attendance:attendance_dashboard' %}" class="quick-card">
+
+                <div>
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </div>
+
+                    <h3>
+                        Attendance
+                    </h3>
+
+                    <p>
+                        View and manage attendance information.
+                    </p>
+
+                </div>
+
+            </a>
+
+
+            <a href="{% url 'announcements:list' %}" class="quick-card">
+
+                <div>
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-bullhorn"></i>
+                    </div>
+
+                    <h3>
+                        Announcements
+                    </h3>
+
+                    <p>
+                        View school announcements and updates.
+                    </p>
+
+                </div>
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         SYSTEM ADMINISTRATOR
+    ====================================================== -->
+
+    {% elif request.user.profile.role == "system_administrator" %}
+
+
+    <!-- DYNAMIC INFORMATION FIRST -->
+
+    <div class="dashboard-section">
+
+        <h2 class="section-title">
+            <i class="fa-solid fa-chart-simple"></i>
+            Overview
+        </h2>
+
+
+        <div class="dynamic-grid">
+
+
+            <div class="dynamic-card">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Accounts
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ account_count|default:"0" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="dynamic-card orange">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-user-clock"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Pending Approvals
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ pending_approvals|default:"0" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="dynamic-card green">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-user-check"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Today's Attendance
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ attendance_percentage|default:"0" }}%
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="dynamic-card purple">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-bullhorn"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Announcements
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ active_announcements|default:"0" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="dynamic-card orange">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-calendar-days"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Events
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ event_count|default:"0" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- QUICK ACTIONS -->
+
+    <div class="dashboard-section">
+
+        <h2 class="section-title">
+            <i class="fa-solid fa-bolt"></i>
+            Quick Actions
+        </h2>
+
+
+        <div class="quick-grid">
+
+
+            <a href="{% url 'admissions:system_admin_user_credentials' %}" class="quick-card">
+
+                <div>
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-users-gear"></i>
+                    </div>
+
+                    <h3>
+                        Accounts
+                    </h3>
+
+                    <p>
+                        Manage school user accounts and credentials.
+                    </p>
+
+                </div>
+
+            </a>
+
+
+            <a href="{% url 'admissions:system_admin_approvals' %}" class="quick-card">
+
+                <div>
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-user-check"></i>
+                    </div>
+
+                    <h3>
+                        Approvals
+                    </h3>
+
+                    <p>
+                        Review and process account approvals.
+                    </p>
+
+                </div>
+
+            </a>
+
+
+            <a href="{% url 'attendance:attendance_dashboard' %}" class="quick-card">
+
+                <div>
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </div>
+
+                    <h3>
+                        Attendance
+                    </h3>
+
+                    <p>
+                        Monitor student and employee attendance.
+                    </p>
+
+                </div>
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         VICE PRINCIPAL
+    ====================================================== -->
+
+    {% elif request.user.profile.role == "vice_principal" %}
+
+
+    <!-- DYNAMIC INFORMATION FIRST -->
+
+    <div class="dashboard-section">
+
+        <h2 class="section-title">
+            <i class="fa-solid fa-chart-simple"></i>
+            Overview
+        </h2>
+
+
+        <div class="dynamic-grid">
+
+
+            <div class="dynamic-card green">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-user-check"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Today's Attendance
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ attendance_percentage|default:"0" }}%
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="dynamic-card orange">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-file-circle-check"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Leave Approvals
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ pending_leave_count|default:"0" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="dynamic-card purple">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-user-clock"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Approvals
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ pending_approvals|default:"0" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="dynamic-card">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-bullhorn"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Announcements
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ active_announcements|default:"0" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="dynamic-card red">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Safety Alerts
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ safety_alert_count|default:"0" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- QUICK ACTIONS -->
+
+    <div class="dashboard-section">
+
+        <h2 class="section-title">
+            <i class="fa-solid fa-bolt"></i>
+            Quick Actions
+        </h2>
+
+
+        <div class="quick-grid">
+
+
+            <a href="{% url 'academics:timetable' %}" class="quick-card">
+
+                <div>
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-calendar-days"></i>
+                    </div>
+
+                    <h3>
+                        Timetable
+                    </h3>
+
+                    <p>
+                        Manage school timetable and schedules.
+                    </p>
+
+                </div>
+
+            </a>
+
+
+            <a href="{% url 'transport:vp_buses_dashboard' %}" class="quick-card">
+
+                <div>
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-bus"></i>
+                    </div>
+
+                    <h3>
+                        Buses
+                    </h3>
+
+                    <p>
+                        Monitor school buses and transport.
+                    </p>
+
+                </div>
+
+            </a>
+
+
+            <a href="{% url 'leave_management:apply_leave' %}" class="quick-card">
+
+                <div>
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-calendar-minus"></i>
+                    </div>
+
+                    <h3>
+                        Leaves
+                    </h3>
+
+                    <p>
+                        Manage leave related activities.
+                    </p>
+
+                </div>
+
+            </a>
+
+
+            <a href="{% url 'attendance:attendance_dashboard' %}" class="quick-card">
+
+                <div>
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </div>
+
+                    <h3>
+                        Attendance
+                    </h3>
+
+                    <p>
+                        Monitor student and employee attendance.
+                    </p>
+
+                </div>
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         TEACHER
+    ====================================================== -->
+
+    {% elif request.user.profile.role == "teacher" %}
+
+
+    <!-- DYNAMIC INFORMATION FIRST -->
+
+    <div class="dashboard-section">
+
+        <h2 class="section-title">
+            <i class="fa-solid fa-chart-simple"></i>
+            Overview
+        </h2>
+
+
+        <div class="dynamic-grid">
+
+
+            <div class="dynamic-card green">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-user-check"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Today's Attendance
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ attendance_percentage|default:"0" }}%
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="dynamic-card orange">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-calendar-minus"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Leaves
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ pending_leave_count|default:"0" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="dynamic-card purple">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-bullhorn"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Announcements
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ active_announcements|default:"0" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- QUICK ACTIONS -->
+
+    <div class="dashboard-section">
+
+        <h2 class="section-title">
+            <i class="fa-solid fa-bolt"></i>
+            Quick Actions
+        </h2>
+
+
+        <div class="quick-grid">
+
+
+            <a href="{% url 'attendance:attendance_dashboard' %}" class="quick-card">
+
+                <div>
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </div>
+
+                    <h3>
+                        Attendance
+                    </h3>
+
+                    <p>
+                        Mark and manage assigned student attendance.
+                    </p>
+
+                </div>
+
+            </a>
+
+
+            <a href="{% url 'academics:teacher_students' %}" class="quick-card">
+
+                <div>
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+
+                    <h3>
+                        My Classes
+                    </h3>
+
+                    <p>
+                        View students assigned to your classes.
+                    </p>
+
+                </div>
+
+            </a>
+
+
+            <a href="#" class="quick-card">
+
+                <div>
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+
+                    <h3>
+                        Assignments
+                    </h3>
+
+                    <p>
+                        Manage class assignments.
+                    </p>
+
+                </div>
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         STUDENT
+    ====================================================== -->
+
+    {% elif request.user.profile.role == "student" %}
+
+
+    <!-- DYNAMIC INFORMATION FIRST -->
+
+    <div class="dashboard-section">
+
+        <h2 class="section-title">
+            <i class="fa-solid fa-chart-simple"></i>
+            Overview
+        </h2>
+
+
+        <div class="dynamic-grid">
+
+
+            <div class="dynamic-card green">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-user-check"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Attendance
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ attendance_percentage|default:"0" }}%
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="dynamic-card purple">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-bullhorn"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Announcements
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ active_announcements|default:"0" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="dynamic-card orange">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-calendar-days"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Events
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ event_count|default:"0" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- QUICK ACTIONS -->
+
+    <div class="dashboard-section">
+
+        <h2 class="section-title">
+            <i class="fa-solid fa-bolt"></i>
+            Quick Actions
+        </h2>
+
+
+        <div class="quick-grid">
+
+
+            <a href="{% url 'transport:student_live_bus' %}" class="quick-card">
+
+                <div>
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-bus"></i>
+                    </div>
+
+                    <h3>
+                        Live Bus
+                    </h3>
+
+                    <p>
+                        Track your school bus live.
+                    </p>
+
+                </div>
+
+            </a>
+
+
+            <a href="{% url 'academics:student_timetable' %}" class="quick-card">
+
+                <div>
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-calendar-days"></i>
+                    </div>
+
+                    <h3>
+                        Timetable
+                    </h3>
+
+                    <p>
+                        View your class timetable.
+                    </p>
+
+                </div>
+
+            </a>
+
+
+            <a href="{% url 'exams:student_marks' %}" class="quick-card">
+
+                <div>
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+
+                    <h3>
+                        Marks
+                    </h3>
+
+                    <p>
+                        View your examination marks.
+                    </p>
+
+                </div>
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         PARENT
+    ====================================================== -->
+
+    {% elif request.user.profile.role == "parent" %}
+
+
+    <!-- DYNAMIC INFORMATION FIRST -->
+
+    <div class="dashboard-section">
+
+        <h2 class="section-title">
+            <i class="fa-solid fa-chart-simple"></i>
+            Overview
+        </h2>
+
+
+        <div class="dynamic-grid">
+
+
+            <div class="dynamic-card green">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-user-check"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Child Attendance
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ attendance_percentage|default:"0" }}%
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="dynamic-card purple">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-bullhorn"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Announcements
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ active_announcements|default:"0" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="dynamic-card orange">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-calendar-days"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Events
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ event_count|default:"0" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- QUICK ACTIONS -->
+
+    <div class="dashboard-section">
+
+        <h2 class="section-title">
+            <i class="fa-solid fa-bolt"></i>
+            Quick Actions
+        </h2>
+
+
+        <div class="quick-grid">
+
+
+            <a href="{% url 'transport:student_live_bus' %}" class="quick-card">
+
+                <div>
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-bus"></i>
+                    </div>
+
+                    <h3>
+                        Live Bus
+                    </h3>
+
+                    <p>
+                        Track your child's school bus.
+                    </p>
+
+                </div>
+
+            </a>
+
+
+            <a href="{% url 'academics:student_timetable' %}" class="quick-card">
+
+                <div>
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-calendar-days"></i>
+                    </div>
+
+                    <h3>
+                        Timetable
+                    </h3>
+
+                    <p>
+                        View your child's timetable.
+                    </p>
+
+                </div>
+
+            </a>
+
+
+            <a href="{% url 'exams:parent_results' %}" class="quick-card">
+
+                <div>
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+
+                    <h3>
+                        Marks
+                    </h3>
+
+                    <p>
+                        View your child's examination results.
+                    </p>
+
+                </div>
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         CHAIRMAN
+    ====================================================== -->
+
+    {% elif request.user.profile.role == "chairman" %}
+
+
+    <div class="dashboard-section">
+
+        <h2 class="section-title">
+            <i class="fa-solid fa-chart-simple"></i>
+            Overview
+        </h2>
+
+
+        <div class="dynamic-grid">
+
+
+            <div class="dynamic-card">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Total Accounts
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ account_count|default:"0" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="dynamic-card orange">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-bullhorn"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Announcements
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ active_announcements|default:"0" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="dynamic-card purple">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-calendar-days"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Events
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ event_count|default:"0" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="dashboard-section">
+
+        <h2 class="section-title">
+            <i class="fa-solid fa-bolt"></i>
+            Quick Actions
+        </h2>
+
+
+        <div class="quick-grid">
+
+            <a href="{% url 'announcements:list' %}" class="quick-card">
+
+                <div>
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-bullhorn"></i>
+                    </div>
+
+                    <h3>
+                        Announcements
+                    </h3>
+
+                    <p>
+                        View important school announcements.
+                    </p>
+
+                </div>
+
+            </a>
+
+        </div>
+
+    </div>
+    {% elif role == "accountant" %}
+
+    <!-- ACCOUNTANT OVERVIEW -->
+    <div class="dashboard-section">
+
+        <h2 class="section-title">
+            <i class="fa-solid fa-chart-simple"></i>
+            Financial Overview
+        </h2>
+
+        <div class="dynamic-grid">
+
+            <div class="dynamic-card green">
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-sack-dollar"></i>
+                </div>
+                <div class="dynamic-info">
+                    <div class="dynamic-label">Total Fees Collected</div>
+                    <div class="dynamic-value">₹{{ total_fees_collected|floatformat:2 }}</div>
+                </div>
+            </div>
+
+            <div class="dynamic-card orange">
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+                <div class="dynamic-info">
+                    <div class="dynamic-label">Pending Fees</div>
+                    <div class="dynamic-value">₹{{ pending_fees|floatformat:2 }}</div>
+                </div>
+            </div>
+
+            <div class="dynamic-card purple">
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-money-bill-transfer"></i>
+                </div>
+                <div class="dynamic-info">
+                    <div class="dynamic-label">Today's Collection</div>
+                    <div class="dynamic-value">₹{{ today_collection|floatformat:2 }}</div>
+                </div>
+            </div>
+
+            <div class="dynamic-card">
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-receipt"></i>
+                </div>
+                <div class="dynamic-info">
+                    <div class="dynamic-label">Total Transactions</div>
+                    <div class="dynamic-value">{{ total_transactions|default:"0" }}</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ACCOUNTANT QUICK ACTIONS -->
+    
+
+<div class="dashboard-section accountant-actions">
+
+    <h2 class="section-title">
+        <i class="fa-solid fa-bolt"></i>
+        Quick Actions
+    </h2>
+
+    <div class="quick-grid">
+
+        <a href="{% url 'finance:fee_list' %}" class="quick-card">
+            <div class="quick-icon">
+                <i class="fa-solid fa-money-bill-wave"></i>
+            </div>
+            <h3>Fee Management</h3>
+            <p>Manage fee structures, student demands and fee collections.</p>
+        </a>
+
+        <a href="{% url 'finance:salary_list' %}" class="quick-card">
+            <div class="quick-icon">
+                <i class="fa-solid fa-wallet"></i>
+            </div>
+            <h3>Payroll</h3>
+            <p>Manage staff salaries, allowances and deductions.</p>
+        </a>
+
+        <a href="{% url 'finance:expense_list' %}" class="quick-card">
+            <div class="quick-icon">
+                <i class="fa-solid fa-receipt"></i>
+            </div>
+            <h3>Expense Management</h3>
+            <p>Record expenses, vendor bills and approval status.</p>
+        </a>
+
+        <a href="{% url 'finance:reconciliation' %}" class="quick-card">
+            <div class="quick-icon">
+                <i class="fa-solid fa-scale-balanced"></i>
+            </div>
+            <h3>Bank Reconciliation</h3>
+            <p>Match bank statements with recorded transactions.</p>
+        </a>
+
+        <a href="{% url 'finance:reports' %}" class="quick-card">
+            <div class="quick-icon">
+                <i class="fa-solid fa-chart-column"></i>
+            </div>
+            <h3>Financial Reports</h3>
+            <p>View fee collections, dues, expenses and payroll reports.</p>
+        </a>
+
+        <a href="{% url 'finance:alerts' %}" class="quick-card">
+            <div class="quick-icon">
+                <i class="fa-solid fa-bell"></i>
+            </div>
+            <h3>Alerts & Reminders</h3>
+            <p>Monitor overdue fees, pending expenses and unpaid salaries.</p>
+        </a>
+
+        <a href="{% url 'finance:audit_logs' %}" class="quick-card">
+            <div class="quick-icon">
+                <i class="fa-solid fa-clipboard-list"></i>
+            </div>
+            <h3>Audit Logs</h3>
+            <p>Track financial activities and transaction history.</p>
+        </a>
+
+    </div>
+
+</div>
+
+
+    <!-- =====================================================
+         BUS DRIVER
+    ====================================================== -->
+
+    {% elif request.user.profile.role == "bus_driver" %}
+
+
+    <!-- DYNAMIC INFORMATION FIRST -->
+
+    <div class="dashboard-section">
+
+        <h2 class="section-title">
+            <i class="fa-solid fa-chart-simple"></i>
+            Overview
+        </h2>
+
+
+        <div class="dynamic-grid">
+
+
+            <div class="dynamic-card">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-bus"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Bus Status
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ bus_status|default:"-" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="dynamic-card green">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-location-dot"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        GPS Status
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ gps_status|default:"-" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="dynamic-card orange">
+
+                <div class="dynamic-icon">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+
+                <div class="dynamic-info">
+
+                    <div class="dynamic-label">
+                        Students
+                    </div>
+
+                    <div class="dynamic-value">
+                        {{ bus_student_count|default:"0" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- QUICK ACTIONS -->
+
+    <div class="dashboard-section">
+
+        <h2 class="section-title">
+            <i class="fa-solid fa-bolt"></i>
+            Quick Actions
+        </h2>
+
+
+        <div class="quick-grid">
+
+
+            <a href="{% url 'transport:driver_my_bus' %}" class="quick-card">
+
+                <div>
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-bus"></i>
+                    </div>
+
+                    <h3>
+                        My Bus & Route
+                    </h3>
+
+                    <p>
+                        View assigned bus and route details.
+                    </p>
+
+                </div>
+
+            </a>
+
+
+            <a href="{% url 'transport:driver_students' %}" class="quick-card">
+
+                <div>
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+
+                    <h3>
+                        My Students
+                    </h3>
+
+                    <p>
+                        View students assigned to your bus.
+                    </p>
+
+                </div>
+
+            </a>
+
+
+            <a href="{% url 'transport:driver_bus_location' %}" class="quick-card">
+
+                <div>
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </div>
+
+                    <h3>
+                        Bus Location
+                    </h3>
+
+                    <p>
+                        View current bus GPS location.
+                    </p>
+
+                </div>
+
+            </a>
+
+
+            <a href="{% url 'transport:driver_trip_history' %}" class="quick-card">
+
+                <div>
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </div>
+
+                    <h3>
+                        Trip History
+                    </h3>
+
+                    <p>
+                        View previous bus trips.
+                    </p>
+
+                </div>
+
+            </a>
+
+
+            <a href="{% url 'transport:driver_safety_alerts' %}" class="quick-card">
+
+                <div>
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+
+                    <h3>
+                        Safety & Alerts
+                    </h3>
+
+                    <p>
+                        View safety alerts and warnings.
+                    </p>
+
+                </div>
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    {% else %}
+
+
+    <!-- =================================================
+             DEFAULT ROLE
+        ================================================== -->
+
+    <div class="dashboard-section">
+
+        <div class="empty-dashboard">
+
+            <i class="fa-solid fa-chart-pie"></i>
+
+            <h2>
+                Welcome to the Dashboard
+            </h2>
+
+            <p>
+                Your dashboard information will appear here.
+            </p>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+
+</div>
+
+
+<script>
+
+    /* =========================================================
+       CURRENT DATE
+    ========================================================= */
+
+    function updateDashboardDate() {
+
+        const dateElement =
+            document.getElementById("dashboardDate");
+
+        if (!dateElement) {
+            return;
+        }
+
+        const today = new Date();
+
+        const options = {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+        };
+
+        dateElement.textContent =
+            today.toLocaleDateString(
+                "en-IN",
+                options
+            );
+    }
+
+
+    updateDashboardDate();
+
+
+    /* =========================================================
+       AUTO REFRESH
+       Every 5 minutes
+    ========================================================= */
+
+    setInterval(
+        function () {
+            window.location.reload();
+        },
+        300000
+    );
+document.addEventListener("DOMContentLoaded", function () {
+    const dateElement = document.getElementById("dashboardDate");
+
+    if (dateElement) {
+        dateElement.textContent = new Date().toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "long",
+            year: "numeric"
+        });
+    }
+});
+</script>
+
+{% endblock %}

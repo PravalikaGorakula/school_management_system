@@ -1,0 +1,713 @@
+
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Student Application Details{% endblock %}
+
+{% block extra_css %}
+<style>
+.student-detail-page {
+    --deep-blue: #123B63;
+    --deep-blue-dark: #0B2945;
+    --deep-blue-light: #EAF2F8;
+    --orange: #F28C28;
+    --orange-hover: #D97706;
+    --orange-light: #FFF4E6;
+    --green: #21865A;
+    --green-light: #E8F5EE;
+    --red: #C62828;
+    --red-light: #FCEBE9;
+    --yellow: #946200;
+    --yellow-light: #FFF4D6;
+    --white: #FFFFFF;
+    --border-color: #DCE5EF;
+    --text-color: #243447;
+    --muted-color: #536579;
+
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 16px;
+    color: var(--text-color);
+    font-size: 18px;
+    line-height: 1.5;
+    box-sizing: border-box;
+}
+
+.student-detail-page *,
+.student-detail-page *::before,
+.student-detail-page *::after {
+    box-sizing: border-box;
+}
+
+/* PAGE HEADER */
+.student-detail-page .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 16px 20px;
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--orange);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(18, 59, 99, 0.05);
+}
+
+.student-detail-page .page-header h1 {
+    margin: 0 0 4px;
+    color: var(--deep-blue);
+    font-size: 25px;
+    font-weight: 750;
+    line-height: 1.4;
+}
+
+.student-detail-page .page-header h1 i {
+    margin-right: 5px;
+    color: var(--orange);
+}
+
+.student-detail-page .page-header p {
+    margin: 0;
+    color: var(--muted-color);
+    font-size: 16px;
+}
+
+/* BUTTONS */
+.student-detail-page .btn-secondary,
+.student-detail-page .btn-edit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 40px;
+    padding: 8px 15px;
+    border-radius: 7px;
+    font-size: 16px;
+    font-weight: 650;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.2s ease, color 0.2s ease,
+        border-color 0.2s ease, transform 0.2s ease;
+}
+
+.student-detail-page .btn-secondary {
+    color: var(--deep-blue);
+    background: var(--white);
+    border: 1px solid #B8C9D9;
+}
+
+.student-detail-page .btn-secondary:hover {
+    color: var(--white);
+    background: var(--deep-blue);
+    border-color: var(--deep-blue);
+}
+
+.student-detail-page .btn-edit {
+    color: var(--white);
+    background: var(--orange);
+    border: 1px solid var(--orange);
+}
+
+.student-detail-page .btn-edit:hover {
+    color: var(--white);
+    background: var(--orange-hover);
+    border-color: var(--orange-hover);
+    transform: translateY(-1px);
+}
+
+.student-detail-page .btn-secondary:focus-visible,
+.student-detail-page .btn-edit:focus-visible,
+.student-detail-page .document-item:focus-visible {
+    outline: 3px solid var(--orange);
+    outline-offset: 2px;
+}
+
+/* DETAIL CARD */
+.student-detail-page .detail-card {
+    width: 100%;
+    overflow: hidden;
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(18, 59, 99, 0.05);
+}
+
+/* APPLICATION HEADER */
+.student-detail-page .detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px 20px;
+    background: var(--deep-blue);
+    border-bottom: 4px solid var(--orange);
+}
+
+.student-detail-page .detail-label {
+    display: block;
+    margin-bottom: 3px;
+    color: #D9E8F5;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.student-detail-page .detail-header h2 {
+    margin: 0;
+    color: var(--white);
+    font-size: 22px;
+    font-weight: 750;
+    overflow-wrap: anywhere;
+}
+
+.student-detail-page .detail-header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-left: auto;
+}
+
+/* STATUS BADGES */
+.student-detail-page .status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
+    max-width: 100%;
+    padding: 6px 12px;
+    border: 1px solid transparent;
+    border-radius: 20px;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.4;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.student-detail-page .status-pending,
+.student-detail-page .status-submitted,
+.student-detail-page .status-under_review,
+.student-detail-page .status-under-review,
+.student-detail-page .status-system_admin_pending,
+.student-detail-page .status-vp_pending {
+    color: var(--yellow);
+    background: var(--yellow-light);
+    border-color: #F0D98D;
+}
+
+.student-detail-page .status-approved,
+.student-detail-page .status-accepted,
+.student-detail-page .status-account_created {
+    color: var(--green);
+    background: var(--green-light);
+    border-color: #B7E2C9;
+}
+
+.student-detail-page .status-rejected,
+.student-detail-page .status-declined {
+    color: var(--red);
+    background: var(--red-light);
+    border-color: #F1C5C0;
+}
+
+.student-detail-page .status-verified {
+    color: var(--deep-blue);
+    background: var(--deep-blue-light);
+    border-color: #C8DDED;
+}
+
+/* DETAIL SECTIONS */
+.student-detail-page .detail-section {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.student-detail-page .detail-section:last-child {
+    border-bottom: none;
+}
+
+.student-detail-page .detail-section h3 {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 13px;
+    padding-bottom: 10px;
+    color: var(--deep-blue);
+    border-bottom: 1px solid var(--border-color);
+    font-size: 19px;
+    font-weight: 750;
+}
+
+.student-detail-page .detail-section h3 i {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    color: var(--deep-blue);
+    background: var(--deep-blue-light);
+    border-radius: 7px;
+    font-size: 16px;
+}
+
+/* INFORMATION GRID */
+.student-detail-page .detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 14px;
+}
+
+.student-detail-page .detail-grid > div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+    padding: 10px 12px;
+    background: #F8FAFD;
+    border: 1px solid #E3EAF2;
+    border-radius: 7px;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.student-detail-page .detail-grid > div:hover {
+    background: #F2F7FC;
+    border-color: #C4D6E6;
+}
+
+.student-detail-page .detail-grid > div.detail-full {
+    grid-column: 1 / -1;
+}
+
+.student-detail-page .detail-grid > div > span {
+    display: block;
+    margin-bottom: 3px;
+    color: var(--muted-color);
+    font-size: 15px;
+    font-weight: 550;
+}
+
+.student-detail-page .detail-grid > div > strong {
+    display: block;
+    max-width: 100%;
+    color: var(--deep-blue-dark);
+    font-size: 17px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+/* DOCUMENT LINKS */
+.student-detail-page .document-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.student-detail-page .document-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    min-height: 50px;
+    padding: 10px 12px;
+    color: var(--deep-blue);
+    background: var(--deep-blue-light);
+    border: 1px solid #C9DCEB;
+    border-radius: 7px;
+    font-size: 16px;
+    font-weight: 650;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+    transition: background 0.2s ease, border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.student-detail-page .document-item i {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    color: var(--deep-blue);
+    background: var(--white);
+    border-radius: 7px;
+    font-size: 16px;
+}
+
+.student-detail-page .document-item:hover {
+    color: var(--deep-blue-dark);
+    background: var(--orange-light);
+    border-color: var(--orange);
+    transform: translateY(-1px);
+}
+
+.student-detail-page .document-item:hover i {
+    color: var(--orange-hover);
+}
+
+.student-detail-page .no-documents {
+    padding: 12px;
+    color: var(--muted-color);
+    background: #F8FAFD;
+    border: 1px dashed #C8D5E2;
+    border-radius: 7px;
+    font-size: 16px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .student-detail-page {
+        padding: 12px;
+    }
+
+    .student-detail-page .page-header,
+    .student-detail-page .detail-header {
+        padding: 15px 17px;
+    }
+
+    .student-detail-page .detail-section {
+        padding: 15px 17px;
+    }
+}
+
+@media (max-width: 600px) {
+    .student-detail-page {
+        padding: 8px;
+    }
+
+    .student-detail-page .page-header {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 12px;
+        padding: 14px;
+    }
+
+    .student-detail-page .page-header h1 {
+        font-size: 22px;
+    }
+
+    .student-detail-page .page-header .btn-secondary {
+        align-self: flex-start;
+    }
+
+    .student-detail-page .detail-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+        padding: 14px;
+    }
+
+    .student-detail-page .detail-header h2 {
+        font-size: 20px;
+    }
+
+    .student-detail-page .detail-header-actions {
+        justify-content: flex-start;
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .student-detail-page .detail-section {
+        padding: 12px;
+    }
+
+    .student-detail-page .detail-section h3 {
+        gap: 8px;
+        margin-bottom: 11px;
+        font-size: 18px;
+    }
+
+    .student-detail-page .detail-grid,
+    .student-detail-page .document-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 8px;
+    }
+
+    .student-detail-page .detail-grid > div.detail-full {
+        grid-column: auto;
+    }
+
+    .student-detail-page .detail-grid > div,
+    .student-detail-page .document-item {
+        padding: 9px 10px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="student-detail-page">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+        <div>
+            <h1>
+                <i class="fas fa-file-alt"></i>
+                Student Application Details
+            </h1>
+            <p>View complete student admission application.</p>
+        </div>
+
+        <a href="{% url 'admissions:student_applications' %}" class="btn-secondary">
+            <i class="fas fa-arrow-left"></i>
+            Back
+        </a>
+    </div>
+
+    <!-- APPLICATION DETAILS CARD -->
+    <div class="detail-card">
+
+        <!-- APPLICATION ID, STATUS AND EDIT BUTTON -->
+        <div class="detail-header">
+            <div>
+                <span class="detail-label">Application ID</span>
+                <h2>{{ application.application_id|default:"Not Generated" }}</h2>
+            </div>
+
+            <div class="detail-header-actions">
+                <span class="status-badge status-{{ application.status }}">
+                    {{ application.get_status_display }}
+                </span>
+
+                {% if not account_created %}
+                    <a href="{% url 'admissions:student_application_edit' application.pk %}"
+                       class="btn-edit">
+                        <i class="fas fa-edit"></i>
+                        Edit
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- PERSONAL DETAILS -->
+        <div class="detail-section">
+            <h3><i class="fas fa-user"></i> Personal Details</h3>
+
+            <div class="detail-grid">
+                <div>
+                    <span>First Name</span>
+                    <strong>{{ application.first_name|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>Last Name</span>
+                    <strong>{{ application.last_name|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>Date of Birth</span>
+                    <strong>
+                        {% if application.date_of_birth %}
+                            {{ application.date_of_birth|date:"d M Y" }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </strong>
+                </div>
+                <div>
+                    <span>Gender</span>
+                    <strong>{{ application.get_gender_display|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>Phone</span>
+                    <strong>{{ application.phone|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>Email</span>
+                    <strong>{{ application.email|default:"-" }}</strong>
+                </div>
+                <div class="detail-full">
+                    <span>Address</span>
+                    <strong>{{ application.address|default:"-" }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- PARENT DETAILS -->
+        <div class="detail-section">
+            <h3><i class="fas fa-users"></i> Parent Details</h3>
+
+            <div class="detail-grid">
+                <div>
+                    <span>Father Name</span>
+                    <strong>{{ application.father_name|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>Mother Name</span>
+                    <strong>{{ application.mother_name|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>Parent Phone</span>
+                    <strong>{{ application.parent_phone|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>Parent Email</span>
+                    <strong>{{ application.parent_email|default:"-" }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACADEMIC DETAILS -->
+        <div class="detail-section">
+            <h3><i class="fas fa-graduation-cap"></i> Academic Details</h3>
+
+            <div class="detail-grid">
+                <div>
+                    <span>Applying Class</span>
+                    <strong>{{ application.applying_class|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>Previous School</span>
+                    <strong>{{ application.previous_school|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>Previous Percentage</span>
+                    <strong>
+                        {% if application.previous_percentage != None and application.previous_percentage != "" %}
+                            {{ application.previous_percentage }}%
+                        {% else %}
+                            -
+                        {% endif %}
+                    </strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- TRANSPORT DETAILS -->
+        <div class="detail-section">
+            <h3><i class="fas fa-bus"></i> Transport Details</h3>
+
+            <div class="detail-grid">
+                <div>
+                    <span>Bus Required</span>
+                    <strong>
+                        {% if application.bus_required %}
+                            Yes
+                        {% else %}
+                            No
+                        {% endif %}
+                    </strong>
+                </div>
+                <div>
+                    <span>Bus Location</span>
+                    <strong>{{ application.bus_location|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>Bus Route</span>
+                    <strong>{{ application.bus_route|default:"-" }}</strong>
+                </div>
+                <div>
+                    <span>Pickup Stop</span>
+                    <strong>{{ application.pickup_stop|default:"-" }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- DOCUMENTS -->
+        <div class="detail-section">
+            <h3><i class="fas fa-file-alt"></i> Student Documents</h3>
+
+            <div class="document-grid">
+                {% if application.student_photo %}
+                    <a href="{{ application.student_photo.url }}"
+                       target="_blank" rel="noopener noreferrer"
+                       class="document-item">
+                        <i class="fas fa-image"></i>
+                        Student Photo
+                    </a>
+                {% endif %}
+
+                {% if application.birth_certificate %}
+                    <a href="{{ application.birth_certificate.url }}"
+                       target="_blank" rel="noopener noreferrer"
+                       class="document-item">
+                        <i class="fas fa-file-alt"></i>
+                        Birth Certificate
+                    </a>
+                {% endif %}
+
+                {% if application.aadhaar_card %}
+                    <a href="{{ application.aadhaar_card.url }}"
+                       target="_blank" rel="noopener noreferrer"
+                       class="document-item">
+                        <i class="fas fa-id-card"></i>
+                        Aadhaar Card
+                    </a>
+                {% endif %}
+
+                {% if application.previous_school_certificate %}
+                    <a href="{{ application.previous_school_certificate.url }}"
+                       target="_blank" rel="noopener noreferrer"
+                       class="document-item">
+                        <i class="fas fa-school"></i>
+                        Previous School Certificate
+                    </a>
+                {% endif %}
+
+                {% if application.transfer_certificate %}
+                    <a href="{{ application.transfer_certificate.url }}"
+                       target="_blank" rel="noopener noreferrer"
+                       class="document-item">
+                        <i class="fas fa-file-signature"></i>
+                        Transfer Certificate
+                    </a>
+                {% endif %}
+            </div>
+
+            {% if not application.student_photo and not application.birth_certificate and not application.aadhaar_card and not application.previous_school_certificate and not application.transfer_certificate %}
+                <div class="no-documents">
+                    <i class="fas fa-folder-open"></i>
+                    No student documents have been uploaded.
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- SUBMISSION INFORMATION -->
+        <div class="detail-section">
+            <h3><i class="fas fa-clock"></i> Submission Information</h3>
+
+            <div class="detail-grid">
+                <div>
+                    <span>Submitted By</span>
+                    <strong>
+                        {% if application.submitted_by %}
+                            {{ application.submitted_by.username }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </strong>
+                </div>
+
+                <div>
+                    <span>Submitted At</span>
+                    <strong>
+                        {% if application.submitted_at %}
+                            {{ application.submitted_at|date:"d M Y, h:i A" }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </strong>
+                </div>
+
+                <div>
+                    <span>Last Updated</span>
+                    <strong>
+                        {% if application.updated_at %}
+                            {{ application.updated_at|date:"d M Y, h:i A" }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </strong>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

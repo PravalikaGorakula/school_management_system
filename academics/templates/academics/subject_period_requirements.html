@@ -1,0 +1,643 @@
+
+{% extends "dashboard/base.html" %}
+
+{% block title %}Subject Period Requirements{% endblock %}
+
+{% block extra_css %}
+<style>
+.requirements-page {
+    --blue: #123B63;
+    --dark: #0B2945;
+    --light-blue: #EAF2F8;
+    --orange: #F28C28;
+    --orange-hover: #D97706;
+    --light-orange: #FFF4E6;
+    --border: #D9E2EC;
+    --muted: #64748B;
+
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 28px;
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: #243447;
+    font-size: 18px;
+}
+
+.requirements-page *,
+.requirements-page *::before,
+.requirements-page *::after {
+    box-sizing: border-box;
+}
+
+.requirements-page .page-header {
+    padding: 32px;
+    margin-bottom: 28px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #0B2945, #123B63);
+    box-shadow: 0 5px 18px rgba(11, 41, 69, .12);
+}
+
+.requirements-page h1 {
+    color: #fff;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 0 0 10px;
+}
+
+.requirements-page .subtitle {
+    color: rgba(255, 255, 255, .9);
+    font-size: 18px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.requirements-page .steps {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
+    margin-bottom: 28px;
+}
+
+.requirements-page .step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    padding: 20px 18px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--muted);
+    font-size: 17px;
+    box-shadow: 0 3px 12px rgba(11, 41, 69, .04);
+}
+
+.requirements-page .step.active {
+    background: var(--light-blue);
+    border-color: var(--blue);
+    color: var(--blue);
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(18, 59, 99, .08);
+}
+
+.requirements-page .step-number {
+    display: inline-flex;
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #E2E8F0;
+    color: var(--dark);
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.requirements-page .step.active .step-number {
+    background: var(--blue);
+    color: white;
+}
+
+.requirements-page .panel {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+    margin-bottom: 24px;
+    box-shadow: 0 3px 12px rgba(11, 41, 69, .05);
+    min-width: 0;
+}
+
+.requirements-page .panel h2 {
+    color: var(--dark);
+    font-size: 23px;
+    font-weight: 700;
+    margin: 0 0 10px;
+}
+
+.requirements-page .panel-description {
+    color: var(--muted);
+    font-size: 18px;
+    line-height: 1.6;
+    margin: 0 0 24px;
+}
+
+.requirements-page .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.requirements-page .field {
+    min-width: 0;
+}
+
+.requirements-page .field.full {
+    grid-column: 1 / -1;
+}
+
+.requirements-page label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--dark);
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.requirements-page input,
+.requirements-page select {
+    width: 100%;
+    min-height: 46px;
+    padding: 11px 14px;
+    border: 1px solid #CBD5E1;
+    border-radius: 8px;
+    background: #fff;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 18px;
+    color: #243447;
+}
+
+.requirements-page input:focus,
+.requirements-page select:focus {
+    outline: 2px solid #F28C2840;
+    border-color: var(--orange);
+}
+
+.requirements-page .help-text {
+    display: block;
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.requirements-page .btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    min-height: 46px;
+    padding: 11px 20px;
+    border: none;
+    border-radius: 8px;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background .2s ease, transform .2s ease;
+}
+
+.requirements-page .btn:hover {
+    transform: translateY(-1px);
+}
+
+.requirements-page .btn-primary {
+    background: var(--blue);
+    color: #fff;
+}
+
+.requirements-page .btn-primary:hover {
+    background: var(--dark);
+    color: #fff;
+}
+
+.requirements-page .btn-orange {
+    background: var(--orange);
+    color: #fff;
+}
+
+.requirements-page .btn-orange:hover {
+    background: var(--orange-hover);
+    color: #fff;
+}
+
+.requirements-page .btn-light {
+    background: var(--light-blue);
+    color: var(--blue);
+}
+
+.requirements-page .btn-light:hover {
+    background: #D7E6F2;
+    color: var(--dark);
+}
+
+.requirements-page .btn-danger {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+.requirements-page .btn-danger:hover {
+    background: #FECACA;
+}
+
+.requirements-page .actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 28px;
+}
+
+.requirements-page .action-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+.requirements-page .table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+.requirements-page table {
+    width: 100%;
+    min-width: 760px;
+    border-collapse: collapse;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 18px;
+}
+
+.requirements-page th {
+    padding: 16px 18px;
+    background: var(--dark);
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.requirements-page td {
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+.requirements-page tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.requirements-page tbody tr:hover {
+    background: #F8FAFC;
+}
+
+.requirements-page .period-count {
+    display: inline-block;
+    padding: 7px 13px;
+    border-radius: 20px;
+    background: var(--light-blue);
+    color: var(--blue);
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.requirements-page .empty-state {
+    padding: 30px 18px;
+    text-align: center;
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+.requirements-page .notice {
+    padding: 16px 18px;
+    border: 1px solid #F6D7B5;
+    border-radius: 10px;
+    background: var(--light-orange);
+    color: #854D0E;
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 22px;
+    overflow-wrap: anywhere;
+}
+
+.requirements-page .errorlist {
+    color: #B91C1C;
+    font-size: 16px;
+    line-height: 1.6;
+    padding-left: 22px;
+}
+
+.requirements-page .errorlist li {
+    margin-top: 5px;
+}
+
+.requirements-page .delete-form {
+    display: none;
+}
+
+@media (max-width: 1000px) {
+    .requirements-page .steps {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 750px) {
+    .requirements-page {
+        padding: 16px;
+    }
+
+    .requirements-page .page-header {
+        padding: 24px;
+    }
+
+    .requirements-page h1 {
+        font-size: 26px;
+    }
+
+    .requirements-page .steps {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .requirements-page .form-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .requirements-page .field.full {
+        grid-column: auto;
+    }
+
+    .requirements-page .panel {
+        padding: 20px;
+    }
+
+    .requirements-page .actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .requirements-page .actions > .btn,
+    .requirements-page .actions > a {
+        width: 100%;
+    }
+
+    .requirements-page .action-group {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .requirements-page .action-group .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .requirements-page {
+        padding: 12px;
+    }
+
+    .requirements-page .page-header {
+        padding: 20px;
+    }
+
+    .requirements-page h1 {
+        font-size: 23px;
+    }
+
+    .requirements-page .subtitle {
+        font-size: 17px;
+    }
+
+    .requirements-page .panel {
+        padding: 16px;
+    }
+
+    .requirements-page .panel h2 {
+        font-size: 23px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="requirements-page">
+
+    <!-- HEADER -->
+    <div class="page-header">
+        <h1>Subject Period Requirements</h1>
+        <p class="subtitle">
+            Step 2 of 4 — Define the number of periods each subject
+            requires per week for every class and academic year.
+        </p>
+    </div>
+
+    <!-- WORKFLOW -->
+    <div class="steps">
+        <div class="step">
+            <span class="step-number">1</span>
+            <span>Configure</span>
+        </div>
+
+        <div class="step active">
+            <span class="step-number">2</span>
+            <span>Requirements</span>
+        </div>
+
+        <div class="step">
+            <span class="step-number">3</span>
+            <span>Generate &amp; Edit</span>
+        </div>
+
+        <div class="step">
+            <span class="step-number">4</span>
+            <span>Validate</span>
+        </div>
+    </div>
+
+    <!-- MESSAGES -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="notice">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- REQUIREMENT FORM -->
+    <section class="panel">
+        <h2>
+            {% if edit_requirement %}
+                Edit Subject Requirement
+            {% else %}
+                Add Subject Requirement
+            {% endif %}
+        </h2>
+
+        <p class="panel-description">
+            Select a class, academic year and subject, then enter
+            the required weekly periods.
+        </p>
+
+        {% if form.errors %}
+            <div class="notice">
+                Please correct the errors below.
+                {{ form.errors }}
+            </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-grid">
+                <div class="field">
+                    <label for="{{ form.class_section.id_for_label }}">
+                        Class / Section
+                    </label>
+                    {{ form.class_section }}
+                    {% if form.class_section.errors %}
+                        {{ form.class_section.errors }}
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label for="{{ form.academic_year.id_for_label }}">
+                        Academic Year
+                    </label>
+                    {{ form.academic_year }}
+                    {% if form.academic_year.errors %}
+                        {{ form.academic_year.errors }}
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label for="{{ form.subject.id_for_label }}">
+                        Subject
+                    </label>
+                    {{ form.subject }}
+                    {% if form.subject.errors %}
+                        {{ form.subject.errors }}
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label for="{{ form.periods_per_week.id_for_label }}">
+                        Periods Per Week
+                    </label>
+                    {{ form.periods_per_week }}
+                    {% if form.periods_per_week.errors %}
+                        {{ form.periods_per_week.errors }}
+                    {% endif %}
+                    <span class="help-text">
+                        Example: Mathematics — 6 periods per week.
+                    </span>
+                </div>
+            </div>
+
+            <div class="actions">
+                <a href="{% url 'academics:timetable' %}"
+                   class="btn btn-light">
+                    ← Back to Timetable
+                </a>
+
+                <div class="action-group">
+                    {% if edit_requirement %}
+                        <a href="{% url 'academics:subject_period_requirements' %}"
+                           class="btn btn-light">
+                            Cancel Edit
+                        </a>
+                    {% endif %}
+
+                    <button type="submit" class="btn btn-primary">
+                        {% if edit_requirement %}
+                            Update Requirement
+                        {% else %}
+                            Save Requirement
+                        {% endif %}
+                    </button>
+                </div>
+            </div>
+        </form>
+    </section>
+
+    <!-- SAVED REQUIREMENTS -->
+    <section class="panel">
+        <h2>Saved Subject Requirements</h2>
+        <p class="panel-description">
+            Review the weekly subject requirements saved for the school.
+        </p>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Class / Section</th>
+                        <th>Academic Year</th>
+                        <th>Subject</th>
+                        <th>Periods / Week</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for requirement in requirements %}
+                    <tr>
+                        <td>{{ requirement.class_section }}</td>
+                        <td>{{ requirement.academic_year }}</td>
+                        <td>{{ requirement.subject }}</td>
+                        <td>
+                            <span class="period-count">
+                                {{ requirement.periods_per_week }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-group">
+                                <a class="btn btn-light"
+                                   href="?edit={{ requirement.id }}">
+                                    Edit
+                                </a>
+
+                                <button type="button"
+                                        class="btn btn-danger"
+                                        onclick="if(confirm('Delete this subject requirement?')) { document.getElementById('delete-requirement-{{ requirement.id }}').submit(); }">
+                                    Delete
+                                </button>
+
+                                <form id="delete-requirement-{{ requirement.id }}"
+                                      class="delete-form"
+                                      method="post"
+                                      action="?delete={{ requirement.id }}">
+                                    {% csrf_token %}
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            No subject requirements have been added yet.
+                            Use the form above to add the first requirement.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        
+
+        <!-- NEXT STEP -->
+        <div class="actions">
+            <a href="{% url 'academics:timetable' %}"
+               class="btn btn-light">
+                ← Previous: Timetable
+            </a>
+
+            <a href="{% url 'academics:timetable_generate' %}"
+               class="btn btn-orange">
+                Next: Generate &amp; Edit →
+            </a>
+        </div>
+    </section>
+
+</div>
+{% endblock %}

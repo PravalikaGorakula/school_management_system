@@ -1,0 +1,1004 @@
+
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+Application Approvals
+{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --orange-light: #FFF4E6;
+        --green: #25845A;
+        --green-light: #EAF7F0;
+        --text-primary: #243447;
+        --text-secondary: #5F6F80;
+        --border-color: #E0E7EF;
+        --page-background: #F5F7FA;
+        --card-background: #FFFFFF;
+        --radius-small: 10px;
+        --radius-medium: 14px;
+        --radius-large: 18px;
+        --shadow-card: 0 4px 16px rgba(18, 59, 99, 0.07);
+        --shadow-hover: 0 10px 25px rgba(18, 59, 99, 0.13);
+    }
+
+    .approvals-page {
+        width: 100%;
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 28px;
+        box-sizing: border-box;
+        color: var(--text-primary);
+        font-family: "Segoe UI", Arial, sans-serif;
+        font-size: 18px;
+        line-height: 1.6;
+    }
+
+    .approvals-page *,
+    .approvals-page *::before,
+    .approvals-page *::after {
+        box-sizing: border-box;
+    }
+
+    /* PAGE HEADER */
+
+    .approvals-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+        padding: 30px 32px;
+        margin-bottom: 30px;
+        color: #FFFFFF;
+        background: linear-gradient(
+            120deg,
+            var(--deep-blue-dark),
+            var(--deep-blue)
+        );
+        border-radius: var(--radius-large);
+        box-shadow: var(--shadow-card);
+    }
+
+    .approvals-header-content {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+    }
+
+    .approvals-header-icon {
+        width: 62px;
+        height: 62px;
+        min-width: 62px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.13);
+        color: #FFD19A;
+        border-radius: 15px;
+        font-size: 27px;
+    }
+
+    .approvals-header h1 {
+        margin: 0 0 7px;
+        color: #FFFFFF;
+        font-size: 30px;
+        font-weight: 750;
+        line-height: 1.35;
+    }
+
+    .approvals-header p {
+        margin: 0;
+        color: #E5EDF5;
+        font-size: 17px;
+        line-height: 1.6;
+    }
+
+    .approval-header-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 17px;
+        color: #FFFFFF;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: var(--radius-small);
+        font-size: 16px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .approval-header-label i {
+        color: #FFD19A;
+    }
+
+    /* STATISTICS */
+
+    .approval-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 24px;
+        margin-bottom: 34px;
+    }
+
+    .approval-stat-card {
+        display: flex;
+        align-items: center;
+        gap: 19px;
+        min-width: 0;
+        min-height: 135px;
+        padding: 25px;
+        background: var(--card-background);
+        border: 1px solid var(--border-color);
+        border-left: 5px solid var(--deep-blue);
+        border-radius: var(--radius-medium);
+        box-shadow: var(--shadow-card);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .approval-stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .approval-stat-card.employee {
+        border-left-color: var(--green);
+        background: linear-gradient(135deg, #FFFFFF, #F0FAF4);
+    }
+
+    .approval-stat-card.total {
+        border-left-color: var(--orange);
+        background: linear-gradient(135deg, #FFFFFF, #FFF8EF);
+    }
+
+    .approval-stat-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        min-width: 60px;
+        border-radius: 15px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        font-size: 25px;
+    }
+
+    .approval-stat-card.employee .approval-stat-icon {
+        background: var(--green-light);
+        color: var(--green);
+    }
+
+    .approval-stat-card.total .approval-stat-icon {
+        background: var(--orange-light);
+        color: var(--orange-hover);
+    }
+
+    .approval-stat-info {
+        min-width: 0;
+        flex: 1;
+    }
+
+    .approval-stat-label {
+        margin-bottom: 6px;
+        color: var(--text-secondary);
+        font-size: 17px;
+        font-weight: 600;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+    }
+
+    .approval-stat-value {
+        color: var(--deep-blue-dark);
+        font-size: 31px;
+        font-weight: 750;
+        line-height: 1.3;
+    }
+
+    /* APPLICATION SECTIONS */
+
+    .approval-section {
+        margin-bottom: 32px;
+        overflow: hidden;
+        background: var(--card-background);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-large);
+        box-shadow: var(--shadow-card);
+    }
+
+    .approval-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 18px;
+        padding: 24px 28px;
+        background: #FFFFFF;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .approval-section-title {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        min-width: 0;
+    }
+
+    .approval-section-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 52px;
+        height: 52px;
+        min-width: 52px;
+        border-radius: 13px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        font-size: 22px;
+    }
+
+    .approval-section.employee-section .approval-section-icon {
+        background: var(--green-light);
+        color: var(--green);
+    }
+
+    .approval-section-title h2 {
+        margin: 0;
+        color: var(--deep-blue-dark);
+        font-size: 22px;
+        font-weight: 750;
+        line-height: 1.4;
+    }
+
+    .approval-section-title p {
+        margin: 5px 0 0;
+        color: var(--text-secondary);
+        font-size: 16px;
+        line-height: 1.5;
+    }
+
+    .approval-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 9px 15px;
+        color: var(--orange-hover);
+        background: var(--orange-light);
+        border: 1px solid #F9D9B3;
+        border-radius: 30px;
+        font-size: 15px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    /* TABLE */
+
+    .approval-table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .approval-table {
+        width: 100%;
+        min-width: 1050px;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .approval-table thead th {
+        padding: 17px 20px;
+        color: var(--text-secondary);
+        background: #F5F7FA;
+        border-bottom: 1px solid var(--border-color);
+        text-align: left;
+        font-size: 15px;
+        font-weight: 750;
+        white-space: nowrap;
+    }
+
+    .approval-table tbody td {
+        padding: 19px 20px;
+        color: var(--text-primary);
+        background: #FFFFFF;
+        border-bottom: 1px solid #EDF1F5;
+        font-size: 16px;
+        vertical-align: middle;
+    }
+
+    .approval-table tbody tr {
+        transition: background 0.2s ease;
+    }
+
+    .approval-table tbody tr:hover td {
+        background: #F8FBFE;
+    }
+
+    .approval-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* APPLICATION ID */
+
+    .approval-application-id {
+        display: inline-block;
+        color: var(--deep-blue);
+        font-size: 15px;
+        font-weight: 750;
+        white-space: nowrap;
+    }
+
+    /* PERSON DETAILS */
+
+    .approval-person {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 190px;
+    }
+
+    .approval-person-avatar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        border-radius: 12px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        font-size: 19px;
+    }
+
+    .employee-section .approval-person-avatar {
+        background: var(--green-light);
+        color: var(--green);
+    }
+
+    .approval-person-details {
+        min-width: 0;
+    }
+
+    .approval-person-details strong {
+        display: block;
+        color: var(--text-primary);
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+    }
+
+    .approval-person-details small {
+        display: block;
+        margin-top: 3px;
+        color: var(--text-secondary);
+        font-size: 14px;
+    }
+
+    /* SUBMISSION DATE */
+
+    .approval-date {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 145px;
+        color: var(--text-secondary);
+        font-size: 15px;
+        white-space: nowrap;
+    }
+
+    .approval-date i {
+        color: var(--orange-hover);
+    }
+
+    /* STATUS */
+
+    .approval-status {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 8px 12px;
+        color: #B96A00;
+        background: var(--orange-light);
+        border: 1px solid #F9D9B3;
+        border-radius: 25px;
+        font-size: 14px;
+        font-weight: 750;
+        white-space: nowrap;
+    }
+
+    /* VIEW BUTTON */
+
+    .approval-view-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 11px 16px;
+        color: #FFFFFF;
+        background: var(--deep-blue);
+        border: 1px solid var(--deep-blue);
+        border-radius: 9px;
+        font-family: inherit;
+        font-size: 15px;
+        font-weight: 700;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .approval-view-btn:hover {
+        color: #FFFFFF;
+        background: var(--orange-hover);
+        border-color: var(--orange-hover);
+        transform: translateY(-1px);
+    }
+
+    /* EMPTY STATE */
+
+    .approval-empty-state {
+        padding: 58px 24px;
+        text-align: center;
+    }
+
+    .approval-empty-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 72px;
+        height: 72px;
+        margin: 0 auto 19px;
+        color: var(--green);
+        background: var(--green-light);
+        border-radius: 50%;
+        font-size: 29px;
+    }
+
+    .approval-empty-state h3 {
+        margin: 0;
+        color: var(--deep-blue-dark);
+        font-size: 21px;
+        font-weight: 750;
+    }
+
+    .approval-empty-state p {
+        max-width: 580px;
+        margin: 10px auto 0;
+        color: var(--text-secondary);
+        font-size: 16px;
+        line-height: 1.7;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 1200px) {
+        .approval-stats-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .approval-stat-card.total {
+            grid-column: 1 / -1;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .approvals-page {
+            padding: 18px;
+        }
+
+        .approvals-header {
+            padding: 24px;
+        }
+
+        .approvals-header h1 {
+            font-size: 26px;
+        }
+
+        .approvals-header-content {
+            align-items: flex-start;
+        }
+
+        .approval-header-label {
+            white-space: normal;
+        }
+
+        .approval-stats-grid {
+            grid-template-columns: 1fr;
+            gap: 17px;
+            margin-bottom: 26px;
+        }
+
+        .approval-stat-card.total {
+            grid-column: auto;
+        }
+
+        .approval-stat-card {
+            min-height: 115px;
+            padding: 21px;
+        }
+
+        .approval-section-header {
+            padding: 21px;
+        }
+
+        .approval-section-title h2 {
+            font-size: 20px;
+        }
+
+        .approval-section-title p {
+            font-size: 15px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .approvals-page {
+            padding: 12px;
+        }
+
+        .approvals-header {
+            padding: 20px;
+        }
+
+        .approvals-header-icon {
+            width: 50px;
+            height: 50px;
+            min-width: 50px;
+            font-size: 22px;
+        }
+
+        .approvals-header h1 {
+            font-size: 23px;
+        }
+
+        .approvals-header p {
+            font-size: 15px;
+        }
+
+        .approval-stat-card {
+            gap: 14px;
+            padding: 18px;
+        }
+
+        .approval-stat-icon {
+            width: 52px;
+            height: 52px;
+            min-width: 52px;
+            font-size: 22px;
+        }
+
+        .approval-stat-label {
+            font-size: 16px;
+        }
+
+        .approval-stat-value {
+            font-size: 27px;
+        }
+
+        .approval-section-header {
+            padding: 18px;
+        }
+
+        .approval-empty-state {
+            padding: 42px 18px;
+        }
+    }
+</style>
+
+<div class="approvals-page">
+
+    <!-- PAGE HEADER -->
+
+    <div class="approvals-header">
+
+        <div class="approvals-header-content">
+
+            <div class="approvals-header-icon">
+                <i class="fa-solid fa-clipboard-check"></i>
+            </div>
+
+            <div>
+                <h1>Application Approvals</h1>
+
+                <p>
+                    Review and process student and employee applications.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="approval-header-label">
+            <i class="fa-solid fa-clock"></i>
+            <span>Pending Verification</span>
+        </div>
+
+    </div>
+
+    <!-- SUMMARY CARDS -->
+
+    <div class="approval-stats-grid">
+
+        <div class="approval-stat-card">
+
+            <div class="approval-stat-icon">
+                <i class="fa-solid fa-user-graduate"></i>
+            </div>
+
+            <div class="approval-stat-info">
+                <div class="approval-stat-label">
+                    Student Approvals
+                </div>
+
+                <div class="approval-stat-value">
+                    {{ student_count|default:0 }}
+                </div>
+            </div>
+
+        </div>
+
+        <div class="approval-stat-card employee">
+
+            <div class="approval-stat-icon">
+                <i class="fa-solid fa-user-tie"></i>
+            </div>
+
+            <div class="approval-stat-info">
+                <div class="approval-stat-label">
+                    Employee Approvals
+                </div>
+
+                <div class="approval-stat-value">
+                    {{ employee_count|default:0 }}
+                </div>
+            </div>
+
+        </div>
+
+        <div class="approval-stat-card total">
+
+            <div class="approval-stat-icon">
+                <i class="fa-solid fa-hourglass-half"></i>
+            </div>
+
+            <div class="approval-stat-info">
+                <div class="approval-stat-label">
+                    Total Pending
+                </div>
+
+                <div class="approval-stat-value">
+                    {{ total_count|default:0 }}
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- STUDENT APPROVALS -->
+
+    <section class="approval-section">
+
+        <div class="approval-section-header">
+
+            <div class="approval-section-title">
+
+                <div class="approval-section-icon">
+                    <i class="fa-solid fa-user-graduate"></i>
+                </div>
+
+                <div>
+                    <h2>Student Applications</h2>
+
+                    <p>
+                        Student applications waiting for verification.
+                    </p>
+                </div>
+
+            </div>
+
+            <span class="approval-count">
+                <i class="fa-solid fa-clock"></i>
+                {{ student_count|default:0 }} Pending
+            </span>
+
+        </div>
+
+        {% if student_approvals %}
+
+        <div class="approval-table-wrapper">
+
+            <table class="approval-table">
+
+                <thead>
+                    <tr>
+                        <th>Application ID</th>
+                        <th>Student Name</th>
+                        <th>Class</th>
+                        <th>Submitted By</th>
+                        <th>Submitted At</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for approval in student_approvals %}
+
+                    <tr>
+
+                        <td>
+                            <span class="approval-application-id">
+                                {{ approval.application_id|default:"-" }}
+                            </span>
+                        </td>
+
+                        <td>
+
+                            {% if approval.application %}
+
+                            <div class="approval-person">
+
+                                <div class="approval-person-avatar">
+                                    <i class="fa-solid fa-user-graduate"></i>
+                                </div>
+
+                                <div class="approval-person-details">
+
+                                    <strong>
+                                        {{ approval.application.first_name }}
+                                        {{ approval.application.last_name }}
+                                    </strong>
+
+                                    <small>Student</small>
+
+                                </div>
+
+                            </div>
+
+                            {% else %}
+                                -
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+                            {% if approval.application %}
+                                {{ approval.application.applying_class|default:"-" }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if approval.application and approval.application.submitted_by %}
+                                {{ approval.application.submitted_by.get_full_name|default:approval.application.submitted_by.username }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <span class="approval-date">
+                                <i class="fa-regular fa-calendar"></i>
+                                {{ approval.created_at|date:"d M Y, h:i A"|default:"-" }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="approval-status">
+                                <i class="fa-solid fa-clock"></i>
+                                Pending
+                            </span>
+                        </td>
+
+                        <td>
+                            <a
+                                href="{% url 'admissions:system_admin_student_approval_detail' approval.id %}"
+                                class="approval-view-btn"
+                            >
+                                <i class="fa-solid fa-eye"></i>
+                                View
+                            </a>
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="approval-empty-state">
+
+            <div class="approval-empty-icon">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+
+            <h3>No Pending Student Applications</h3>
+
+            <p>
+                There are currently no student applications waiting
+                for System Administrator approval.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </section>
+
+    <!-- EMPLOYEE APPROVALS -->
+
+    <section class="approval-section employee-section">
+
+        <div class="approval-section-header">
+
+            <div class="approval-section-title">
+
+                <div class="approval-section-icon">
+                    <i class="fa-solid fa-user-tie"></i>
+                </div>
+
+                <div>
+                    <h2>Employee Applications</h2>
+
+                    <p>
+                        Employee applications waiting for verification.
+                    </p>
+                </div>
+
+            </div>
+
+            <span class="approval-count">
+                <i class="fa-solid fa-clock"></i>
+                {{ employee_count|default:0 }} Pending
+            </span>
+
+        </div>
+
+        {% if employee_approvals %}
+
+        <div class="approval-table-wrapper">
+
+            <table class="approval-table">
+
+                <thead>
+                    <tr>
+                        <th>Application ID</th>
+                        <th>Employee Name</th>
+                        <th>Designation</th>
+                        <th>Submitted By</th>
+                        <th>Submitted At</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for approval in employee_approvals %}
+
+                    <tr>
+
+                        <td>
+                            <span class="approval-application-id">
+                                {{ approval.application_id|default:"-" }}
+                            </span>
+                        </td>
+
+                        <td>
+
+                            {% if approval.application %}
+
+                            <div class="approval-person">
+
+                                <div class="approval-person-avatar">
+                                    <i class="fa-solid fa-user-tie"></i>
+                                </div>
+
+                                <div class="approval-person-details">
+
+                                    <strong>
+                                        {{ approval.application.first_name }}
+                                        {{ approval.application.last_name }}
+                                    </strong>
+
+                                    <small>Employee</small>
+
+                                </div>
+
+                            </div>
+
+                            {% else %}
+                                -
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+                            {% if approval.application %}
+                                {{ approval.application.designation|default:"-" }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if approval.application and approval.application.submitted_by %}
+                                {{ approval.application.submitted_by.get_full_name|default:approval.application.submitted_by.username }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <span class="approval-date">
+                                <i class="fa-regular fa-calendar"></i>
+                                {{ approval.created_at|date:"d M Y, h:i A"|default:"-" }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="approval-status">
+                                <i class="fa-solid fa-clock"></i>
+                                Pending
+                            </span>
+                        </td>
+
+                        <td>
+                            <a
+                                href="{% url 'admissions:system_admin_employee_approval_detail' approval.id %}"
+                                class="approval-view-btn"
+                            >
+                                <i class="fa-solid fa-eye"></i>
+                                View
+                            </a>
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="approval-empty-state">
+
+            <div class="approval-empty-icon">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+
+            <h3>No Pending Employee Applications</h3>
+
+            <p>
+                There are currently no employee applications waiting
+                for System Administrator approval.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </section>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,1366 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+Teacher Marks
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --orange-light: #FFF4E6;
+        --white: #FFFFFF;
+        --background: #F6F8FB;
+        --text-primary: #172033;
+        --text-secondary: #64748B;
+        --border: #E2E8F0;
+        --border-dark: #CBD5E1;
+        --success: #198754;
+        --danger: #DC2626;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    .teacher-marks-page {
+        min-height: calc(100vh - 70px);
+        padding: 24px;
+        background: var(--background);
+    }
+
+    /* =========================
+       PAGE HEADER
+    ========================== */
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+
+    .heading-area {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .heading-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 10px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 23px;
+    }
+
+    .heading-area h1 {
+        margin: 0;
+        color: var(--deep-blue);
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+    .heading-area p {
+        margin: 5px 0 0;
+        color: var(--text-secondary);
+        font-size: 18px;
+    }
+
+    /* =========================
+       STATISTICS
+    ========================== */
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+    }
+
+    .stat-icon {
+        width: 52px;
+        height: 52px;
+        flex-shrink: 0;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        font-size: 22px;
+    }
+
+    .stat-card:nth-child(2) .stat-icon {
+        background: var(--orange-light);
+        color: var(--orange-hover);
+    }
+
+    .stat-card:nth-child(3) .stat-icon {
+        background: #EAF7EF;
+        color: var(--success);
+    }
+
+    .stat-card:nth-child(4) .stat-icon {
+        background: #F1F5F9;
+        color: var(--text-secondary);
+    }
+
+    .stat-label {
+        margin-bottom: 4px;
+        color: var(--text-secondary);
+        font-size: 18px;
+    }
+
+    .stat-value {
+        color: var(--deep-blue);
+        font-size: 26px;
+        font-weight: 700;
+    }
+
+    /* =========================
+       FILTER CARD
+    ========================== */
+
+    .filter-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        margin-bottom: 20px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+    }
+
+    .filter-header {
+        padding: 19px 22px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: var(--deep-blue);
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .filter-body {
+        padding: 21px 22px;
+    }
+
+    .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr) 1fr;
+        gap: 14px;
+        align-items: end;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .form-group label {
+        color: var(--text-primary);
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .form-group select,
+    .form-group input {
+        width: 100%;
+        height: 46px;
+        padding: 0 13px;
+        border: 1px solid var(--border-dark);
+        border-radius: 7px;
+        background: var(--white);
+        color: var(--text-primary);
+        font-size: 18px;
+        outline: none;
+    }
+
+    .form-group select:focus,
+    .form-group input:focus {
+        border-color: var(--deep-blue);
+        box-shadow: 0 0 0 3px rgba(18, 59, 99, 0.08);
+    }
+
+    .filter-btn {
+        height: 46px;
+        padding: 0 18px;
+        border: none;
+        border-radius: 7px;
+        background: var(--deep-blue);
+        color: var(--white);
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .filter-btn:hover {
+        background: var(--deep-blue-dark);
+    }
+
+    /* =========================
+       MARKS CARD
+    ========================== */
+
+    .marks-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+    }
+
+    .marks-header {
+        padding: 19px 22px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .marks-title {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: var(--deep-blue);
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .selected-info {
+        color: var(--text-secondary);
+        font-size: 18px;
+    }
+
+    /* =========================
+       TABLE
+    ========================== */
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .marks-table {
+        width: 100%;
+        min-width: 1200px;
+        border-collapse: collapse;
+    }
+
+    .marks-table th {
+        padding: 15px 16px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue-dark);
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+        font-size: 18px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .marks-table td {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--border);
+        color: var(--text-primary);
+        font-size: 18px;
+        vertical-align: middle;
+    }
+
+    .marks-table tbody tr:hover {
+        background: #FAFCFE;
+    }
+
+    .student-name {
+        color: var(--deep-blue);
+        font-weight: 700;
+    }
+
+    .secondary-text {
+        color: var(--text-secondary);
+    }
+
+    /* =========================
+       INPUTS
+    ========================== */
+
+    .marks-input {
+        width: 120px;
+        height: 42px;
+        padding: 0 10px;
+        border: 1px solid var(--border-dark);
+        border-radius: 7px;
+        font-size: 18px;
+        color: var(--text-primary);
+        outline: none;
+    }
+
+    .marks-input:focus {
+        border-color: var(--deep-blue);
+        box-shadow: 0 0 0 3px rgba(18, 59, 99, 0.08);
+    }
+
+    .remarks-input {
+        width: 190px;
+        height: 42px;
+        padding: 0 10px;
+        border: 1px solid var(--border-dark);
+        border-radius: 7px;
+        font-size: 18px;
+        color: var(--text-primary);
+        outline: none;
+    }
+
+    .remarks-input:focus {
+        border-color: var(--deep-blue);
+        box-shadow: 0 0 0 3px rgba(18, 59, 99, 0.08);
+    }
+
+    .percentage {
+        color: var(--deep-blue);
+        font-weight: 700;
+    }
+
+    .grade-badge {
+        min-width: 48px;
+        padding: 7px 10px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 7px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    /* =========================
+       STATUS
+    ========================== */
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 12px;
+        border-radius: 20px;
+        font-size: 17px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .status-draft {
+        background: var(--orange-light);
+        color: var(--orange-hover);
+    }
+
+    .status-submitted {
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+    }
+
+    .status-published {
+        background: #EAF7EF;
+        color: var(--success);
+    }
+
+    /* =========================
+       ACTIONS
+    ========================== */
+
+    .action-area {
+        padding: 20px 22px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+    }
+
+    .action-btn {
+        min-height: 46px;
+        padding: 0 19px;
+        border-radius: 7px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .save-btn {
+        background: var(--deep-blue);
+        border: 1px solid var(--deep-blue);
+        color: var(--white);
+    }
+
+    .save-btn:hover {
+        background: var(--deep-blue-dark);
+        border-color: var(--deep-blue-dark);
+    }
+
+    .submit-btn {
+        background: var(--orange);
+        border: 1px solid var(--orange);
+        color: var(--white);
+    }
+
+    .submit-btn:hover {
+        background: var(--orange-hover);
+        border-color: var(--orange-hover);
+    }
+
+    /* =========================
+       EMPTY
+    ========================== */
+
+    .empty-state {
+        padding: 65px 20px;
+        text-align: center;
+    }
+
+    .empty-icon {
+        width: 70px;
+        height: 70px;
+        margin: 0 auto 16px;
+        border-radius: 50%;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+    }
+
+    .empty-state h3 {
+        margin: 0 0 8px;
+        color: var(--deep-blue);
+        font-size: 21px;
+    }
+
+    .empty-state p {
+        margin: 0;
+        color: var(--text-secondary);
+        font-size: 18px;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================== */
+
+    @media (max-width: 1200px) {
+
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .filter-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 700px) {
+
+        .teacher-marks-page {
+            padding: 16px;
+        }
+
+        .heading-area h1 {
+            font-size: 24px;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .marks-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .action-area {
+            flex-direction: column;
+        }
+
+        .action-btn {
+            width: 100%;
+        }
+    }
+
+</style>
+
+
+<div class="teacher-marks-page">
+
+    <!-- =========================
+         PAGE HEADER
+    ========================== -->
+
+    <div class="page-header">
+
+        <div class="heading-area">
+
+            <div class="heading-icon">
+                <i class="fa-solid fa-marker"></i>
+            </div>
+
+            <div>
+
+                <h1>
+                    Marks Entry
+                </h1>
+
+                <p>
+                    Enter and manage student examination marks
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         STATISTICS
+    ========================== -->
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                <i class="fa-solid fa-user-graduate"></i>
+            </div>
+
+            <div>
+
+                <div class="stat-label">
+                    Total Students
+                </div>
+
+                <div class="stat-value">
+                    {{ total_students|default:0 }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                <i class="fa-solid fa-chalkboard"></i>
+            </div>
+
+            <div>
+
+                <div class="stat-label">
+                    Assigned Classes
+                </div>
+
+                <div class="stat-value">
+                    {{ total_classes|default:0 }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                <i class="fa-solid fa-book"></i>
+            </div>
+
+            <div>
+
+                <div class="stat-label">
+                    Subjects
+                </div>
+
+                <div class="stat-value">
+                    {{ total_subjects|default:0 }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                <i class="fa-solid fa-file-pen"></i>
+            </div>
+
+            <div>
+
+                <div class="stat-label">
+                    Examinations
+                </div>
+
+                <div class="stat-value">
+                    {{ total_examinations|default:0 }}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         FILTER CARD
+    ========================== -->
+
+    <div class="filter-card">
+
+        <div class="filter-header">
+
+            <i class="fa-solid fa-filter"></i>
+
+            Select Marks Entry
+
+        </div>
+
+
+        <div class="filter-body">
+
+            <form method="get">
+
+                <div class="filter-grid">
+
+                    <!-- CLASS -->
+
+                    <div class="form-group">
+
+                        <label for="class_section">
+                            Class
+                        </label>
+
+                        <select
+                            id="class_section"
+                            name="class_section"
+                        >
+
+                            <option value="">
+                                Select Class
+                            </option>
+
+                            {% for class_section in assigned_classes %}
+
+                                <option
+                                    value="{{ class_section.pk }}"
+                                    {% if selected_class and selected_class.pk == class_section.pk %}
+                                        selected
+                                    {% endif %}
+                                >
+
+                                    {{ class_section.grade }}
+                                    -
+                                    {{ class_section.section }}
+
+                                    ({{ class_section.academic_year }})
+
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- SUBJECT -->
+
+                    <div class="form-group">
+
+                        <label for="subject">
+                            Subject
+                        </label>
+
+                        <select
+                            id="subject"
+                            name="subject"
+                        >
+
+                            <option value="">
+                                Select Subject
+                            </option>
+
+                            {% for subject in subjects %}
+
+                                <option
+                                    value="{{ subject.pk }}"
+                                    {% if selected_subject and selected_subject.pk == subject.pk %}
+                                        selected
+                                    {% endif %}
+                                >
+
+                                    {{ subject.subject_name }}
+                                    ({{ subject.subject_code }})
+
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- EXAMINATION -->
+
+                    <div class="form-group">
+
+                        <label for="examination">
+                            Examination
+                        </label>
+
+                        <select
+                            id="examination"
+                            name="examination"
+                        >
+
+                            <option value="">
+                                Select Examination
+                            </option>
+
+                            {% for exam in examinations %}
+
+                                <option
+                                    value="{{ exam.pk }}"
+                                    {% if selected_examination and selected_examination.pk == exam.pk %}
+                                        selected
+                                    {% endif %}
+                                >
+
+                                    {{ exam.exam_name }}
+                                    -
+                                    {{ exam.academic_year }}
+
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- SEARCH -->
+
+                    <div class="form-group">
+
+                        <label for="search">
+                            Student Search
+                        </label>
+
+                        <input
+                            type="text"
+                            id="search"
+                            name="search"
+                            value="{{ request.GET.search|default:'' }}"
+                            placeholder="Name / Admission ID"
+                        >
+
+                    </div>
+
+
+                    <!-- BUTTON -->
+
+                    <div class="form-group">
+
+                        <button
+                            type="submit"
+                            class="filter-btn"
+                        >
+
+                            <i class="fa-solid fa-magnifying-glass"></i>
+
+                            Load Students
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         MARKS CARD
+    ========================== -->
+
+    <div class="marks-card">
+
+        <div class="marks-header">
+
+            <div class="marks-title">
+
+                <i class="fa-solid fa-table-list"></i>
+
+                Student Marks
+
+            </div>
+
+
+            <div class="selected-info">
+
+                {% if selected_class %}
+
+                    {{ selected_class.grade }}
+                    -
+                    {{ selected_class.section }}
+
+                {% endif %}
+
+
+                {% if selected_subject %}
+
+                    |
+                    {{ selected_subject.subject_name }}
+
+                {% endif %}
+
+
+                {% if selected_examination %}
+
+                    |
+                    {{ selected_examination.exam_name }}
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        {% if students %}
+
+            <form method="post">
+
+                {% csrf_token %}
+
+
+                <!-- KEEP FILTERS -->
+
+                <input
+                    type="hidden"
+                    name="examination"
+                    value="{{ selected_examination.pk|default:'' }}"
+                >
+
+                <input
+                    type="hidden"
+                    name="class_section"
+                    value="{{ selected_class.pk|default:'' }}"
+                >
+
+                <input
+                    type="hidden"
+                    name="subject"
+                    value="{{ selected_subject.pk|default:'' }}"
+                >
+
+
+                <div class="table-wrapper">
+
+                    <table class="marks-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>#</th>
+
+                                <th>
+                                    Student
+                                </th>
+
+                                <th>
+                                    Admission ID
+                                </th>
+
+                                <th>
+                                    Maximum Marks
+                                </th>
+
+                                <th>
+                                    Obtained Marks
+                                </th>
+
+                                <th>
+                                    Percentage
+                                </th>
+
+                                <th>
+                                    Grade
+                                </th>
+
+                                <th>
+                                    Remarks
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for student in students %}
+
+                                <tr>
+
+                                    <!-- NUMBER -->
+
+                                    <td>
+                                        {{ forloop.counter }}
+                                    </td>
+
+
+                                    <!-- STUDENT -->
+
+                                    <td>
+
+                                        <span class="student-name">
+
+                                            {{ student.first_name }}
+                                            {{ student.last_name }}
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <!-- ADMISSION ID -->
+
+                                    <td>
+
+                                        <span class="secondary-text">
+
+                                            {{ student.application_id }}
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <!-- MAX MARKS -->
+
+                                    <td>
+
+                                        {% if exam_assignment %}
+
+                                            <strong>
+                                                {{ exam_assignment.max_marks }}
+                                            </strong>
+
+                                        {% else %}
+
+                                            —
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <!-- OBTAINED MARKS -->
+
+                                    <td>
+
+                                        <input
+                                            type="number"
+                                            class="marks-input"
+                                            name="marks_{{ student.pk }}"
+                                            value="{% if student.exam_mark %}{{ student.exam_mark.obtained_marks }}{% endif %}"
+                                            min="0"
+                                            step="0.01"
+                                            {% if exam_assignment %}
+                                                max="{{ exam_assignment.max_marks }}"
+                                            {% endif %}
+                                            data-student="{{ student.pk }}"
+                                        >
+
+                                    </td>
+
+
+                                    <!-- PERCENTAGE -->
+
+                                    <td>
+
+                                        <span
+                                            class="percentage"
+                                            id="percentage_{{ student.pk }}"
+                                        >
+
+                                            {% if student.exam_mark %}
+
+                                                {{ student.exam_mark.percentage }}%
+
+                                            {% else %}
+
+                                                —
+
+                                            {% endif %}
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <!-- GRADE -->
+
+                                    <td>
+
+                                        <span
+                                            class="grade-badge"
+                                            id="grade_{{ student.pk }}"
+                                        >
+
+                                            {% if student.exam_mark %}
+
+                                                {{ student.exam_mark.grade }}
+
+                                            {% else %}
+
+                                                —
+
+                                            {% endif %}
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <!-- REMARKS -->
+
+                                    <td>
+
+                                        <input
+                                            type="text"
+                                            class="remarks-input"
+                                            name="remarks_{{ student.pk }}"
+                                            value="{% if student.exam_mark %}{{ student.exam_mark.remarks|default:'' }}{% endif %}"
+                                            placeholder="Optional remarks"
+                                        >
+
+                                    </td>
+
+
+                                    <!-- STATUS -->
+
+                                    <td>
+
+                                        {% if student.exam_mark %}
+
+                                            {% if student.exam_mark.status == "published" %}
+
+                                                <span class="status-badge status-published">
+
+                                                    <i class="fa-solid fa-circle-check"></i>
+
+                                                    Published
+
+                                                </span>
+
+                                            {% elif student.exam_mark.status == "submitted" %}
+
+                                                <span class="status-badge status-submitted">
+
+                                                    <i class="fa-solid fa-paper-plane"></i>
+
+                                                    Submitted
+
+                                                </span>
+
+                                            {% else %}
+
+                                                <span class="status-badge status-draft">
+
+                                                    <i class="fa-solid fa-file"></i>
+
+                                                    Draft
+
+                                                </span>
+
+                                            {% endif %}
+
+                                        {% else %}
+
+                                            <span class="status-badge status-draft">
+
+                                                <i class="fa-solid fa-file"></i>
+
+                                                Draft
+
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+                                </tr>
+
+                            {% empty %}
+
+                                <tr>
+
+                                    <td colspan="9">
+
+                                        No students found for this class.
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <!-- ACTIONS -->
+
+                {% if exam_assignment %}
+
+                    <div class="action-area">
+
+                        <button
+                            type="submit"
+                            name="action"
+                            value="save"
+                            class="action-btn save-btn"
+                        >
+
+                            <i class="fa-solid fa-floppy-disk"></i>
+
+                            Save Marks
+
+                        </button>
+
+
+                        <button
+                            type="submit"
+                            name="action"
+                            value="submit"
+                            class="action-btn submit-btn"
+                            onclick="return confirmSubmit();"
+                        >
+
+                            <i class="fa-solid fa-paper-plane"></i>
+
+                            Submit Marks
+
+                        </button>
+
+                    </div>
+
+                {% endif %}
+
+            </form>
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+
+                    <i class="fa-solid fa-user-graduate"></i>
+
+                </div>
+
+
+                <h3>
+                    No Students Loaded
+                </h3>
+
+
+                <p>
+
+                    Select class, subject and examination
+                    to load students for marks entry.
+
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const markInputs =
+        document.querySelectorAll(".marks-input");
+
+
+    markInputs.forEach(function (input) {
+
+        input.addEventListener("input", function () {
+
+            const studentId =
+                this.dataset.student;
+
+
+            const percentageElement =
+                document.getElementById(
+                    "percentage_" + studentId
+                );
+
+
+            const gradeElement =
+                document.getElementById(
+                    "grade_" + studentId
+                );
+
+
+            const obtained =
+                parseFloat(this.value);
+
+
+            const maxMarks =
+                parseFloat(this.max);
+
+
+            if (
+                isNaN(obtained) ||
+                isNaN(maxMarks) ||
+                maxMarks <= 0
+            ) {
+
+                percentageElement.textContent = "—";
+                gradeElement.textContent = "—";
+
+                return;
+            }
+
+
+            if (obtained < 0) {
+
+                this.value = 0;
+
+            }
+
+
+            if (obtained > maxMarks) {
+
+                this.value = maxMarks;
+
+            }
+
+
+            const finalObtained =
+                parseFloat(this.value);
+
+
+            const percentage =
+                (finalObtained / maxMarks) * 100;
+
+
+            percentageElement.textContent =
+                percentage.toFixed(2) + "%";
+
+
+            let grade = "F";
+
+
+            if (percentage >= 90) {
+
+                grade = "A+";
+
+            } else if (percentage >= 80) {
+
+                grade = "A";
+
+            } else if (percentage >= 70) {
+
+                grade = "B+";
+
+            } else if (percentage >= 60) {
+
+                grade = "B";
+
+            } else if (percentage >= 50) {
+
+                grade = "C";
+
+            } else if (percentage >= 40) {
+
+                grade = "D";
+
+            }
+
+
+            gradeElement.textContent = grade;
+
+        });
+
+    });
+
+});
+
+
+function confirmSubmit() {
+
+    return confirm(
+        "Are you sure you want to submit these marks?\n\n" +
+        "After submission, the marks may require approval " +
+        "or may not be editable."
+    );
+
+}
+
+</script>
+
+{% endblock %}

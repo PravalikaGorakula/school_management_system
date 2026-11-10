@@ -1,0 +1,672 @@
+
+{% extends "dashboard/base.html" %}
+
+{% block title %}All Buses{% endblock %}
+
+{% block content %}
+
+
+<style>
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --orange-light: #FFF4E6;
+        --white: #ffffff;
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --border: #dbe3ea;
+        --success: #15803d;
+        --success-bg: #dcfce7;
+        --danger: #dc2626;
+        --danger-bg: #fee2e2;
+        --warning: #b45309;
+        --warning-bg: #fef3c7;
+    }
+
+    .buses-page,
+    .buses-page * {
+        box-sizing: border-box;
+    }
+
+    .buses-page {
+        width: 100%;
+        padding: 28px;
+        background: #f7f9fc;
+        min-height: calc(100vh - 70px);
+        font-size: 18px;
+    }
+
+    /* PAGE HEADER */
+    .buses-page .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+    .buses-page .page-header-left {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+    }
+
+    .buses-page .page-icon {
+        width: 62px;
+        height: 62px;
+        flex-shrink: 0;
+        border-radius: 12px;
+        background: var(--deep-blue);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+    }
+
+    .buses-page .page-title {
+        margin: 0;
+        color: var(--deep-blue-dark);
+        font-size: 34px;
+        font-weight: 800;
+    }
+
+    .buses-page .page-subtitle {
+        margin: 7px 0 0;
+        color: var(--text-muted);
+        font-size: 19px;
+        line-height: 1.5;
+    }
+
+    /* HEADER BUTTONS */
+    .buses-page .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+
+    .buses-page .assign-btn,
+    .buses-page .back-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 14px 20px;
+        border-radius: 9px;
+        text-decoration: none;
+        font-size: 17px;
+        font-weight: 700;
+        transition: all 0.25s ease;
+        white-space: nowrap;
+    }
+
+    .buses-page .assign-btn {
+        background: var(--orange);
+        color: white;
+        border: 1px solid var(--orange);
+    }
+
+    .buses-page .assign-btn:hover {
+        background: var(--orange-hover);
+        border-color: var(--orange-hover);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 12px rgba(242, 140, 40, 0.22);
+    }
+
+    .buses-page .back-btn {
+        background: white;
+        color: var(--deep-blue);
+        border: 1px solid var(--border);
+    }
+
+    .buses-page .back-btn:hover {
+        background: var(--deep-blue-light);
+        border-color: var(--deep-blue);
+        color: var(--deep-blue);
+    }
+
+    /* MESSAGES */
+    .buses-page .messages-container {
+        margin-bottom: 22px;
+    }
+
+    .buses-page .message {
+        padding: 16px 20px;
+        border-radius: 9px;
+        background: var(--success-bg);
+        color: var(--success);
+        border: 1px solid #bbf7d0;
+        font-size: 17px;
+        font-weight: 600;
+        margin-bottom: 12px;
+    }
+
+    /* TABLE CARD */
+    .buses-page .table-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(15, 23, 42, 0.06);
+    }
+
+    .buses-page .table-card-header {
+        padding: 23px 25px;
+        background: var(--deep-blue);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+    }
+
+    .buses-page .table-card-title {
+        margin: 0;
+        font-size: 25px;
+        font-weight: 800;
+    }
+
+    .buses-page .table-card-count {
+        padding: 8px 15px;
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.15);
+        font-size: 16px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    /* TABLE WRAPPER */
+    .buses-page .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .buses-page .buses-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1250px;
+    }
+
+    .buses-page .buses-table thead {
+        background: #f1f5f9;
+    }
+
+    .buses-page .buses-table th {
+        padding: 18px 17px;
+        text-align: left;
+        color: var(--deep-blue-dark);
+        font-size: 16px;
+        font-weight: 800;
+        border-bottom: 1px solid var(--border);
+        white-space: nowrap;
+    }
+
+    .buses-page .buses-table td {
+        padding: 19px 17px;
+        color: var(--text-dark);
+        font-size: 17px;
+        border-bottom: 1px solid #edf1f5;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    .buses-page .buses-table tbody tr {
+        transition: background 0.2s ease;
+    }
+
+    .buses-page .buses-table tbody tr:hover {
+        background: var(--orange-light);
+    }
+
+    .buses-page .buses-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* BUS NUMBER */
+    .buses-page .bus-number {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 17px;
+        font-weight: 800;
+        color: var(--deep-blue);
+    }
+
+    .buses-page .bus-small-icon {
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        border-radius: 9px;
+        font-size: 20px;
+    }
+
+    /* STATUS BADGES */
+    .buses-page .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 8px 13px;
+        border-radius: 22px;
+        font-size: 15px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .buses-page .badge-active {
+        background: var(--success-bg);
+        color: var(--success);
+    }
+
+    .buses-page .badge-inactive {
+        background: var(--danger-bg);
+        color: var(--danger);
+    }
+
+    .buses-page .badge-maintenance {
+        background: var(--warning-bg);
+        color: var(--warning);
+    }
+
+    .buses-page .badge-gps {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .buses-page .badge-no-gps {
+        background: #f1f5f9;
+        color: #64748b;
+    }
+
+    /* EDIT BUTTON */
+    .buses-page .edit-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 11px 16px;
+        border-radius: 8px;
+        background: var(--deep-blue);
+        border: 1px solid var(--deep-blue);
+        color: white;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: 700;
+        transition: all 0.2s ease;
+    }
+
+    .buses-page .edit-btn:hover {
+        background: var(--orange);
+        border-color: var(--orange);
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    /* EMPTY STATE */
+    .buses-page .empty-state {
+        padding: 70px 25px;
+        text-align: center;
+    }
+
+    .buses-page .empty-icon {
+        width: 85px;
+        height: 85px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 36px;
+    }
+
+    .buses-page .empty-state h3 {
+        margin: 0 0 10px;
+        color: var(--deep-blue-dark);
+        font-size: 27px;
+    }
+
+    .buses-page .empty-state p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 19px;
+    }
+
+    /* FOOTER */
+    .buses-page .page-footer {
+        margin-top: 22px;
+    }
+
+    /* TABLET AND MOBILE */
+    @media (max-width: 768px) {
+        .buses-page {
+            padding: 18px;
+        }
+
+        .buses-page .page-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .buses-page .header-actions {
+            width: 100%;
+        }
+
+        .buses-page .assign-btn {
+            flex: 1;
+            white-space: normal;
+            text-align: center;
+        }
+
+        .buses-page .page-title {
+            font-size: 28px;
+        }
+
+        .buses-page .page-subtitle {
+            font-size: 17px;
+        }
+
+        .buses-page .table-card-header {
+            padding: 18px;
+        }
+
+        .buses-page .table-card-title {
+            font-size: 22px;
+        }
+
+        .buses-page .buses-table th {
+            font-size: 15px;
+        }
+
+        .buses-page .buses-table td {
+            font-size: 16px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .buses-page {
+            padding: 12px;
+        }
+
+        .buses-page .page-title {
+            font-size: 25px;
+        }
+
+        .buses-page .page-subtitle {
+            font-size: 16px;
+        }
+
+        .buses-page .assign-btn,
+        .buses-page .back-btn {
+            font-size: 15px;
+            white-space: normal;
+        }
+
+        .buses-page .table-card-title {
+            font-size: 20px;
+        }
+
+        .buses-page .table-card-count {
+            font-size: 14px;
+        }
+
+        .buses-page .buses-table th {
+            font-size: 14px;
+        }
+
+        .buses-page .buses-table td {
+            font-size: 15px;
+        }
+
+        .buses-page .badge {
+            font-size: 13px;
+        }
+    }
+</style>
+
+
+<div class="buses-page">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+
+        <div class="page-header-left">
+            <div class="page-icon">
+                <i class="fa-solid fa-bus"></i>
+            </div>
+
+            <div>
+                <h1 class="page-title">All Buses</h1>
+                <p class="page-subtitle">
+                    View and manage all registered school buses.
+                </p>
+            </div>
+        </div>
+
+        <div class="header-actions">
+            <a href="{% url 'transport:vp_bus_routes' %}"
+               class="assign-btn">
+                <i class="fa-solid fa-route"></i>
+                Assign Bus Routes
+            </a>
+
+            <a href="{% url 'transport:vp_bus_assignment' %}"
+               class="assign-btn">
+                <i class="fa-solid fa-plus"></i>
+                Assign Bus
+            </a>
+        </div>
+
+    </div>
+
+    <!-- SUCCESS / ERROR MESSAGES -->
+    {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+                <div class="message">
+                    <i class="fa-solid fa-circle-check"></i>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- BUS TABLE -->
+    <div class="table-card">
+
+        <div class="table-card-header">
+            <h2 class="table-card-title">
+                <i class="fa-solid fa-list"></i>
+                Bus Details
+            </h2>
+
+            <span class="table-card-count">
+                {{ buses|length }} Bus{{ buses|length|pluralize }}
+            </span>
+        </div>
+
+        {% if buses %}
+
+            <div class="table-wrapper">
+                <table class="buses-table">
+
+                    <thead>
+                        <tr>
+                            <th>Bus Number</th>
+                            <th>Registration Number</th>
+                            <th>Bus Name</th>
+                            <th>Driver</th>
+                            <th>Route</th>
+                            <th>Capacity</th>
+                            <th>Fuel Type</th>
+                            <th>GPS</th>
+                            <th>Status</th>
+                            <th>Active</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for bus in buses %}
+                            <tr>
+
+                                <!-- BUS NUMBER -->
+                                <td>
+                                    <div class="bus-number">
+                                        <span class="bus-small-icon">
+                                            <i class="fa-solid fa-bus"></i>
+                                        </span>
+                                        {{ bus.bus_number }}
+                                    </div>
+                                </td>
+
+                                <!-- REGISTRATION NUMBER -->
+                                <td>
+                                    {{ bus.registration_number|default:"-" }}
+                                </td>
+
+                                <!-- BUS NAME -->
+                                <td>
+                                    {{ bus.bus_name|default:"-" }}
+                                </td>
+
+                                <!-- DRIVER -->
+                                <td>
+                                    {% if bus.driver %}
+                                        {{ bus.driver.first_name }}
+                                        {{ bus.driver.last_name }}
+                                    {% else %}
+                                        <span style="color:#94a3b8;">
+                                            Not Assigned
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <!-- ROUTE -->
+                                <td>
+                                    {% if bus.route %}
+                                        {{ bus.route.route_name }}
+                                    {% else %}
+                                        <span style="color:#94a3b8;">
+                                            Not Assigned
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <!-- CAPACITY -->
+                                <td>
+                                    {{ bus.capacity|default:"-" }}
+                                </td>
+
+                                <!-- FUEL TYPE -->
+                                <td>
+                                    {% if bus.fuel_type %}
+                                        {{ bus.fuel_type|title }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+
+                                <!-- GPS -->
+                                <td>
+                                    {% if bus.tracker_is_active %}
+                                        <span class="badge badge-gps">
+                                            <i class="fa-solid fa-location-dot"></i>
+                                            GPS Active
+                                        </span>
+                                    {% else %}
+                                        <span class="badge badge-no-gps">
+                                            <i class="fa-solid fa-location-dot"></i>
+                                            Not Active
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <!-- STATUS -->
+                                <td>
+                                    {% if bus.status == "active" %}
+                                        <span class="badge badge-active">
+                                            Active
+                                        </span>
+                                    {% elif bus.status == "maintenance" %}
+                                        <span class="badge badge-maintenance">
+                                            Maintenance
+                                        </span>
+                                    {% else %}
+                                        <span class="badge badge-inactive">
+                                            {{ bus.status|title }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <!-- ACTIVE -->
+                                <td>
+                                    {% if bus.is_active %}
+                                        <span class="badge badge-active">
+                                            Yes
+                                        </span>
+                                    {% else %}
+                                        <span class="badge badge-inactive">
+                                            No
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <!-- EDIT ACTION -->
+                                <td>
+                                    <a
+                                        href="{% url 'transport:vp_bus_assignment' %}?bus_id={{ bus.pk }}&mode=edit"
+                                        class="edit-btn"
+                                        title="Edit {{ bus.bus_number }}"
+                                    >
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                        Edit
+                                    </a>
+                                </td>
+
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fa-solid fa-bus"></i>
+                </div>
+
+                <h3>No Buses Found</h3>
+
+                <p>No school buses have been registered yet.</p>
+            </div>
+
+        {% endif %}
+
+    </div>
+
+    <!-- BACK BUTTON -->
+    <div class="page-footer">
+        <a href="{% url 'transport:vp_buses_dashboard' %}"
+           class="back-btn">
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to Buses
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

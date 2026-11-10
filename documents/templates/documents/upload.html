@@ -1,0 +1,1202 @@
+
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}
+Upload Document
+{% endblock %}
+
+{% block extra_css %}
+
+<style>
+/* =========================================================
+   SMS - DOCUMENT UPLOAD PAGE
+   Theme: Navy Blue + Soft Orange
+   Font Size: 18px
+========================================================= */
+
+:root {
+    --deep-blue: #123B63;
+    --deep-blue-dark: #0B2945;
+    --deep-blue-light: #EAF2F8;
+    --deep-blue-soft: #F5F8FB;
+
+    --orange: #F28C28;
+    --orange-hover: #D97706;
+    --orange-light: #FFF4E6;
+
+    --white: #FFFFFF;
+    --background: #F7F9FC;
+
+    --text-primary: #263746;
+    --text-secondary: #667585;
+    --text-light: #8A98A8;
+
+    --border: #DFE6ED;
+    --border-dark: #CBD5DF;
+
+    --success: #15803D;
+    --success-bg: #ECFDF5;
+
+    --danger: #B91C1C;
+    --danger-bg: #FEF2F2;
+
+    --radius-sm: 8px;
+    --radius-md: 10px;
+    --radius-lg: 12px;
+
+    --shadow-sm: 0 2px 7px rgba(18, 59, 99, 0.05);
+    --shadow-md: 0 6px 18px rgba(18, 59, 99, 0.09);
+
+    --transition: all 0.2s ease;
+}
+
+/* =========================================================
+   PAGE CONTAINER
+========================================================= */
+
+.documents-page {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 24px;
+
+    color: var(--text-primary);
+    font-family: "Inter", "Segoe UI", Arial, sans-serif;
+    font-size: 18px;
+    line-height: 1.55;
+}
+
+.documents-page *,
+.documents-page *::before,
+.documents-page *::after {
+    box-sizing: border-box;
+}
+
+.documents-page a {
+    text-decoration: none;
+}
+
+.documents-page h1,
+.documents-page h2,
+.documents-page h3,
+.documents-page h4,
+.documents-page p {
+    overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.documents-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    margin-bottom: 24px;
+    padding: 20px 22px;
+
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--orange);
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+}
+
+.documents-title-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-width: 0;
+}
+
+.documents-title-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    width: 54px;
+    height: 54px;
+
+    color: var(--deep-blue);
+    background: var(--deep-blue-light);
+    border: 1px solid #D5E4F0;
+    border-radius: var(--radius-md);
+
+    font-size: 24px;
+    transition: var(--transition);
+}
+
+.documents-title-section:hover .documents-title-icon {
+    color: var(--white);
+    background: var(--deep-blue);
+}
+
+.documents-title-section h1 {
+    margin: 0;
+
+    color: var(--deep-blue);
+    font-size: 23px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.documents-title-section p {
+    margin: 5px 0 0;
+
+    color: var(--text-secondary);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+/* =========================================================
+   COMMON BUTTONS
+========================================================= */
+
+.documents-primary-btn,
+.documents-secondary-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    min-height: 46px;
+    padding: 10px 17px;
+
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.4;
+    text-align: center;
+
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.documents-primary-btn {
+    color: var(--white);
+    background: var(--deep-blue);
+    border-color: var(--deep-blue);
+    box-shadow: var(--shadow-sm);
+}
+
+.documents-primary-btn i {
+    color: var(--orange);
+    font-size: 18px;
+    transition: var(--transition);
+}
+
+.documents-primary-btn:hover {
+    color: var(--white);
+    background: var(--orange-hover);
+    border-color: var(--orange-hover);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+}
+
+.documents-primary-btn:hover i {
+    color: var(--white);
+}
+
+.documents-secondary-btn {
+    color: var(--deep-blue);
+    background: var(--white);
+    border-color: var(--border-dark);
+}
+
+.documents-secondary-btn i {
+    color: var(--orange);
+    font-size: 18px;
+}
+
+.documents-secondary-btn:hover {
+    color: var(--deep-blue);
+    background: var(--deep-blue-light);
+    border-color: var(--deep-blue);
+}
+
+/* =========================================================
+   UPLOAD FORM CARD
+========================================================= */
+
+.document-upload-card {
+    width: 100%;
+    min-width: 0;
+
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+/* =========================================================
+   FORM CARD HEADER
+========================================================= */
+
+.document-upload-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    padding: 20px 22px;
+
+    background: var(--deep-blue-light);
+    border-bottom: 1px solid var(--border);
+    border-left: 4px solid var(--orange);
+}
+
+.document-upload-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    width: 48px;
+    height: 48px;
+
+    color: var(--deep-blue);
+    background: var(--white);
+    border: 1px solid #D5E4F0;
+    border-radius: var(--radius-md);
+
+    font-size: 22px;
+}
+
+.document-upload-header h2 {
+    margin: 0 0 5px;
+
+    color: var(--deep-blue);
+    font-size: 21px;
+    font-weight: 600;
+    line-height: 1.45;
+}
+
+.document-upload-header p {
+    margin: 0;
+
+    color: var(--text-secondary);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.55;
+}
+
+/* =========================================================
+   FORM BODY
+========================================================= */
+
+.document-upload-form {
+    padding: 24px;
+}
+
+/* =========================================================
+   FORM GROUPS
+========================================================= */
+
+.document-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+
+    width: 100%;
+    min-width: 0;
+    margin-bottom: 23px;
+}
+
+.document-form-group > label {
+    display: block;
+
+    margin: 0;
+
+    color: var(--deep-blue-dark);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.document-form-group > label > span:not(.optional-label) {
+    color: var(--danger);
+    margin-left: 3px;
+}
+
+.document-form-group .optional-label {
+    display: inline-block;
+
+    margin-left: 7px;
+    padding: 3px 8px;
+
+    color: var(--text-secondary);
+    background: var(--deep-blue-soft);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+
+    font-size: 18px;
+    font-weight: 400;
+}
+
+/* =========================================================
+   DJANGO INPUTS, SELECTS AND TEXTAREAS
+========================================================= */
+
+.document-form-group input:not([type="checkbox"]):not([type="radio"]),
+.document-form-group select,
+.document-form-group textarea {
+    display: block;
+
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 48px;
+
+    padding: 11px 13px;
+
+    color: var(--text-primary);
+    background: var(--white);
+
+    border: 1px solid var(--border-dark);
+    border-radius: var(--radius-sm);
+
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.5;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.document-form-group select {
+    cursor: pointer;
+}
+
+.document-form-group textarea {
+    min-height: 125px;
+    resize: vertical;
+}
+
+.document-form-group input::placeholder,
+.document-form-group textarea::placeholder {
+    color: var(--text-light);
+    opacity: 1;
+}
+
+.document-form-group input:focus,
+.document-form-group select:focus,
+.document-form-group textarea:focus {
+    border-color: var(--orange);
+    box-shadow: 0 0 0 3px rgba(242, 140, 40, 0.14);
+}
+
+.document-form-group input:disabled,
+.document-form-group select:disabled,
+.document-form-group textarea:disabled {
+    color: var(--text-secondary);
+    background: #F1F5F9;
+    cursor: not-allowed;
+}
+
+/* =========================================================
+   HELP TEXT
+========================================================= */
+
+.document-help-text {
+    display: block;
+
+    margin-top: 0;
+
+    color: var(--text-secondary);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+/* =========================================================
+   FILE UPLOAD BOX
+========================================================= */
+
+.document-file-upload-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+
+    width: 100%;
+    min-width: 0;
+    padding: 20px;
+
+    background: var(--deep-blue-soft);
+    border: 1px dashed #AFC3D6;
+    border-radius: var(--radius-md);
+
+    transition: var(--transition);
+}
+
+.document-file-upload-box:hover,
+.document-file-upload-box:focus-within {
+    background: var(--orange-light);
+    border-color: var(--orange);
+}
+
+.document-file-upload-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    width: 50px;
+    height: 50px;
+
+    color: var(--deep-blue);
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+
+    font-size: 23px;
+}
+
+.document-file-upload-box > div:nth-child(2) {
+    flex: 1;
+    min-width: 0;
+}
+
+.document-file-upload-box strong {
+    display: block;
+
+    margin: 0 0 5px;
+
+    color: var(--deep-blue);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.document-file-upload-box p {
+    margin: 0 0 5px;
+
+    color: var(--text-secondary);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.55;
+}
+
+.document-file-upload-box small {
+    display: block;
+
+    color: var(--text-secondary);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+/* File input wrapper */
+
+.document-file-input-wrapper {
+    width: 100%;
+    min-width: 0;
+    margin-top: 13px;
+}
+
+.document-file-input-wrapper input[type="file"] {
+    display: block;
+
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    color: var(--text-primary);
+    background: var(--white);
+
+    border: 1px solid var(--border-dark);
+    border-radius: var(--radius-sm);
+
+    font-family: inherit;
+    font-size: 18px;
+
+    overflow: hidden;
+}
+
+.document-file-input-wrapper input[type="file"]::file-selector-button {
+    margin-right: 12px;
+    padding: 11px 14px;
+
+    color: var(--white);
+    background: var(--deep-blue);
+    border: none;
+    border-right: 1px solid var(--deep-blue);
+    border-radius: 0;
+
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 500;
+
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.document-file-input-wrapper input[type="file"]::file-selector-button:hover {
+    background: var(--orange-hover);
+}
+
+/* =========================================================
+   FORM VALIDATION ERRORS
+========================================================= */
+
+.document-form-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+
+    margin-bottom: 22px;
+    padding: 15px 17px;
+
+    color: #991B1B;
+    background: var(--danger-bg);
+    border: 1px solid #FECACA;
+    border-left: 4px solid var(--danger);
+    border-radius: var(--radius-sm);
+}
+
+.document-error-icon {
+    flex-shrink: 0;
+    padding-top: 2px;
+
+    color: var(--danger);
+    font-size: 21px;
+}
+
+.document-form-error p {
+    margin: 0 0 5px;
+
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+.document-form-error p:last-child {
+    margin-bottom: 0;
+}
+
+.document-field-error {
+    display: block;
+
+    padding: 9px 12px;
+
+    color: #991B1B;
+    background: var(--danger-bg);
+    border: 1px solid #FECACA;
+    border-radius: 7px;
+
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+.document-field-error ul {
+    margin: 0;
+    padding-left: 22px;
+}
+
+/* =========================================================
+   SECURE UPLOAD INFORMATION
+========================================================= */
+
+.document-security-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+
+    margin-top: 8px;
+    padding: 18px;
+
+    background: var(--deep-blue-light);
+    border: 1px solid #C9DCEC;
+    border-left: 4px solid var(--orange);
+    border-radius: var(--radius-md);
+}
+
+.document-security-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    width: 43px;
+    height: 43px;
+
+    color: var(--deep-blue);
+    background: var(--white);
+    border: 1px solid #D5E4F0;
+    border-radius: var(--radius-sm);
+
+    font-size: 21px;
+}
+
+.document-security-box h4 {
+    margin: 0 0 6px;
+
+    color: var(--deep-blue);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.document-security-box p {
+    margin: 0;
+
+    color: var(--text-secondary);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.65;
+}
+
+/* =========================================================
+   FORM ACTIONS
+========================================================= */
+
+.document-form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    margin-top: 25px;
+    padding-top: 20px;
+
+    border-top: 1px solid var(--border);
+}
+
+.document-form-actions .documents-secondary-btn,
+.document-form-actions .documents-primary-btn {
+    min-width: 145px;
+}
+
+/* =========================================================
+   BUTTON AND LINK FOCUS
+========================================================= */
+
+.documents-page a:focus-visible,
+.documents-page button:focus-visible,
+.documents-page input:focus-visible,
+.documents-page select:focus-visible,
+.documents-page textarea:focus-visible {
+    outline: 3px solid rgba(242, 140, 40, 0.45);
+    outline-offset: 3px;
+}
+
+/* =========================================================
+   TABLET RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .documents-page {
+        padding: 20px;
+    }
+
+    .documents-page-header {
+        gap: 15px;
+        padding: 18px;
+    }
+
+    .document-upload-form {
+        padding: 20px;
+    }
+
+    .document-file-upload-box {
+        padding: 17px;
+    }
+}
+
+/* =========================================================
+   MOBILE RESPONSIVE
+========================================================= */
+
+@media (max-width: 650px) {
+
+    .documents-page {
+        padding: 14px;
+    }
+
+    .documents-page-header {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 16px;
+
+        padding: 17px;
+        margin-bottom: 18px;
+    }
+
+    .documents-title-section {
+        gap: 12px;
+    }
+
+    .documents-title-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 22px;
+    }
+
+    .documents-title-section h1 {
+        font-size: 23px;
+    }
+
+    .documents-page-header > .documents-secondary-btn {
+        width: 100%;
+    }
+
+    .document-upload-header {
+        align-items: flex-start;
+        gap: 12px;
+        padding: 16px;
+    }
+
+    .document-upload-icon {
+        width: 43px;
+        height: 43px;
+        font-size: 20px;
+    }
+
+    .document-upload-header h2 {
+        font-size: 20px;
+    }
+
+    .document-upload-form {
+        padding: 16px;
+    }
+
+    .document-form-group {
+        margin-bottom: 21px;
+    }
+
+    .document-file-upload-box {
+        flex-direction: column;
+        gap: 12px;
+        padding: 16px;
+    }
+
+    .document-file-upload-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 21px;
+    }
+
+    .document-file-input-wrapper {
+        margin-top: 12px;
+    }
+
+    .document-security-box {
+        gap: 11px;
+        padding: 15px;
+    }
+
+    .document-security-icon {
+        width: 38px;
+        height: 38px;
+        font-size: 19px;
+    }
+
+    .document-form-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .document-form-actions .documents-secondary-btn,
+    .document-form-actions .documents-primary-btn {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 380px) {
+
+    .documents-page {
+        padding: 11px;
+    }
+
+    .documents-page-header {
+        padding: 14px;
+    }
+
+    .document-upload-form {
+        padding: 13px;
+    }
+
+    .document-upload-header {
+        padding: 14px;
+    }
+
+    .document-upload-header h2 {
+        font-size: 18px;
+    }
+
+    .document-file-upload-box {
+        padding: 13px;
+    }
+
+    .documents-primary-btn,
+    .documents-secondary-btn {
+        padding: 10px 12px;
+    }
+}
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .documents-page *,
+    .documents-page *::before,
+    .documents-page *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+        animation: none !important;
+    }
+}
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="documents-page">
+
+    <!-- =====================================================
+         PAGE HEADER
+    ====================================================== -->
+
+    <div class="documents-page-header">
+
+        <div class="documents-title-section">
+
+            <div class="documents-title-icon">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+            </div>
+
+            <div>
+
+                <h1>
+                    Upload Document
+                </h1>
+
+                <p>
+                    Upload and securely store a document in the system.
+                </p>
+
+            </div>
+
+        </div>
+
+        <a
+            href="{% url 'documents:home' %}"
+            class="documents-secondary-btn"
+        >
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to Documents
+        </a>
+
+    </div>
+
+    <!-- =====================================================
+         UPLOAD FORM CARD
+    ====================================================== -->
+
+    <div class="document-upload-card">
+
+        <!-- FORM HEADER -->
+
+        <div class="document-upload-header">
+
+            <div class="document-upload-icon">
+                <i class="fa-solid fa-file-arrow-up"></i>
+            </div>
+
+            <div>
+
+                <h2>
+                    Document Information
+                </h2>
+
+                <p>
+                    Enter the document details and select the file you want to upload.
+                </p>
+
+            </div>
+
+        </div>
+
+        <!-- =================================================
+             UPLOAD FORM
+        ================================================== -->
+
+        <form
+            method="POST"
+            enctype="multipart/form-data"
+            class="document-upload-form"
+        >
+
+            {% csrf_token %}
+
+            <!-- FORM ERRORS -->
+
+            {% if form.non_field_errors %}
+
+            <div class="document-form-error">
+
+                <div class="document-error-icon">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                </div>
+
+                <div>
+
+                    {% for error in form.non_field_errors %}
+
+                    <p>
+                        {{ error }}
+                    </p>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+            <!-- CATEGORY -->
+
+            <div class="document-form-group">
+
+                <label for="{{ form.category.id_for_label }}">
+                    Document Category
+                    <span>*</span>
+                </label>
+
+                {{ form.category }}
+
+                {% if form.category.errors %}
+
+                <div class="document-field-error">
+
+                    {% for error in form.category.errors %}
+                    {{ error }}
+                    {% endfor %}
+
+                </div>
+
+                {% endif %}
+
+                <small class="document-help-text">
+                    Select the category that matches the document.
+                </small>
+
+            </div>
+
+            <!-- DOCUMENT TYPE -->
+
+            <div class="document-form-group">
+
+                <label for="{{ form.document_type.id_for_label }}">
+                    Document Type
+                    <span>*</span>
+                </label>
+
+                {{ form.document_type }}
+
+                {% if form.document_type.errors %}
+
+                <div class="document-field-error">
+
+                    {% for error in form.document_type.errors %}
+                    {{ error }}
+                    {% endfor %}
+
+                </div>
+
+                {% endif %}
+
+                <small class="document-help-text">
+                    Select the specific type of document.
+                </small>
+
+            </div>
+
+            <!-- DOCUMENT NAME -->
+
+            <div class="document-form-group">
+
+                <label for="{{ form.name.id_for_label }}">
+                    Document Name
+                    <span>*</span>
+                </label>
+
+                {{ form.name }}
+
+                {% if form.name.errors %}
+
+                <div class="document-field-error">
+
+                    {% for error in form.name.errors %}
+                    {{ error }}
+                    {% endfor %}
+
+                </div>
+
+                {% endif %}
+
+                <small class="document-help-text">
+                    Enter a clear name for the document.
+                </small>
+
+            </div>
+
+            <!-- FILE UPLOAD -->
+
+            <div class="document-form-group">
+
+                <label for="{{ form.file.id_for_label }}">
+                    Select File
+                    <span>*</span>
+                </label>
+
+                <div class="document-file-upload-box">
+
+                    <div class="document-file-upload-icon">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Select your document
+                        </strong>
+
+                        <p>
+                            PDF, JPG, JPEG, PNG, DOC, DOCX, XLS or XLSX
+                        </p>
+
+                        <small>
+                            Maximum file size: 10 MB
+                        </small>
+
+                        <div class="document-file-input-wrapper">
+                            {{ form.file }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% if form.file.errors %}
+
+                <div class="document-field-error">
+
+                    {% for error in form.file.errors %}
+                    {{ error }}
+                    {% endfor %}
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+            <!-- DESCRIPTION -->
+
+            <div class="document-form-group">
+
+                <label for="{{ form.description.id_for_label }}">
+                    Description
+                    <span class="optional-label">Optional</span>
+                </label>
+
+                {{ form.description }}
+
+                {% if form.description.errors %}
+
+                <div class="document-field-error">
+
+                    {% for error in form.description.errors %}
+                    {{ error }}
+                    {% endfor %}
+
+                </div>
+
+                {% endif %}
+
+                <small class="document-help-text">
+                    Add additional information about this document if required.
+                </small>
+
+            </div>
+
+            <!-- SECURITY INFORMATION -->
+
+            <div class="document-security-box">
+
+                <div class="document-security-icon">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+
+                <div>
+
+                    <h4>
+                        Secure Document Upload
+                    </h4>
+
+                    <p>
+                        Your uploaded document will be stored securely
+                        and access will be controlled according to your role.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <!-- FORM ACTIONS -->
+
+            <div class="document-form-actions">
+
+                <a
+                    href="{% url 'documents:home' %}"
+                    class="documents-secondary-btn"
+                >
+                    <i class="fa-solid fa-xmark"></i>
+                    Cancel
+                </a>
+
+                <button
+                    type="submit"
+                    class="documents-primary-btn"
+                >
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    Upload Document
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}
+

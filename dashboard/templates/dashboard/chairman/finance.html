@@ -1,0 +1,782 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Finance Overview{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --orange-light: #FFF4E6;
+        --green: #25845A;
+        --green-light: #EAF7F0;
+        --purple: #7654A8;
+        --purple-light: #F2EDFA;
+        --red: #C74747;
+        --red-light: #FDECEC;
+        --teal: #168A91;
+        --text-primary: #243447;
+        --text-secondary: #5F6F80;
+        --border-color: #E0E7EF;
+        --card-background: #FFFFFF;
+        --radius-medium: 14px;
+        --radius-large: 18px;
+        --shadow-card: 0 4px 16px rgba(18, 59, 99, 0.07);
+        --shadow-hover: 0 10px 25px rgba(18, 59, 99, 0.13);
+    }
+
+    .finance-dashboard {
+        width: 100%;
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 28px;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Arial, sans-serif;
+        font-size: 18px;
+        line-height: 1.6;
+        color: var(--text-primary);
+    }
+
+    /* PAGE HEADER */
+
+    .finance-header {
+        background: linear-gradient(
+            135deg,
+            var(--deep-blue-dark),
+            var(--deep-blue)
+        );
+        color: #FFFFFF;
+        padding: 28px 32px;
+        border-radius: var(--radius-large);
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 20px;
+        box-shadow: var(--shadow-card);
+    }
+
+    .finance-header h1 {
+        margin: 0 0 8px;
+        font-size: 30px;
+        font-weight: 700;
+        line-height: 1.3;
+        color: #FFFFFF;
+    }
+
+    .finance-header p {
+        margin: 0;
+        font-size: 18px;
+        color: #EAF2F8;
+    }
+
+    .finance-header-icon {
+        width: 66px;
+        height: 66px;
+        min-width: 66px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.13);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        color: #FFFFFF;
+    }
+
+    /* SECTION TITLE */
+
+    .finance-section {
+        margin-bottom: 32px;
+    }
+
+    .finance-section-title {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin: 0 0 22px;
+        font-size: 23px;
+        font-weight: 700;
+        color: var(--deep-blue);
+    }
+
+    .finance-section-title .title-icon {
+        width: 43px;
+        height: 43px;
+        min-width: 43px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: var(--orange-light);
+        color: var(--orange);
+        font-size: 21px;
+    }
+
+    /* FINANCE CARDS */
+
+    .finance-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 22px;
+    }
+
+    .finance-stat-card {
+        min-width: 0;
+        min-height: 140px;
+        padding: 24px;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        background: var(--card-background);
+        border: 1px solid var(--border-color);
+        border-left: 5px solid var(--deep-blue);
+        border-radius: var(--radius-medium);
+        box-shadow: var(--shadow-card);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        overflow: hidden;
+    }
+
+    .finance-stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .finance-stat-card.orange {
+        border-left-color: var(--orange);
+    }
+
+    .finance-stat-card.green {
+        border-left-color: var(--green);
+    }
+
+    .finance-stat-card.purple {
+        border-left-color: var(--purple);
+    }
+
+    .finance-stat-icon {
+        width: 60px;
+        height: 60px;
+        min-width: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 15px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        font-size: 25px;
+    }
+
+    .finance-stat-card.orange .finance-stat-icon {
+        background: var(--orange-light);
+        color: var(--orange);
+    }
+
+    .finance-stat-card.green .finance-stat-icon {
+        background: var(--green-light);
+        color: var(--green);
+    }
+
+    .finance-stat-card.purple .finance-stat-icon {
+        background: var(--purple-light);
+        color: var(--purple);
+    }
+
+    .finance-stat-info {
+        min-width: 0;
+        flex: 1;
+    }
+
+    .finance-stat-label {
+        margin: 0 0 7px;
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 1.4;
+        color: var(--text-secondary);
+    }
+
+    .finance-stat-value {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 750;
+        line-height: 1.3;
+        color: var(--deep-blue);
+        overflow-wrap: anywhere;
+    }
+
+    .finance-stat-card.orange .finance-stat-value {
+        color: var(--orange-hover);
+    }
+
+    .finance-stat-card.green .finance-stat-value {
+        color: var(--green);
+    }
+
+    .finance-stat-card.purple .finance-stat-value {
+        color: var(--purple);
+    }
+
+    /* CHART GRID */
+
+    .finance-charts-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 24px;
+    }
+
+    .finance-chart-card {
+        min-width: 0;
+        padding: 26px;
+        background: var(--card-background);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-medium);
+        box-shadow: var(--shadow-card);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .finance-chart-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .finance-chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 22px;
+    }
+
+    .finance-chart-header h3 {
+        margin: 0 0 6px;
+        color: var(--deep-blue);
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .finance-chart-header p {
+        margin: 0;
+        color: var(--text-secondary);
+        font-size: 15px;
+    }
+
+    .finance-chart-icon {
+        width: 46px;
+        height: 46px;
+        min-width: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        font-size: 21px;
+    }
+
+    .finance-chart-icon.orange {
+        background: var(--orange-light);
+        color: var(--orange);
+    }
+
+    .finance-chart-container {
+        position: relative;
+        width: 100%;
+        height: 320px;
+    }
+
+    /* FINANCE SUMMARY */
+
+    .finance-info-card {
+        padding: 26px;
+        background: var(--card-background);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-medium);
+        box-shadow: var(--shadow-card);
+    }
+
+    .finance-info-card h3 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0 0 14px;
+        color: var(--deep-blue);
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .finance-info-card h3 i {
+        color: var(--orange);
+    }
+
+    .finance-info-card p {
+        margin: 0;
+        font-size: 17px;
+        color: var(--text-secondary);
+    }
+
+    /* RESPONSIVE DESIGN */
+
+    @media (max-width: 1200px) {
+        .finance-stats-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 1000px) {
+        .finance-charts-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .finance-dashboard {
+            padding: 18px;
+        }
+
+        .finance-header {
+            padding: 22px;
+        }
+
+        .finance-header h1 {
+            font-size: 26px;
+        }
+
+        .finance-header p {
+            font-size: 16px;
+        }
+
+        .finance-section-title {
+            font-size: 21px;
+        }
+
+        .finance-stat-card {
+            padding: 18px;
+            gap: 12px;
+        }
+
+        .finance-stat-icon {
+            width: 50px;
+            height: 50px;
+            min-width: 50px;
+            font-size: 21px;
+        }
+
+        .finance-stat-label {
+            font-size: 16px;
+        }
+
+        .finance-stat-value {
+            font-size: 24px;
+        }
+
+        .finance-chart-card {
+            padding: 18px;
+        }
+
+        .finance-chart-container {
+            height: 280px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .finance-stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .finance-header-icon {
+            display: none;
+        }
+
+        .finance-dashboard {
+            padding: 12px;
+        }
+    }
+</style>
+
+<div class="finance-dashboard">
+
+    <!-- PAGE HEADER -->
+
+    <div class="finance-header">
+        <div>
+            <h1>Finance Overview</h1>
+            <p>School income, fees and expenses.</p>
+        </div>
+
+        <div class="finance-header-icon">
+            <i class="fa-solid fa-wallet"></i>
+        </div>
+    </div>
+
+    <!-- FINANCE STATISTICS -->
+
+    <div class="finance-section">
+
+        <h2 class="finance-section-title">
+            <span class="title-icon">
+                <i class="fa-solid fa-chart-column"></i>
+            </span>
+            Finance Statistics
+        </h2>
+
+        <div class="finance-stats-grid">
+
+            <!-- FEES COLLECTED -->
+
+            <div class="finance-stat-card">
+                <div class="finance-stat-icon">
+                    <i class="fa-solid fa-money-bill-wave"></i>
+                </div>
+
+                <div class="finance-stat-info">
+                    <p class="finance-stat-label">Fees Collected</p>
+                    <h3 class="finance-stat-value">
+                        ₹{{ fee_total|default:"0" }}
+                    </h3>
+                </div>
+            </div>
+
+            <!-- SALARY -->
+
+            <div class="finance-stat-card orange">
+                <div class="finance-stat-icon">
+                    <i class="fa-solid fa-money-check-dollar"></i>
+                </div>
+
+                <div class="finance-stat-info">
+                    <p class="finance-stat-label">Salary</p>
+                    <h3 class="finance-stat-value">
+                        ₹{{ salary_total|default:"0" }}
+                    </h3>
+                </div>
+            </div>
+
+            <!-- EXPENSES -->
+
+            <div class="finance-stat-card purple">
+                <div class="finance-stat-icon">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                </div>
+
+                <div class="finance-stat-info">
+                    <p class="finance-stat-label">Expenses</p>
+                    <h3 class="finance-stat-value">
+                        ₹{{ expense_total|default:"0" }}
+                    </h3>
+                </div>
+            </div>
+
+            <!-- TOTAL INCOME -->
+
+            <div class="finance-stat-card green">
+                <div class="finance-stat-icon">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+
+                <div class="finance-stat-info">
+                    <p class="finance-stat-label">Total Income</p>
+                    <h3 class="finance-stat-value">
+                        ₹{{ income_total|default:"0" }}
+                    </h3>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- FINANCE ANALYTICS -->
+
+    <div class="finance-section">
+
+        <h2 class="finance-section-title">
+            <span class="title-icon">
+                <i class="fa-solid fa-chart-pie"></i>
+            </span>
+            Financial Analytics
+        </h2>
+
+        <div class="finance-charts-grid">
+
+            <!-- BAR CHART -->
+
+            <div class="finance-chart-card">
+
+                <div class="finance-chart-header">
+                    <div>
+                        <h3>Financial Overview</h3>
+                        <p>Income, fees, salary and expenses</p>
+                    </div>
+
+                    <span class="finance-chart-icon">
+                        <i class="fa-solid fa-chart-column"></i>
+                    </span>
+                </div>
+
+                <div class="finance-chart-container">
+                    <canvas id="financeBarChart"></canvas>
+                </div>
+
+            </div>
+
+            <!-- PIE CHART -->
+
+            <div class="finance-chart-card">
+
+                <div class="finance-chart-header">
+                    <div>
+                        <h3>Finance Distribution</h3>
+                        <p>Fees, salary and other expenses</p>
+                    </div>
+
+                    <span class="finance-chart-icon orange">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </span>
+                </div>
+
+                <div class="finance-chart-container">
+                    <canvas id="financePieChart"></canvas>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- FINANCE INFORMATION -->
+
+    <div class="finance-section">
+
+        <h2 class="finance-section-title">
+            <span class="title-icon">
+                <i class="fa-solid fa-circle-info"></i>
+            </span>
+            Finance Information
+        </h2>
+
+        <div class="finance-info-card">
+            <h3>
+                <i class="fa-solid fa-building-columns"></i>
+                Financial Summary
+            </h3>
+
+            <p>
+                This section presents the fees collected, salary expenditure,
+                other expenses and total income recorded in your School
+                Management System.
+            </p>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- CHART.JS LIBRARY -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const feeTotal = Number(
+        "{{ fee_total|default:'0' }}"
+    );
+
+    const salaryTotal = Number(
+        "{{ salary_total|default:'0' }}"
+    );
+
+    const expenseTotal = Number(
+        "{{ expense_total|default:'0' }}"
+    );
+
+    const incomeTotal = Number(
+        "{{ income_total|default:'0' }}"
+    );
+
+    function formatRupees(value) {
+        return "₹" + Number(value).toLocaleString("en-IN", {
+            maximumFractionDigits: 2
+        });
+    }
+
+    /* BAR CHART */
+
+    const barCanvas = document.getElementById("financeBarChart");
+
+    if (barCanvas && typeof Chart !== "undefined") {
+
+        new Chart(barCanvas, {
+            type: "bar",
+
+            data: {
+                labels: [
+                    "Fees Collected",
+                    "Salary",
+                    "Expenses",
+                    "Total Income"
+                ],
+
+                datasets: [{
+                    label: "Amount (₹)",
+
+                    data: [
+                        feeTotal,
+                        salaryTotal,
+                        expenseTotal,
+                        incomeTotal
+                    ],
+
+                    backgroundColor: [
+                        "#123B63",
+                        "#F28C28",
+                        "#7654A8",
+                        "#25845A"
+                    ],
+
+                    borderRadius: 8,
+                    borderSkipped: false,
+                    maxBarThickness: 55
+                }]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return formatRupees(context.raw);
+                            }
+                        }
+                    }
+                },
+
+                scales: {
+                    y: {
+                        beginAtZero: true,
+
+                        ticks: {
+                            color: "#5F6F80",
+
+                            callback: function(value) {
+                                return "₹" +
+                                    Number(value).toLocaleString("en-IN");
+                            }
+                        },
+
+                        grid: {
+                            color: "#E0E7EF"
+                        }
+                    },
+
+                    x: {
+                        ticks: {
+                            color: "#5F6F80",
+                            maxRotation: 25,
+                            minRotation: 0
+                        },
+
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    /* PIE CHART */
+
+    const pieCanvas = document.getElementById("financePieChart");
+
+    if (pieCanvas && typeof Chart !== "undefined") {
+
+        new Chart(pieCanvas, {
+            type: "pie",
+
+            data: {
+                labels: [
+                    "Fees Collected",
+                    "Salary",
+                    "Other Expenses"
+                ],
+
+                datasets: [{
+                    data: [
+                        Math.max(0, feeTotal),
+                        Math.max(0, salaryTotal),
+                        Math.max(0, expenseTotal)
+                    ],
+
+                    backgroundColor: [
+                        "#123B63",
+                        "#F28C28",
+                        "#7654A8"
+                    ],
+
+                    borderColor: "#FFFFFF",
+                    borderWidth: 4,
+                    hoverOffset: 10
+                }]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                plugins: {
+                    legend: {
+                        position: "bottom",
+
+                        labels: {
+                            padding: 20,
+                            color: "#243447",
+
+                            font: {
+                                size: 14
+                            }
+                        }
+                    },
+
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const value = Number(context.raw);
+
+                                const total = context.dataset.data.reduce(
+                                    (sum, item) => sum + Number(item),
+                                    0
+                                );
+
+                                const percentage = total > 0
+                                    ? ((value / total) * 100).toFixed(1)
+                                    : "0.0";
+
+                                return context.label + ": " +
+                                    formatRupees(value) +
+                                    " (" + percentage + "%)";
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+});
+</script>
+
+{% endblock %}

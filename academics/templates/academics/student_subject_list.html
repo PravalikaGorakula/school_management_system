@@ -1,0 +1,337 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}My Subjects | SMS{% endblock %}
+
+{% block page_title %}My Subjects{% endblock %}
+
+{% block extra_css %}
+
+<style>
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --border-color: #DCE5ED;
+        --text-muted: #64748B;
+        --white: #FFFFFF;
+    }
+
+    .student-page {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px 16px;
+        color: var(--deep-blue);
+        font-size: 18px;
+    }
+
+    .page-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    .page-heading h2 {
+        margin: 0;
+        color: var(--deep-blue);
+        font-size: 27px;
+        font-weight: 700;
+    }
+
+    .page-heading h2 i {
+        margin-right: 6px;
+        color: var(--orange);
+    }
+
+    .all-results-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 42px;
+        padding: 8px 14px;
+        border: 1px solid var(--orange);
+        border-radius: 6px;
+        background: var(--orange);
+        color: var(--white);
+        text-decoration: none;
+        font-size: 18px;
+        font-weight: 600;
+        transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .all-results-btn:hover {
+        background: var(--orange-hover);
+        border-color: var(--orange-hover);
+        color: var(--white);
+    }
+
+    .class-info {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 18px;
+        padding: 10px 14px;
+        margin-bottom: 14px;
+        background: linear-gradient(100deg, #EAF2F8, #FFF4E6);
+        border: 1px solid var(--border-color);
+        border-left: 4px solid var(--orange);
+        border-radius: 7px;
+        color: var(--deep-blue);
+        font-size: 18px;
+    }
+
+    .class-info strong {
+        color: var(--deep-blue);
+        font-weight: 700;
+    }
+
+    .table-card {
+        padding: 10px;
+        background: var(--white);
+        border: 1px solid var(--border-color);
+        border-top: 3px solid var(--deep-blue);
+        border-radius: 8px;
+        overflow-x: auto;
+        box-shadow: 0 2px 8px rgba(11, 41, 69, 0.05);
+    }
+
+    .subject-table {
+        width: 100%;
+        min-width: 800px;
+        border-collapse: collapse;
+    }
+
+    .subject-table th {
+        padding: 11px 12px;
+        background: var(--deep-blue);
+        color: var(--white);
+        text-align: left;
+        font-size: 18px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .subject-table td {
+        padding: 11px 12px;
+        border-bottom: 1px solid #E5EAF0;
+        color: #334155;
+        font-size: 18px;
+        vertical-align: middle;
+    }
+
+    .subject-table tbody tr {
+        transition: background 0.2s ease;
+    }
+
+    .subject-table tbody tr:hover {
+        background: #FFF8EF;
+    }
+
+    .subject-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .subject-name {
+        color: var(--deep-blue) !important;
+        font-weight: 700;
+    }
+
+    .subject-code {
+        color: var(--text-muted) !important;
+    }
+
+    .subject-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        min-height: 38px;
+        padding: 7px 10px;
+        border: 1px solid var(--deep-blue);
+        border-radius: 5px;
+        background: var(--deep-blue);
+        color: var(--white);
+        text-decoration: none;
+        font-size: 18px;
+        font-weight: 600;
+        white-space: nowrap;
+        transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .subject-btn:hover {
+        background: var(--orange-hover);
+        border-color: var(--orange-hover);
+        color: var(--white);
+    }
+
+    .assignment-btn {
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        border-color: #C6D8E8;
+    }
+
+    .assignment-btn:hover {
+        background: var(--deep-blue);
+        border-color: var(--deep-blue);
+        color: var(--white);
+    }
+
+    .message-btn {
+        background: var(--white);
+        color: var(--deep-blue);
+        border-color: #C6D8E8;
+    }
+
+    .message-btn:hover {
+        background: var(--deep-blue);
+        border-color: var(--deep-blue);
+        color: var(--white);
+    }
+
+    .empty-state {
+        padding: 25px 12px;
+        color: var(--text-muted);
+        text-align: center;
+        font-size: 18px;
+        line-height: 1.6;
+    }
+
+    .empty-state i {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--orange);
+        font-size: 34px;
+    }
+
+    @media (max-width: 700px) {
+        .student-page {
+            padding: 10px;
+        }
+
+        .page-heading {
+            align-items: flex-start;
+        }
+
+        .page-heading h2 {
+            font-size: 24px;
+        }
+
+        .class-info {
+            gap: 6px 12px;
+        }
+
+        .table-card {
+            padding: 7px;
+        }
+    }
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="student-page">
+
+    <div class="page-heading">
+        <h2>
+            <i class="fa-solid fa-book-open"></i>
+            My Subjects
+        </h2>
+
+        <a href="{% url 'academics:student_all_results' %}"
+           class="all-results-btn">
+            <i class="fa-solid fa-square-poll-vertical"></i>
+            All Results
+        </a>
+    </div>
+
+    {% if class_section %}
+    <div class="class-info">
+        <span>
+            <strong>Class:</strong>
+            {{ class_section.grade }} - {{ class_section.section }}
+        </span>
+
+        <span>
+            <strong>Academic Year:</strong>
+            {{ class_section.academic_year }}
+        </span>
+    </div>
+    {% endif %}
+
+    <div class="table-card">
+
+        {% if subject_assignments %}
+
+        <table class="subject-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Subject</th>
+                    <th>Code</th>
+                    <th>Teacher</th>
+                    <th>Assignments</th>
+                    <th>Message</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in subject_assignments %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+
+                    <td class="subject-name">
+                        {{ item.subject.subject_name }}
+                    </td>
+
+                    <td class="subject-code">
+                        {{ item.subject.subject_code|default:"—" }}
+                    </td>
+
+                    <td>
+                        {% if item.employee.get_full_name %}
+                            {{ item.employee.get_full_name }}
+                        {% else %}
+                            {{ item.employee.username }}
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <a href="#"
+                           class="subject-btn assignment-btn">
+                            <i class="fa-solid fa-file-arrow-down"></i>
+                            Assignments
+                        </a>
+                    </td>
+
+                    <td>
+                        <a href="{% url 'academics:student_message_teacher' item.id %}"
+                           class="subject-btn message-btn">
+                            <i class="fa-solid fa-message"></i>
+                            Message
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% else %}
+
+        <div class="empty-state">
+            <i class="fa-solid fa-book-open"></i>
+            No subjects have been assigned to your class yet.
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

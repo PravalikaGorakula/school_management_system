@@ -1,0 +1,565 @@
+
+{% extends "dashboard/base.html" %}
+
+{% block title %}Validate & Approval{% endblock %}
+
+{% block extra_css %}
+<style>
+.validation-page {
+    --blue: #123B63;
+    --dark-blue: #0B2945;
+    --light-blue: #EAF2F8;
+    --orange: #F28C28;
+    --orange-hover: #D97706;
+    --border: #DCE5ED;
+    --text: #263746;
+    padding: 24px;
+    color: var(--text);
+    font-size: 17px;
+}
+
+.validation-page * { box-sizing: border-box; }
+
+.page-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 22px;
+}
+
+.page-heading h1 {
+    color: var(--blue);
+    font-size: 28px;
+    margin: 0 0 7px;
+}
+
+.page-heading p {
+    color: #687887;
+    margin: 0;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 7px 13px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 700;
+    background: #FFF4E6;
+    color: #97520B;
+}
+
+.step-progress {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(120px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.step-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+}
+
+.step-number {
+    display: grid;
+    place-items: center;
+    width: 35px;
+    height: 35px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--light-blue);
+    color: var(--blue);
+    font-weight: 700;
+}
+
+.step-item.active {
+    background: #FFF8F0;
+    border-color: var(--orange);
+}
+
+.step-item.active .step-number {
+    background: var(--orange);
+    color: white;
+}
+
+.step-item small {
+    display: block;
+    color: #687887;
+    margin-top: 3px;
+}
+
+.panel {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 22px;
+    box-shadow: 0 3px 12px rgba(11, 41, 69, .04);
+}
+
+.panel h2 {
+    color: var(--blue);
+    font-size: 21px;
+    margin: 0 0 8px;
+}
+
+.panel-description {
+    color: #687887;
+    margin: 0 0 22px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+    gap: 20px;
+}
+
+.field label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.field input,
+.field select,
+.field textarea {
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid #C9D5DF;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 16px;
+    background: white;
+    color: var(--text);
+}
+
+.field textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+.button-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 22px;
+}
+
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+    min-height: 43px;
+    padding: 10px 17px;
+    border: 0;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: var(--orange);
+    color: white;
+}
+
+.btn-primary:hover { background: var(--orange-hover); }
+
+.btn-secondary {
+    background: var(--light-blue);
+    color: var(--blue);
+}
+
+.btn-secondary:hover { background: #D7E7F4; }
+
+.btn-outline {
+    background: white;
+    color: var(--blue);
+    border: 1px solid var(--blue);
+}
+
+.btn-danger {
+    background: #FDECEC;
+    color: #B42318;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(150px, 1fr));
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.summary-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    background: #fff;
+}
+
+.summary-card .summary-label {
+    color: #687887;
+    font-size: 15px;
+    margin-bottom: 10px;
+}
+
+.summary-card .summary-value {
+    font-size: 25px;
+    font-weight: 700;
+    color: var(--blue);
+}
+
+.summary-card.warning .summary-value { color: #B45309; }
+.summary-card.success .summary-value { color: #15803D; }
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.validation-table {
+    width: 100%;
+    min-width: 700px;
+    border-collapse: collapse;
+}
+
+.validation-table th {
+    text-align: left;
+    background: var(--blue);
+    color: white;
+    padding: 13px;
+}
+
+.validation-table td {
+    padding: 13px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+}
+
+.validation-table tr:hover td { background: #F8FAFC; }
+
+.issue-error {
+    color: #B42318;
+    font-weight: 700;
+}
+
+.issue-warning {
+    color: #B45309;
+    font-weight: 700;
+}
+
+.issue-ok {
+    color: #15803D;
+    font-weight: 700;
+}
+
+.notice {
+    border-left: 4px solid var(--orange);
+    background: #FFF8F0;
+    color: #69451F;
+    padding: 14px 16px;
+    border-radius: 6px;
+    margin-top: 18px;
+}
+
+.empty-state {
+    padding: 28px 16px;
+    text-align: center;
+    background: #F8FAFC;
+    border-radius: 8px;
+    color: #687887;
+}
+
+@media (max-width: 850px) {
+    .step-progress { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 560px) {
+    .validation-page { padding: 14px; }
+    .panel { padding: 16px; }
+    .step-progress, .form-grid, .summary-grid { grid-template-columns: 1fr; }
+    .page-heading h1 { font-size: 23px; }
+    .button-row .btn { flex: 1; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="validation-page">
+
+    <div class="page-heading">
+        <div>
+            <h1>Validate & Approval</h1>
+            <p>Check timetable conflicts and submit a verified draft for approval.</p>
+        </div>
+        <span class="status-badge">
+            {{ timetable_plan.status|default:"Draft — Not Published" }}
+        </span>
+    </div>
+
+    <div class="step-progress">
+        <div class="step-item">
+            <span class="step-number">✓</span>
+            <div>
+                <strong>Configure</strong>
+                <small>School timings</small>
+            </div>
+        </div>
+
+        <div class="step-item">
+            <span class="step-number">✓</span>
+            <div>
+                <strong>Requirements</strong>
+                <small>Weekly periods</small>
+            </div>
+        </div>
+
+        <div class="step-item">
+            <span class="step-number">✓</span>
+            <div>
+                <strong>Generate & Edit</strong>
+                <small>Draft timetable</small>
+            </div>
+        </div>
+
+        <div class="step-item active">
+            <span class="step-number">4</span>
+            <div>
+                <strong>Validate & Approval</strong>
+                <small>Final review</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Select timetable -->
+    <div class="panel">
+        <h2>Select Timetable</h2>
+        <p class="panel-description">
+            Select the class and academic year for which you want to validate the draft.
+        </p>
+
+        <form method="get" action="{% url 'academics:timetable' %}">
+            <input type="hidden" name="step" value="validate">
+
+            <div class="form-grid">
+                <div class="field">
+                    <label for="class_section">Class / Section *</label>
+                    <select id="class_section" name="class_section" required>
+                        <option value="">Select class / section</option>
+                        {% for class_item in classes %}
+                            <option value="{{ class_item.id }}"
+                                {% if selected_class|stringformat:"s" == class_item.id|stringformat:"s" %}selected{% endif %}>
+                                {{ class_item }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="academic_year">Academic Year *</label>
+                    <input id="academic_year"
+                           name="academic_year"
+                           type="text"
+                           value="{{ selected_academic_year|default:'' }}"
+                           placeholder="e.g. 2026-27"
+                           required>
+                </div>
+            </div>
+
+            <div class="button-row">
+                <a class="btn btn-secondary"
+                   href="{% url 'academics:timetable' %}">
+                    ← Back to Timetable
+                </a>
+
+                <button class="btn btn-outline" type="submit">
+                    Load Timetable
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Validation summary -->
+    <div class="summary-grid">
+        <div class="summary-card">
+            <div class="summary-label">Total Period Entries</div>
+            <div class="summary-value">{{ entries|length }}</div>
+        </div>
+
+        <div class="summary-card warning">
+            <div class="summary-label">Conflicts / Errors</div>
+            <div class="summary-value">{{ conflict_count|default:"—" }}</div>
+        </div>
+
+        <div class="summary-card success">
+            <div class="summary-label">Validation Status</div>
+            <div class="summary-value">
+                {{ validation_status|default:"Pending" }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Conflict report -->
+    <div class="panel">
+        <h2>Validation Report</h2>
+        <p class="panel-description">
+            Review the results returned by the timetable validation process.
+        </p>
+
+        {% if validation_results %}
+            <div class="table-wrapper">
+                <table class="validation-table">
+                    <thead>
+                        <tr>
+                            <th>Issue Type</th>
+                            <th>Description</th>
+                            <th>Day / Period</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for result in validation_results %}
+                        <tr>
+                            <td>{{ result.issue_type }}</td>
+                            <td>{{ result.message }}</td>
+                            <td>{{ result.day|default:"—" }} / {{ result.period|default:"—" }}</td>
+                            <td>
+                                {% if result.severity == "error" %}
+                                    <span class="issue-error">Error</span>
+                                {% elif result.severity == "warning" %}
+                                    <span class="issue-warning">Warning</span>
+                                {% else %}
+                                    <span class="issue-ok">Passed</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <h3>No validation report available</h3>
+                <p>Load a timetable and run validation to see conflict details here.</p>
+            </div>
+        {% endif %}
+
+        <div class="notice">
+            <strong>Validation checks should include:</strong>
+            teacher double-booking, class double-booking, room conflicts,
+            break/lunch placement, required weekly subject periods, and
+            missing teacher assignments.
+        </div>
+
+        <form method="post" action="{% url 'academics:timetable' %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="validate_timetable">
+            <input type="hidden" name="class_section" value="{{ selected_class }}">
+            <input type="hidden" name="academic_year" value="{{ selected_academic_year }}">
+
+            <div class="button-row">
+                <span>Run checks before requesting approval.</span>
+                <button type="submit" class="btn btn-primary">
+                    ✓ Validate Timetable
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Submit for approval -->
+    <div class="panel">
+        <h2>Submit for Principal Approval</h2>
+        <p class="panel-description">
+            Submit the validated draft for review. Publishing should happen only
+            after the required approval has been recorded.
+        </p>
+
+        <form method="post" action="{% url 'academics:timetable' %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="submit_for_approval">
+            <input type="hidden" name="class_section" value="{{ selected_class }}">
+            <input type="hidden" name="academic_year" value="{{ selected_academic_year }}">
+
+            <div class="field">
+                <label for="approval_comment">Comments (optional)</label>
+                <textarea id="approval_comment"
+                          name="approval_comment"
+                          placeholder="Add any instructions or notes for the Principal"></textarea>
+            </div>
+
+            <div class="button-row">
+                <a class="btn btn-secondary"
+                   href="{% url 'academics:timetable' %}">
+                    ← Back to Edit Timetable
+                </a>
+
+                <button type="submit" class="btn btn-primary">
+                    Submit for Approval →
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Approval / publish status -->
+    <div class="panel">
+        <h2>Approval Status</h2>
+
+        <div class="form-grid">
+            <div>
+                <strong>Current Status</strong>
+                <p>{{ timetable_plan.status|default:"Draft" }}</p>
+            </div>
+
+            <div>
+                <strong>Principal Review</strong>
+                <p>{{ approval_status|default:"Not submitted" }}</p>
+            </div>
+        </div>
+
+        {% if can_publish %}
+            <form method="post" action="{% url 'academics:timetable' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="publish_timetable">
+                <input type="hidden" name="class_section" value="{{ selected_class }}">
+                <input type="hidden" name="academic_year" value="{{ selected_academic_year }}">
+
+                <div class="notice">
+                    The approval workflow indicates that this timetable is eligible
+                    for publishing. Confirm that the approval record is valid before publishing.
+                </div>
+
+                <div class="button-row">
+                    <span>Publishing makes the timetable available to authorized users.</span>
+                    <button type="submit" class="btn btn-primary">
+                        Publish Timetable
+                    </button>
+                </div>
+            </form>
+        {% else %}
+            <div class="notice">
+                Publishing is unavailable until the backend confirms the required
+                approval and successful validation.
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

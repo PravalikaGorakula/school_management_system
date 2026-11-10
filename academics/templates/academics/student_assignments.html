@@ -1,0 +1,478 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+Assignments | SMS
+{% endblock %}
+
+{% block page_title %}
+Assignments
+{% endblock %}
+
+{% block extra_css %}
+
+<style>
+
+    .student-page {
+        padding: 25px;
+    }
+
+    .page-header {
+        margin-bottom: 25px;
+    }
+
+    .page-header h2 {
+        color: #123B63;
+        font-size: 30px;
+        margin: 0 0 8px;
+    }
+
+    .page-header p {
+        color: #64748B;
+        font-size: 18px;
+        margin: 0;
+    }
+
+    .class-info {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-left: 5px solid #F28C28;
+        border-radius: 10px;
+        padding: 18px 20px;
+        margin-bottom: 25px;
+    }
+
+    .class-info strong {
+        color: #123B63;
+    }
+
+    .assignment-card {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        padding: 22px;
+        overflow-x: auto;
+    }
+
+    .assignment-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1100px;
+    }
+
+    .assignment-table th {
+        background: #123B63;
+        color: #FFFFFF;
+        padding: 15px;
+        text-align: left;
+        font-size: 18px;
+        white-space: nowrap;
+    }
+
+    .assignment-table td {
+        padding: 15px;
+        border-bottom: 1px solid #E2E8F0;
+        color: #334155;
+        font-size: 17px;
+        vertical-align: top;
+    }
+
+    .assignment-table tr:hover {
+        background: #F8FAFC;
+    }
+
+    .subject-name {
+        color: #123B63;
+        font-weight: 700;
+    }
+
+    .assignment-title {
+        color: #123B63;
+        font-weight: 600;
+    }
+
+    .teacher-name {
+        color: #475569;
+    }
+
+    .description {
+        max-width: 260px;
+        line-height: 1.5;
+    }
+
+    .due-date {
+        white-space: nowrap;
+    }
+
+    .action-group {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 9px 13px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 15px;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .download-btn {
+        background: #123B63;
+        color: #FFFFFF;
+    }
+
+    .download-btn:hover {
+        background: #0B2945;
+    }
+
+    .upload-btn {
+        background: #F28C28;
+        color: #FFFFFF;
+    }
+
+    .upload-btn:hover {
+        background: #D97706;
+    }
+
+    .submitted-download-btn {
+        background: #16A34A;
+        color: #FFFFFF;
+    }
+
+    .submitted-download-btn:hover {
+        background: #15803D;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 6px 11px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .submitted {
+        background: #DCFCE7;
+        color: #166534;
+    }
+
+    .pending {
+        background: #FEF3C7;
+        color: #92400E;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 55px 20px;
+        color: #64748B;
+        font-size: 18px;
+    }
+
+    .empty-state i {
+        font-size: 45px;
+        color: #123B63;
+        margin-bottom: 15px;
+    }
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="student-page">
+
+    <div class="page-header">
+
+        <h2>
+            <i class="fa-solid fa-file-lines"></i>
+            My Assignments
+        </h2>
+
+        <p>
+            View, download and submit your subject assignments.
+        </p>
+
+    </div>
+
+
+    {% if class_section %}
+
+    <div class="class-info">
+
+        <strong>
+            Class:
+        </strong>
+
+        {{ class_section.grade }}
+        -
+        {{ class_section.section }}
+
+        &nbsp;&nbsp; | &nbsp;&nbsp;
+
+        <strong>
+            Academic Year:
+        </strong>
+
+        {{ class_section.academic_year }}
+
+    </div>
+
+    {% endif %}
+
+
+    <div class="assignment-card">
+
+        {% if assignments %}
+
+        <table class="assignment-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>#</th>
+
+                    <th>Subject</th>
+
+                    <th>Assignment</th>
+
+                    <th>Description</th>
+
+                    <th>Teacher</th>
+
+                    <th>Due Date</th>
+
+                    <th>Status</th>
+
+                    <th>Actions</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for assignment in assignments %}
+
+                <tr>
+
+                    <td>
+                        {{ forloop.counter }}
+                    </td>
+
+
+                    <td>
+
+                        <div class="subject-name">
+
+                            {{ assignment.subject.subject_name }}
+
+                        </div>
+
+                        <small>
+                            {{ assignment.subject.subject_code }}
+                        </small>
+
+                    </td>
+
+
+                    <td>
+
+                        <div class="assignment-title">
+
+                            {{ assignment.title }}
+
+                        </div>
+
+                    </td>
+
+
+                    <td>
+
+                        <div class="description">
+
+                            {% if assignment.description %}
+
+                                {{ assignment.description }}
+
+                            {% else %}
+
+                                No description provided.
+
+                            {% endif %}
+
+                        </div>
+
+                    </td>
+
+
+                    <td>
+
+                        <div class="teacher-name">
+
+                            {% if assignment.teacher.get_full_name %}
+
+                                {{ assignment.teacher.get_full_name }}
+
+                            {% else %}
+
+                                {{ assignment.teacher.username }}
+
+                            {% endif %}
+
+                        </div>
+
+                    </td>
+
+
+                    <td>
+
+                        <div class="due-date">
+
+                            {% if assignment.due_date %}
+
+                                {{ assignment.due_date|date:"d M Y" }}
+
+                            {% else %}
+
+                                No due date
+
+                            {% endif %}
+
+                        </div>
+
+                    </td>
+
+
+                    <td>
+
+                        {% if assignment.student_submission %}
+
+                            <span class="status-badge submitted">
+
+                                <i class="fa-solid fa-check"></i>
+
+                                Submitted
+
+                            </span>
+
+                        {% else %}
+
+                            <span class="status-badge pending">
+
+                                <i class="fa-solid fa-clock"></i>
+
+                                Not Submitted
+
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        <div class="action-group">
+
+                            {% if assignment.assignment_file %}
+
+                            <a
+                                href="{% url 'academics:student_download_assignment' assignment.id %}"
+                                class="action-btn download-btn"
+                            >
+
+                                <i class="fa-solid fa-download"></i>
+
+                                Download
+
+                            </a>
+
+                            {% endif %}
+
+
+                            <a
+                                href="{% url 'academics:student_submit_assignment' assignment.id %}"
+                                class="action-btn upload-btn"
+                            >
+
+                                {% if assignment.student_submission %}
+
+                                    <i class="fa-solid fa-rotate"></i>
+
+                                    Replace
+
+                                {% else %}
+
+                                    <i class="fa-solid fa-upload"></i>
+
+                                    Upload
+
+                                {% endif %}
+
+                            </a>
+
+
+                            {% if assignment.student_submission %}
+
+                            <a
+                                href="{% url 'academics:student_download_submission' assignment.student_submission.id %}"
+                                class="action-btn submitted-download-btn"
+                            >
+
+                                <i class="fa-solid fa-file-arrow-down"></i>
+
+                                My Submission
+
+                            </a>
+
+                            {% endif %}
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        {% else %}
+
+        <div class="empty-state">
+
+            <i class="fa-solid fa-file-circle-xmark"></i>
+
+            <br>
+
+            <strong>
+                No assignments available
+            </strong>
+
+            <br>
+
+            Your teachers have not uploaded any assignments for your class yet.
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

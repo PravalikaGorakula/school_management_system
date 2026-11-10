@@ -1,0 +1,543 @@
+{% extends "dashboard/base.html" %}
+
+{% block extra_css %}
+
+<style>
+
+/* =========================================================
+   SUBJECT FORM PAGE
+========================================================= */
+
+.subject-form-page {
+    padding: 24px;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.subject-form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.subject-form-header-left {
+    min-width: 0;
+}
+
+.subject-form-eyebrow {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--orange);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.subject-form-header h1 {
+    margin: 0;
+    color: var(--deep-blue);
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.subject-form-header h1 i {
+    color: var(--orange);
+    margin-right: 8px;
+}
+
+.subject-form-header p {
+    margin: 8px 0 0;
+    color: var(--text-secondary);
+    font-size: 18px;
+}
+
+.back-subject-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 18px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--white);
+    color: var(--deep-blue);
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.back-subject-btn:hover {
+    background: var(--deep-blue-light);
+    border-color: var(--deep-blue);
+    color: var(--deep-blue);
+}
+
+
+/* =========================================================
+   FORM CARD
+========================================================= */
+
+.subject-form-card {
+    max-width: 1000px;
+    padding: 28px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+}
+
+
+/* =========================================================
+   FORM GRID
+========================================================= */
+
+.subject-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+}
+
+.subject-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.subject-field label {
+    color: var(--text-primary);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.subject-field input,
+.subject-field select,
+.subject-field textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--white);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 16px;
+    outline: none;
+    transition: var(--transition);
+}
+
+.subject-field input:focus,
+.subject-field select:focus,
+.subject-field textarea:focus {
+    border-color: var(--deep-blue);
+    box-shadow: 0 0 0 3px rgba(18, 59, 99, 0.10);
+}
+
+.subject-field textarea {
+    min-height: 130px;
+    resize: vertical;
+}
+
+.subject-field-wide {
+    grid-column: 1 / -1;
+}
+
+
+/* =========================================================
+   CHECKBOX
+========================================================= */
+
+.subject-active-field {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.subject-active-field input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--deep-blue);
+    cursor: pointer;
+}
+
+.subject-active-field span {
+    color: var(--text-primary);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   ERRORS
+========================================================= */
+
+.subject-field-error {
+    color: #B91C1C;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.subject-field-error ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.subject-non-field-error {
+    margin-top: 18px;
+    padding: 12px 14px;
+    border: 1px solid #FECACA;
+    border-radius: 8px;
+    background: var(--light-red);
+    color: #B91C1C;
+    font-size: 15px;
+}
+
+
+/* =========================================================
+   FORM ACTIONS
+========================================================= */
+
+.subject-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 28px;
+    padding-top: 22px;
+    border-top: 1px solid var(--border);
+}
+
+.subject-cancel-btn {
+    min-height: 44px;
+    padding: 10px 20px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--white);
+    color: var(--deep-blue);
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.subject-cancel-btn:hover {
+    background: var(--deep-blue-light);
+    color: var(--deep-blue);
+}
+
+.subject-save-btn {
+    min-height: 44px;
+    padding: 10px 22px;
+    border: none;
+    border-radius: 8px;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 16px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.subject-save-btn:hover {
+    background: var(--orange-hover);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .subject-form-page {
+        padding: 16px;
+    }
+
+    .subject-form-header {
+        flex-direction: column;
+    }
+
+    .back-subject-btn {
+        width: 100%;
+    }
+
+    .subject-form-header h1 {
+        font-size: 26px;
+    }
+
+    .subject-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .subject-field-wide,
+    .subject-active-field {
+        grid-column: auto;
+    }
+
+    .subject-form-card {
+        padding: 20px;
+    }
+
+    .subject-form-actions {
+        flex-direction: column;
+    }
+
+    .subject-cancel-btn,
+    .subject-save-btn {
+        width: 100%;
+    }
+}
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="subject-form-page">
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <div class="subject-form-header">
+
+        <div class="subject-form-header-left">
+
+            <span class="subject-form-eyebrow">
+                ACADEMIC MANAGEMENT
+            </span>
+
+            <h1>
+
+                <i class="fa-solid fa-book"></i>
+
+                {% if is_edit %}
+                    Edit Subject
+                {% else %}
+                    Add Subject
+                {% endif %}
+
+            </h1>
+
+            <p>
+
+                {% if is_edit %}
+                    Update the subject details and academic information.
+                {% else %}
+                    Create a subject for the academic curriculum.
+                {% endif %}
+
+            </p>
+
+        </div>
+
+
+        <a
+            href="{% url 'academics:subjects' %}"
+            class="back-subject-btn"
+        >
+
+            <i class="fa-solid fa-arrow-left"></i>
+
+            Back to Subjects
+
+        </a>
+
+    </div>
+
+
+    <!-- =====================================================
+         FORM
+    ====================================================== -->
+
+    <div class="subject-form-card">
+
+        <form method="post">
+
+            {% csrf_token %}
+
+
+            <div class="subject-form-grid">
+
+                <!-- SUBJECT NAME -->
+
+                <div class="subject-field">
+
+                    <label for="{{ form.subject_name.id_for_label }}">
+                        Subject Name
+                    </label>
+
+                    {{ form.subject_name }}
+
+                    {% if form.subject_name.errors %}
+
+                    <div class="subject-field-error">
+                        {{ form.subject_name.errors }}
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- SUBJECT CODE -->
+
+                <div class="subject-field">
+
+                    <label for="{{ form.subject_code.id_for_label }}">
+                        Subject Code
+                    </label>
+
+                    {{ form.subject_code }}
+
+                    {% if form.subject_code.errors %}
+
+                    <div class="subject-field-error">
+                        {{ form.subject_code.errors }}
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- SUBJECT TYPE -->
+
+                <div class="subject-field">
+
+                    <label for="{{ form.subject_type.id_for_label }}">
+                        Subject Type
+                    </label>
+
+                    {{ form.subject_type }}
+
+                    {% if form.subject_type.errors %}
+
+                    <div class="subject-field-error">
+                        {{ form.subject_type.errors }}
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- DEPARTMENT -->
+
+                <div class="subject-field">
+
+                    <label for="{{ form.department.id_for_label }}">
+                        Department
+                    </label>
+
+                    {{ form.department }}
+
+                    {% if form.department.errors %}
+
+                    <div class="subject-field-error">
+                        {{ form.department.errors }}
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- DESCRIPTION -->
+
+                <div class="subject-field subject-field-wide">
+
+                    <label for="{{ form.description.id_for_label }}">
+                        Description
+                    </label>
+
+                    {{ form.description }}
+
+                    {% if form.description.errors %}
+
+                    <div class="subject-field-error">
+                        {{ form.description.errors }}
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- ACTIVE -->
+
+                <label class="subject-active-field">
+
+                    {{ form.is_active }}
+
+                    <span>
+                        Active subject
+                    </span>
+
+                </label>
+
+            </div>
+
+
+            {% if form.non_field_errors %}
+
+            <div class="subject-non-field-error">
+
+                {{ form.non_field_errors }}
+
+            </div>
+
+            {% endif %}
+
+
+            <!-- =================================================
+                 ACTIONS
+            ================================================== -->
+
+            <div class="subject-form-actions">
+
+                <a
+                    href="{% url 'academics:subjects' %}"
+                    class="subject-cancel-btn"
+                >
+                    Cancel
+                </a>
+
+
+                <button
+                    type="submit"
+                    class="subject-save-btn"
+                >
+
+                    <i class="fa-solid fa-check"></i>
+
+                    {% if is_edit %}
+                        Update Subject
+                    {% else %}
+                        Save Subject
+                    {% endif %}
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

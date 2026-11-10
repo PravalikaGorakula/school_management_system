@@ -1,0 +1,889 @@
+{% extends "dashboard/base.html" %}
+
+{% block content %}
+
+<style>
+
+    .teacher-students-page {
+        padding: 28px;
+    }
+
+    /* ================= HEADER ================= */
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+    .page-title h1 {
+        margin: 0;
+        font-size: 30px;
+        font-weight: 700;
+        color: #123B63;
+    }
+
+    .breadcrumb {
+        margin-top: 7px;
+        color: #64748B;
+        font-size: 14px;
+    }
+
+    /* ================= SUMMARY ================= */
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+        margin-bottom: 24px;
+    }
+
+    .summary-card {
+        background: white;
+        border: 1px solid #E2E8F0;
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+    }
+
+    .summary-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .summary-label {
+        color: #64748B;
+        font-size: 15px;
+        font-weight: 600;
+    }
+
+    .summary-value {
+        margin-top: 8px;
+        font-size: 28px;
+        font-weight: 700;
+        color: #123B63;
+    }
+
+    .summary-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #FFF4E6;
+        color: #F28C28;
+        font-size: 20px;
+    }
+
+    /* ================= MAIN GRID ================= */
+
+    .students-layout {
+        display: grid;
+        grid-template-columns: 300px minmax(0, 1fr);
+        gap: 22px;
+        align-items: start;
+    }
+
+    /* ================= CLASS CARD ================= */
+
+    .classes-card {
+        background: white;
+        border: 1px solid #E2E8F0;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+    }
+
+    .card-header {
+        padding: 19px 20px;
+        border-bottom: 1px solid #E2E8F0;
+    }
+
+    .card-header h2 {
+        margin: 0;
+        color: #123B63;
+        font-size: 19px;
+        font-weight: 700;
+    }
+
+    .card-header p {
+        margin: 6px 0 0;
+        color: #64748B;
+        font-size: 13px;
+    }
+
+    .class-list {
+        padding: 10px;
+    }
+
+    .class-item {
+        display: block;
+        padding: 14px;
+        margin-bottom: 8px;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        text-decoration: none;
+        color: #334155;
+        transition: 0.2s ease;
+    }
+
+    .class-item:hover {
+        background: #F8FAFC;
+        border-color: #E2E8F0;
+    }
+
+    .class-item.active {
+        background: #FFF4E6;
+        border-color: #FED7AA;
+    }
+
+    .class-item-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .class-name {
+        font-weight: 700;
+        color: #123B63;
+        font-size: 15px;
+    }
+
+    .class-count {
+        min-width: 28px;
+        height: 28px;
+        padding: 0 8px;
+        border-radius: 20px;
+        background: #EAF2F8;
+        color: #123B63;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .class-item.active .class-count {
+        background: #F28C28;
+        color: white;
+    }
+
+    .class-year {
+        margin-top: 5px;
+        color: #64748B;
+        font-size: 12px;
+    }
+
+    /* ================= STUDENTS CARD ================= */
+
+    .students-card {
+        background: white;
+        border: 1px solid #E2E8F0;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+    }
+
+    .students-header {
+        padding: 20px 22px;
+        border-bottom: 1px solid #E2E8F0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .students-title h2 {
+        margin: 0;
+        color: #123B63;
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .students-title p {
+        margin: 6px 0 0;
+        color: #64748B;
+        font-size: 14px;
+    }
+
+    .class-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 9px 13px;
+        background: #FFF4E6;
+        color: #C2410C;
+        border-radius: 9px;
+        font-size: 13px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    /* ================= SEARCH ================= */
+
+    .student-search {
+        padding: 17px 22px;
+        background: #FAFCFE;
+        border-bottom: 1px solid #E2E8F0;
+    }
+
+    .student-search-form {
+        display: flex;
+        gap: 10px;
+    }
+
+    .student-search-input {
+        flex: 1;
+        height: 44px;
+        border: 1px solid #CBD5E1;
+        border-radius: 8px;
+        padding: 0 14px;
+        font-size: 15px;
+        outline: none;
+    }
+
+    .student-search-input:focus {
+        border-color: #123B63;
+        box-shadow: 0 0 0 3px rgba(18, 59, 99, 0.08);
+    }
+
+    .search-btn {
+        height: 44px;
+        padding: 0 18px;
+        border: none;
+        border-radius: 8px;
+        background: #123B63;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .search-btn:hover {
+        background: #0B2945;
+    }
+
+    /* ================= TABLE ================= */
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .students-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 900px;
+    }
+
+    .students-table thead {
+        background: #F8FAFC;
+    }
+
+    .students-table th {
+        padding: 14px 16px;
+        text-align: left;
+        font-size: 13px;
+        color: #64748B;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        white-space: nowrap;
+    }
+
+    .students-table td {
+        padding: 16px;
+        border-top: 1px solid #E2E8F0;
+        color: #334155;
+        font-size: 14px;
+        vertical-align: middle;
+    }
+
+    .students-table tbody tr:hover {
+        background: #F8FAFC;
+    }
+
+    .student-name {
+        font-weight: 700;
+        color: #123B63;
+    }
+
+    .student-id {
+        margin-top: 4px;
+        font-size: 12px;
+        color: #94A3B8;
+    }
+
+    .username {
+        color: #475569;
+        font-weight: 600;
+    }
+
+    .parent-name {
+        font-weight: 600;
+        color: #334155;
+    }
+
+    .parent-phone {
+        color: #64748B;
+        margin-top: 3px;
+        font-size: 13px;
+    }
+
+    /* ================= MESSAGE BUTTON ================= */
+
+    .message-parent-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 8px 12px;
+        border: 1px solid #CBD5E1;
+        border-radius: 8px;
+        background: white;
+        color: #123B63;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .message-parent-btn:hover {
+        background: #EAF2F8;
+        border-color: #94A3B8;
+        color: #123B63;
+    }
+
+    /* ================= EMPTY ================= */
+
+    .empty-state {
+        padding: 55px 20px;
+        text-align: center;
+        color: #64748B;
+    }
+
+    .empty-icon {
+        width: 58px;
+        height: 58px;
+        margin: 0 auto 14px;
+        border-radius: 50%;
+        background: #FFF4E6;
+        color: #F28C28;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+
+    .empty-state h3 {
+        margin: 0 0 7px;
+        color: #334155;
+    }
+
+    .empty-state p {
+        margin: 0;
+        font-size: 14px;
+    }
+
+    /* ================= RESPONSIVE ================= */
+
+    @media (max-width: 1000px) {
+
+        .students-layout {
+            grid-template-columns: 1fr;
+        }
+
+    }
+
+    @media (max-width: 700px) {
+
+        .teacher-students-page {
+            padding: 16px;
+        }
+
+        .page-header {
+            align-items: flex-start;
+        }
+
+        .summary-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .students-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .student-search-form {
+            flex-direction: column;
+        }
+
+        .search-btn {
+            width: 100%;
+        }
+
+    }
+    .message-parent-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 10px 16px;
+
+    background: #F28C28;
+    color: #FFFFFF;
+
+    border: none;
+    border-radius: 8px;
+
+    text-decoration: none;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    transition: 0.2s ease;
+}
+
+.message-parent-btn:hover {
+    background: #D97706;
+    color: #FFFFFF;
+}
+
+</style>
+
+
+<div class="teacher-students-page">
+
+    <!-- ================= HEADER ================= -->
+
+    <div class="page-header">
+
+        <div class="page-title">
+
+            <h1>
+                My Students
+            </h1>
+
+            <div class="breadcrumb">
+                {{ breadcrumb }}
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= SUMMARY ================= -->
+
+    <div class="summary-grid">
+
+        <div class="summary-card">
+
+            <div class="summary-top">
+
+                <div>
+
+                    <div class="summary-label">
+                        My Class Sections
+                    </div>
+
+                    <div class="summary-value">
+                        {{ total_classes }}
+                    </div>
+
+                </div>
+
+                <div class="summary-icon">
+                    <i class="fa-solid fa-school"></i>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-top">
+
+                <div>
+
+                    <div class="summary-label">
+                        Total Students
+                    </div>
+
+                    <div class="summary-value">
+                        {{ total_students }}
+                    </div>
+
+                </div>
+
+                <div class="summary-icon">
+                    <i class="fa-solid fa-user-graduate"></i>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <div class="students-layout">
+
+
+        <!-- ================= CLASS SECTIONS ================= -->
+
+        <div class="classes-card">
+
+            <div class="card-header">
+
+                <h2>
+                    My Classes
+                </h2>
+
+                <p>
+                    Classes assigned to you
+                </p>
+
+            </div>
+
+
+            <div class="class-list">
+
+                {% for class_section in assigned_classes %}
+
+                    <a
+                        href="{% url 'academics:teacher_students' %}?class_id={{ class_section.id }}"
+                        class="class-item
+                        {% if selected_class and selected_class.id == class_section.id %}
+                            active
+                        {% endif %}"
+                    >
+
+                        <div class="class-item-title">
+
+                            <span class="class-name">
+
+                                {{ class_section.grade }}
+                                -
+                                {{ class_section.section }}
+
+                            </span>
+
+                            <span class="class-count">
+
+                                {{ class_section.students_count|default:"0" }}
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="class-year">
+
+                            Academic Year:
+                            {{ class_section.academic_year }}
+
+                        </div>
+
+                    </a>
+
+                {% empty %}
+
+                    <div class="empty-state">
+
+                        <div class="empty-icon">
+                            <i class="fa-solid fa-school"></i>
+                        </div>
+
+                        <h3>
+                            No Classes Assigned
+                        </h3>
+
+                        <p>
+                            No class sections are currently assigned to you.
+                        </p>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= STUDENTS ================= -->
+
+        <div class="students-card">
+
+
+            {% if selected_class %}
+
+                <div class="students-header">
+
+                    <div class="students-title">
+
+                        <h2>
+                            Students
+                        </h2>
+
+                        <p>
+                            Students assigned to your class section.
+                        </p>
+
+                    </div>
+
+
+                    <div class="class-badge">
+
+                        <i class="fa-solid fa-school"></i>
+
+                        {{ selected_class.grade }}
+                        -
+                        {{ selected_class.section }}
+
+                        |
+
+                        {{ selected_class.academic_year }}
+
+                    </div>
+
+                </div>
+
+
+                <!-- SEARCH -->
+
+                <div class="student-search">
+
+                    <form
+                        method="get"
+                        class="student-search-form"
+                    >
+
+                        <input
+                            type="hidden"
+                            name="class_id"
+                            value="{{ selected_class.id }}"
+                        >
+
+                        <input
+                            type="text"
+                            name="student_search"
+                            value="{{ student_search }}"
+                            class="student-search-input"
+                            placeholder="Search student name, application ID or phone..."
+                        >
+
+                        <button
+                            type="submit"
+                            class="search-btn"
+                        >
+
+                            <i class="fa-solid fa-magnifying-glass"></i>
+
+                            Search
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+
+                <!-- STUDENT TABLE -->
+
+                <div class="table-wrapper">
+
+                    <table class="students-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Student
+                                </th>
+
+                                <th>
+                                    Application ID
+                                </th>
+
+                                <th>
+                                    Username
+                                </th>
+
+                                <th>
+                                    Parent
+                                </th>
+
+                                <th>
+                                    Parent Phone
+                                </th>
+
+                                <th>
+                                    Action
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for student in students %}
+
+                                <tr>
+
+                                    <td>
+
+                                        <div class="student-name">
+
+                                            {{ student.first_name }}
+                                            {{ student.last_name }}
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <div class="student-id">
+
+                                            {{ student.application_id }}
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        {% if student.credential %}
+
+                                            <span class="username">
+                                                {{ student.credential.username }}
+                                            </span>
+
+                                        {% else %}
+
+                                            —
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <div class="parent-name">
+
+                                            {{ student.father_name }}
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <div class="parent-phone">
+
+                                            {{ student.parent_phone }}
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <a
+                                            href="{% url 'academics:message_parent' student.id %}"
+                                            class="message-parent-btn"
+                                            title="Message Parent"
+                                        >
+
+                                            <i class="fa-solid fa-message"></i>
+
+                                            Message Parent
+
+                                        </a>
+
+                                    </td>
+
+                                </tr>
+
+
+                            {% empty %}
+
+                                <tr>
+
+                                    <td
+                                        colspan="6"
+                                        class="empty-state"
+                                    >
+
+                                        <div class="empty-icon">
+                                            <i class="fa-solid fa-user-graduate"></i>
+                                        </div>
+
+                                        <h3>
+                                            No Students Found
+                                        </h3>
+
+                                        <p>
+                                            No students are currently assigned
+                                            to this class section.
+                                        </p>
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+            {% else %}
+
+                <div class="empty-state">
+
+                    <div class="empty-icon">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+
+                    <h3>
+                        Select a Class
+                    </h3>
+
+                    <p>
+                        Select one of your assigned class sections
+                        to view students.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

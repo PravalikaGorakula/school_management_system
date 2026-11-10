@@ -1,0 +1,53 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Delete Event{% endblock %}
+
+{% block content %}
+<style>
+.ac-delete {
+    max-width: 650px;
+    margin: 40px auto;
+    padding: 28px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    color: #123B63;
+}
+.ac-btn {
+    display: inline-block;
+    padding: 11px 18px;
+    border: none;
+    border-radius: 8px;
+    background: #123B63;
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+}
+.ac-danger { background: #b91c1c; }
+.ac-btn:hover { background: #F28C28; }
+</style>
+
+<div class="ac-delete">
+    <h1>Delete Academic Event</h1>
+
+    <p>
+        Are you sure you want to delete
+        <strong>{{ event.title }}</strong>?
+    </p>
+
+    <p>This action cannot be undone.</p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <button class="ac-btn ac-danger" type="submit">
+            Yes, Delete Event
+        </button>
+
+        <a class="ac-btn"
+           href="{% url 'academic_calendar:event_detail' event.pk %}">
+            Cancel
+        </a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,503 @@
+/* =========================================================
+   PROFILE PAGE
+========================================================= */
+
+.profile-view {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.page-head {
+    margin-bottom: 24px;
+}
+
+.page-head h1 {
+    margin: 0;
+    padding: 0;
+
+    font-size: 30px;
+    font-weight: 700;
+
+    color: #0B2945;
+}
+
+.page-head .sub {
+    margin: 7px 0 0;
+
+    font-size: 17px;
+
+    color: #64748B;
+}
+
+
+/* =========================================================
+   2 x 2 PROFILE GRID
+========================================================= */
+
+.profile-grid {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 22px;
+}
+
+
+/* =========================================================
+   PROFILE CARD
+========================================================= */
+
+.profile-card {
+    width: 100%;
+    min-width: 0;
+
+    background: #FFFFFF;
+
+    border: 1px solid #DCE5EE;
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    box-sizing: border-box;
+
+    box-shadow:
+        0 3px 12px rgba(18, 59, 99, 0.06);
+}
+
+
+/* =========================================================
+   CARD HEADER
+========================================================= */
+
+.card-header {
+    width: 100%;
+    min-height: 68px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 22px;
+
+    box-sizing: border-box;
+
+    background: #F8FAFC;
+
+    border-bottom: 1px solid #E2E8F0;
+}
+
+
+/* =========================================================
+   ICON + HEADING
+========================================================= */
+
+.card-heading {
+    display: flex;
+
+    flex-direction: row;
+
+    align-items: center;
+
+    justify-content: flex-start;
+
+    gap: 12px;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   CARD ICON
+========================================================= */
+
+.card-icon {
+    width: 40px;
+    height: 40px;
+
+    min-width: 40px;
+    min-height: 40px;
+
+    flex: 0 0 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    font-size: 17px;
+}
+
+
+/* BLUE */
+
+.card-icon.blue {
+    background: #EAF2F8;
+    color: #123B63;
+}
+
+
+/* ORANGE */
+
+.card-icon.orange {
+    background: #FFF4E6;
+    color: #F28C28;
+}
+
+
+/* =========================================================
+   CARD HEADING
+========================================================= */
+
+.card-heading h3 {
+    margin: 0;
+    padding: 0;
+
+    font-size: 20px;
+    font-weight: 700;
+
+    line-height: 1.2;
+
+    color: #123B63;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   CARD BODY
+========================================================= */
+
+.card-body {
+    padding: 4px 22px 10px;
+}
+
+
+/* =========================================================
+   INFORMATION ROW
+========================================================= */
+
+.info-row {
+    width: 100%;
+    min-height: 54px;
+
+    display: grid;
+
+    grid-template-columns: 190px minmax(0, 1fr);
+
+    align-items: center;
+
+    gap: 18px;
+
+    border-bottom: 1px solid #EDF2F7;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+
+/* LABEL */
+
+.info-row .label {
+    font-size: 15px;
+    font-weight: 600;
+
+    color: #64748B;
+
+    white-space: nowrap;
+}
+
+
+/* VALUE */
+
+.info-row .value {
+    min-width: 0;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    color: #1E293B;
+
+    text-align: right;
+
+    word-break: break-word;
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 72px;
+
+    padding: 5px 11px;
+
+    border-radius: 20px;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.status.active {
+    background: #E8F7EE;
+    color: #15803D;
+}
+
+.status.inactive {
+    background: #FEECEC;
+    color: #DC2626;
+}
+
+
+/* =========================================================
+   SECURITY BODY
+========================================================= */
+
+.security-body {
+    min-height: 150px;
+
+    padding: 20px 22px;
+
+    box-sizing: border-box;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+}
+
+
+/* =========================================================
+   SECURITY INFORMATION
+========================================================= */
+
+.security-info {
+    display: flex;
+    align-items: flex-start;
+}
+
+.security-item {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+.security-label {
+    font-size: 16px;
+    font-weight: 700;
+
+    color: #1E293B;
+}
+
+.security-value {
+    font-size: 14px;
+
+    color: #64748B;
+}
+
+
+/* =========================================================
+   CHANGE PASSWORD BUTTON
+========================================================= */
+
+.change-password-btn {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 9px;
+
+    min-height: 44px;
+
+    padding: 11px 18px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #F28C28;
+
+    border-radius: 8px;
+
+    background: #F28C28;
+
+    color: #FFFFFF !important;
+
+    text-decoration: none !important;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    box-shadow:
+        0 3px 8px rgba(242, 140, 40, 0.18);
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+/* BUTTON ICON */
+
+.change-password-btn i {
+    font-size: 14px;
+}
+
+
+/* HOVER */
+
+.change-password-btn:hover {
+    background: #D97706;
+
+    border-color: #D97706;
+
+    color: #FFFFFF !important;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 6px 14px rgba(217, 119, 6, 0.25);
+}
+
+
+/* ACTIVE */
+
+.change-password-btn:active {
+    transform: translateY(0);
+
+    box-shadow:
+        0 2px 5px rgba(217, 119, 6, 0.20);
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1000px) {
+
+    .profile-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .info-row {
+        grid-template-columns: 180px minmax(0, 1fr);
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .page-head h1 {
+        font-size: 26px;
+    }
+
+    .page-head .sub {
+        font-size: 15px;
+    }
+
+
+    /* CARD HEADER */
+
+    .card-header {
+        min-height: 64px;
+
+        padding: 0 16px;
+    }
+
+
+    /* ICON + HEADING */
+
+    .card-heading {
+        gap: 10px;
+
+        white-space: nowrap;
+    }
+
+    .card-icon {
+        width: 36px;
+        height: 36px;
+
+        min-width: 36px;
+        min-height: 36px;
+
+        flex-basis: 36px;
+
+        font-size: 15px;
+    }
+
+    .card-heading h3 {
+        font-size: 18px;
+    }
+
+
+    /* CARD BODY */
+
+    .card-body {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+
+    /* INFORMATION */
+
+    .info-row {
+        grid-template-columns: 1fr;
+
+        gap: 4px;
+
+        padding: 12px 0;
+
+        min-height: auto;
+    }
+
+    .info-row .value {
+        text-align: left;
+    }
+
+
+    /* SECURITY */
+
+    .security-body {
+        min-height: auto;
+
+        padding: 18px 16px;
+
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+
+    /* BUTTON */
+
+    .change-password-btn {
+        width: 100%;
+    }
+}

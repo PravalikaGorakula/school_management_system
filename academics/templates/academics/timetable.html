@@ -1,0 +1,710 @@
+
+{% extends "dashboard/base.html" %}
+{% load timetable_filters %}
+
+{% block title %}Timetable Management{% endblock %}
+
+{% block extra_css %}
+<style>
+.timetable-page {
+    --blue: #123B63;
+    --dark-blue: #0B2945;
+    --light-blue: #EAF2F8;
+    --orange: #F28C28;
+    --orange-hover: #D97706;
+    --light-orange: #FFF4E6;
+    --border: #D9E2EC;
+    --muted: #64748B;
+
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 28px;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 18px;
+    color: #243447;
+    box-sizing: border-box;
+}
+
+.timetable-page *,
+.timetable-page *::before,
+.timetable-page *::after {
+    box-sizing: border-box;
+}
+
+.timetable-page .page-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 32px;
+    margin-bottom: 28px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #0B2945 0%, #123B63 100%);
+    color: #fff;
+    box-shadow: 0 5px 18px rgba(11, 41, 69, 0.12);
+}
+
+.timetable-page h1 {
+    color: #fff;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 0 0 10px;
+}
+
+.timetable-page .subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.timetable-page .workflow-heading {
+    color: var(--dark-blue);
+    font-size: 23px;
+    font-weight: 700;
+    margin: 28px 0 8px;
+}
+
+.timetable-page .section-description {
+    color: var(--muted);
+    margin: 0 0 22px;
+    line-height: 1.6;
+    font-size: 18px;
+}
+
+.timetable-page .workflow-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    margin-bottom: 30px;
+}
+
+.timetable-page .workflow-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 225px;
+    padding: 26px 24px;
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--orange);
+    border-radius: 14px;
+    background: #fff;
+    color: inherit;
+    text-decoration: none;
+    box-shadow: 0 3px 12px rgba(11, 41, 69, 0.06);
+    transition: transform .2s ease, box-shadow .2s ease,
+                border-color .2s ease;
+}
+
+.timetable-page .workflow-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--orange);
+    box-shadow: 0 9px 22px rgba(11, 41, 69, 0.12);
+    text-decoration: none;
+}
+
+.timetable-page .card-top {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 16px;
+}
+
+.timetable-page .card-icon {
+    width: 54px;
+    height: 54px;
+    min-width: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: var(--light-blue);
+    color: var(--blue);
+    font-size: 27px;
+}
+
+.timetable-page .workflow-card:nth-child(even) .card-icon {
+    background: var(--light-orange);
+    color: var(--orange-hover);
+}
+
+.timetable-page .card-number {
+    display: block;
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 3px;
+}
+
+.timetable-page .card-title {
+    color: var(--dark-blue);
+    font-size: 21px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.timetable-page .card-description {
+    color: #526477;
+    font-size: 18px;
+    line-height: 1.65;
+    margin: 0 0 20px;
+}
+
+.timetable-page .card-action {
+    margin-top: auto;
+    color: var(--blue);
+    font-weight: 700;
+    font-size: 17px;
+}
+
+.timetable-page .workflow-card:hover .card-action {
+    color: var(--orange-hover);
+}
+
+.timetable-page .panel {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+    margin-bottom: 24px;
+    box-shadow: 0 3px 12px rgba(11, 41, 69, 0.04);
+    min-width: 0;
+}
+
+.timetable-page .panel-heading {
+    color: var(--dark-blue);
+    font-size: 23px;
+    font-weight: 700;
+    margin: 0 0 22px;
+}
+
+.timetable-page .filter-row {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.timetable-page .filter-field {
+    flex: 1;
+    min-width: 220px;
+}
+
+.timetable-page label {
+    display: block;
+    color: var(--dark-blue);
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.timetable-page input,
+.timetable-page select,
+.timetable-page textarea {
+    width: 100%;
+    min-height: 46px;
+    padding: 11px 14px;
+    border: 1px solid #CBD5E1;
+    border-radius: 8px;
+    background: #fff;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 18px;
+    color: #243447;
+}
+
+.timetable-page input:focus,
+.timetable-page select:focus,
+.timetable-page textarea:focus {
+    outline: 2px solid #F28C2840;
+    border-color: var(--orange);
+}
+
+.timetable-page .btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    min-height: 46px;
+    padding: 11px 20px;
+    border: 0;
+    border-radius: 8px;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background .2s ease, transform .2s ease;
+}
+
+.timetable-page .btn:hover {
+    transform: translateY(-1px);
+}
+
+.timetable-page .btn-primary {
+    background: var(--blue);
+    color: #fff;
+}
+
+.timetable-page .btn-primary:hover {
+    background: var(--dark-blue);
+    color: #fff;
+}
+
+.timetable-page .btn-orange {
+    background: var(--orange);
+    color: #fff;
+}
+
+.timetable-page .btn-orange:hover {
+    background: var(--orange-hover);
+    color: #fff;
+}
+
+.timetable-page .btn-light {
+    background: var(--light-blue);
+    color: var(--blue);
+}
+
+.timetable-page .table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+.timetable-page table {
+    width: 100%;
+    min-width: 760px;
+    border-collapse: collapse;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 18px;
+}
+
+.timetable-page th {
+    background: var(--dark-blue);
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 16px 18px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.timetable-page td {
+    padding: 16px 18px;
+    font-size: 18px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    min-width: 125px;
+    line-height: 1.5;
+}
+
+.timetable-page tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.timetable-page tbody tr:hover {
+    background: #F8FAFC;
+}
+
+.timetable-page .period-cell {
+    background: var(--light-blue);
+    color: var(--dark-blue);
+    font-weight: 700;
+    white-space: nowrap;
+    min-width: 150px;
+}
+
+.timetable-page .period-time {
+    display: block;
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.timetable-page .entry-subject {
+    display: block;
+    color: var(--dark-blue);
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+.timetable-page .entry-detail {
+    display: block;
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.timetable-page .empty-cell {
+    color: #94A3B8;
+    text-align: center;
+}
+
+.timetable-page .status-message {
+    padding: 16px 18px;
+    border: 1px solid #F6D7B5;
+    border-radius: 10px;
+    background: var(--light-orange);
+    color: #854D0E;
+    margin-bottom: 20px;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.timetable-page .empty-state {
+    padding: 28px 18px;
+    text-align: center;
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    background: #F8FAFC;
+    color: var(--muted);
+    line-height: 1.7;
+    font-size: 18px;
+}
+
+.timetable-page .empty-state strong {
+    display: block;
+    color: var(--dark-blue);
+    margin-bottom: 8px;
+    font-size: 21px;
+}
+
+.timetable-page .table-caption {
+    color: var(--muted);
+    font-size: 17px;
+    margin: -8px 0 18px;
+}
+
+@media (max-width: 800px) {
+    .timetable-page {
+        padding: 16px;
+    }
+
+    .timetable-page .page-heading {
+        padding: 22px;
+        align-items: flex-start;
+    }
+
+    .timetable-page h1 {
+        font-size: 25px;
+    }
+
+    .timetable-page .workflow-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .timetable-page .workflow-card {
+        padding: 22px 20px;
+    }
+
+    .timetable-page .panel {
+        padding: 20px;
+    }
+
+    .timetable-page .filter-field {
+        min-width: 100%;
+    }
+
+    .timetable-page .filter-row .btn {
+        width: 100%;
+    }
+
+    .timetable-page .table-wrapper {
+        border-radius: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .timetable-page {
+        padding: 12px;
+        font-size: 18px;
+    }
+
+    .timetable-page .page-heading {
+        padding: 20px;
+    }
+
+    .timetable-page h1 {
+        font-size: 23px;
+    }
+
+    .timetable-page .subtitle {
+        font-size: 17px;
+    }
+
+    .timetable-page .workflow-card {
+        padding: 20px 16px;
+    }
+
+    .timetable-page .card-top {
+        gap: 12px;
+    }
+
+    .timetable-page .card-title {
+        font-size: 20px;
+    }
+
+    .timetable-page .panel {
+        padding: 16px;
+    }
+
+    .timetable-page .panel-heading,
+    .timetable-page .workflow-heading {
+        font-size: 23px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="timetable-page">
+
+    <!-- PAGE HEADER -->
+    <div class="page-heading">
+        <div>
+            <h1>Timetable Management</h1>
+            <p class="subtitle">
+                Configure school periods, manage subject requirements,
+                generate timetables and review them before publication.
+            </p>
+        </div>
+    </div>
+
+    <!-- DJANGO MESSAGES -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="status-message">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- WORKFLOW -->
+    <h2 class="workflow-heading">Timetable Workflow</h2>
+    <p class="section-description">
+        Complete each step in order to prepare a conflict-free school timetable.
+    </p>
+
+    <div class="workflow-grid">
+
+        <!-- STEP 1 -->
+        <a href="{% url 'academics:timetable_config' %}"
+           class="workflow-card">
+            <div class="card-top">
+                <div class="card-icon">⚙</div>
+                <div>
+                    <span class="card-number">STEP 01</span>
+                    <h3 class="card-title">Configure</h3>
+                </div>
+            </div>
+
+            <p class="card-description">
+                Set the academic year, working days, school timings,
+                teaching periods, breaks, lunch and activity periods.
+            </p>
+
+            <span class="card-action">Open Configuration &rarr;</span>
+        </a>
+
+        <!-- STEP 2 -->
+        <a href="{% url 'academics:subject_period_requirements' %}"
+           class="workflow-card">
+            <div class="card-top">
+                <div class="card-icon">📚</div>
+                <div>
+                    <span class="card-number">STEP 02</span>
+                    <h3 class="card-title">Requirements</h3>
+                </div>
+            </div>
+
+            <p class="card-description">
+                Define how many periods each subject requires per week
+                for every class and academic year.
+            </p>
+
+            <span class="card-action">Manage Requirements &rarr;</span>
+        </a>
+
+        <!-- STEP 3 -->
+        <a href="{% url 'academics:timetable_generate' %}"
+           class="workflow-card">
+            <div class="card-top">
+                <div class="card-icon">🗓</div>
+                <div>
+                    <span class="card-number">STEP 03</span>
+                    <h3 class="card-title">Generate &amp; Edit</h3>
+                </div>
+            </div>
+
+            <p class="card-description">
+                Generate a draft timetable using subject requirements
+                and teacher assignments. Review and manually edit entries.
+            </p>
+
+            <span class="card-action">Generate Timetable &rarr;</span>
+        </a>
+
+        <!-- STEP 4 -->
+        <a href="{% url 'academics:timetable_validate' %}"
+           class="workflow-card">
+            <div class="card-top">
+                <div class="card-icon">✓</div>
+                <div>
+                    <span class="card-number">STEP 04</span>
+                    <h3 class="card-title">Validate &amp; Approval</h3>
+                </div>
+            </div>
+
+            <p class="card-description">
+                Check teacher, class and room conflicts, verify weekly
+                subject periods, and review the draft before publication.
+            </p>
+
+            <span class="card-action">Review &amp; Validate &rarr;</span>
+        </a>
+
+    </div>
+
+    <!-- TIMETABLE FILTER -->
+    <section class="panel">
+        <h2 class="panel-heading">View Timetable</h2>
+
+        <form method="get"
+              action="{% url 'academics:timetable' %}"
+              class="filter-row">
+
+            <div class="filter-field">
+                <label for="class_section">Class / Section</label>
+
+                <select name="class_section"
+                        id="class_section"
+                        required>
+                    <option value="">Select Class / Section</option>
+
+                    {% for class_item in classes %}
+                        <option value="{{ class_item.id }}"
+                            {% if selected_class|stringformat:"s" == class_item.id|stringformat:"s" %}
+                                selected
+                            {% endif %}>
+                            {{ class_item }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                View Timetable
+            </button>
+        </form>
+    </section>
+
+    <!-- WEEKLY TIMETABLE -->
+    <section class="panel">
+        <h2 class="panel-heading">Weekly Timetable</h2>
+
+        {% if selected_class %}
+
+            {% if timetable_grid %}
+                <p class="table-caption">
+                    Showing the timetable for the selected class and section.
+                </p>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Period / Time</th>
+
+                                {% for day in days %}
+                                    <th>{{ day }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for period in periods %}
+                                <tr>
+                                    <td class="period-cell">
+                                        {% if period.period_number %}
+                                            {{ period.period_name|default:"Period" }}
+                                            {{ period.period_number }}
+                                        {% else %}
+                                            Period {{ period }}
+                                        {% endif %}
+
+                                        {% if period.start_time and period.end_time %}
+                                            <span class="period-time">
+                                                {{ period.start_time|time:"g:i A" }}
+                                                -
+                                                {{ period.end_time|time:"g:i A" }}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+
+                                    {% for day in days %}
+                                        <td>
+                                            {% with entry=timetable_grid|get_item:day|get_item:period.period_number %}
+                                                {% if entry %}
+                                                    <span class="entry-subject">
+                                                        {{ entry.subject.subject_name|default:entry.subject }}
+                                                    </span>
+
+                                                    <span class="entry-detail">
+                                                        Teacher:
+                                                        {{ entry.employee.get_full_name|default:entry.employee.username }}
+                                                    </span>
+
+                                                    {% if entry.room %}
+                                                        <span class="entry-detail">
+                                                            Room: {{ entry.room }}
+                                                        </span>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <div class="empty-cell">—</div>
+                                                {% endif %}
+                                            {% endwith %}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="{{ days|length|add:1 }}">
+                                        No periods are configured for this timetable.
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            {% else %}
+                <div class="empty-state">
+                    <strong>No timetable entries found</strong>
+                    There are currently no timetable entries for this class.
+                    Complete the configuration and requirements, then generate
+                    the timetable.
+                    <br><br>
+                    <a href="{% url 'academics:timetable_generate' %}"
+                       class="btn btn-orange">
+                        Generate Timetable
+                    </a>
+                </div>
+            {% endif %}
+
+        {% else %}
+            <div class="empty-state">
+                <strong>Select a class or section</strong>
+                Choose a class above and click “View Timetable” to see
+                its weekly timetable.
+            </div>
+        {% endif %}
+    </section>
+
+</div>
+{% endblock %}

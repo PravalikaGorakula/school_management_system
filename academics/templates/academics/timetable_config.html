@@ -1,0 +1,765 @@
+
+{% extends "dashboard/base.html" %}
+
+{% block title %}Configure Timetable{% endblock %}
+
+
+{% block extra_css %}
+<style>
+.config-page {
+    --deep-blue: #123B63;
+    --deep-blue-dark: #0B2945;
+    --deep-blue-light: #EAF2F8;
+    --orange: #F28C28;
+    --orange-hover: #D97706;
+    --orange-light: #FFF4E6;
+    --text-primary: #243447;
+    --text-secondary: #5F6F80;
+    --border-color: #E0E7EF;
+    --page-background: #F5F7FA;
+    --card-background: #FFFFFF;
+
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 28px;
+    color: var(--text-primary);
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 18px;
+    line-height: 1.6;
+    box-sizing: border-box;
+}
+
+.config-page *,
+.config-page *::before,
+.config-page *::after {
+    box-sizing: border-box;
+}
+
+.config-page .page-header {
+    padding: 32px;
+    margin-bottom: 30px;
+    border-radius: 18px;
+    color: #fff;
+    background: linear-gradient(
+        135deg,
+        var(--deep-blue-dark),
+        var(--deep-blue)
+    );
+    box-shadow: 0 4px 16px rgba(18, 59, 99, 0.12);
+}
+
+.config-page .page-header h1 {
+    margin: 0 0 8px;
+    color: #fff;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.config-page .subtitle {
+    margin: 0;
+    color: #EAF2F8;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.config-page .steps {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 30px;
+}
+
+.config-page .step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    padding: 18px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--text-secondary);
+    font-size: 16px;
+    font-weight: 600;
+    box-shadow: 0 4px 16px rgba(18, 59, 99, 0.04);
+}
+
+.config-page .step.active {
+    background: var(--deep-blue-light);
+    border-color: var(--deep-blue);
+    color: var(--deep-blue);
+}
+
+.config-page .step-number {
+    display: inline-flex;
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #E2E8F0;
+    color: var(--deep-blue-dark);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.config-page .step.active .step-number {
+    background: var(--deep-blue);
+    color: #fff;
+}
+
+.config-page .panel {
+    margin-bottom: 26px;
+    padding: 28px;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    background: var(--card-background);
+    box-shadow: 0 4px 16px rgba(18, 59, 99, 0.07);
+}
+
+.config-page .panel h2 {
+    margin: 0 0 10px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--deep-blue-light);
+    color: var(--deep-blue-dark);
+    font-size: 23px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.config-page .panel-description {
+    margin: 0 0 24px;
+    color: var(--text-secondary);
+    font-size: 17px;
+    line-height: 1.6;
+}
+
+.config-page .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.config-page .field {
+    min-width: 0;
+}
+
+.config-page .field.full {
+    grid-column: 1 / -1;
+}
+
+.config-page label,
+.config-page .field-label {
+    display: block;
+    margin-bottom: 9px;
+    color: var(--deep-blue-dark);
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.config-page input:not([type="checkbox"]),
+.config-page select {
+    width: 100%;
+    min-height: 48px;
+    padding: 11px 14px;
+    border: 1px solid #CBD5E1;
+    border-radius: 9px;
+    background: #fff;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 17px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.config-page input:focus,
+.config-page select:focus {
+    outline: none;
+    border-color: var(--orange);
+    box-shadow: 0 0 0 3px rgba(242, 140, 40, 0.15);
+}
+
+.config-page .help-text {
+    display: block;
+    margin-top: 7px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.config-page .days-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.config-page .day-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    margin: 0;
+    padding: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: #FAFCFE;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 17px;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.config-page .day-option:hover {
+    border-color: var(--orange);
+    background: var(--orange-light);
+}
+
+.config-page .day-option input[type="checkbox"] {
+    flex: 0 0 18px;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--orange);
+}
+
+.config-page .special-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    margin-top: 24px;
+}
+
+.config-page .special-card {
+    min-width: 0;
+    padding: 22px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: #FAFCFE;
+}
+
+.config-page .special-card h3 {
+    margin: 0 0 18px;
+    color: var(--deep-blue);
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.config-page .time-pair {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.config-page .time-pair label {
+    font-size: 16px;
+}
+
+.config-page .period-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+}
+
+.config-page .period-table {
+    width: 100%;
+    min-width: 680px;
+    border-collapse: collapse;
+    background: #fff;
+    font-size: 17px;
+}
+
+.config-page .period-table th {
+    padding: 16px 18px;
+    background: var(--deep-blue-light);
+    color: var(--deep-blue-dark);
+    text-align: left;
+    font-size: 16px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.config-page .period-table td {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-size: 17px;
+    vertical-align: middle;
+}
+
+.config-page .period-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.config-page .period-table tbody tr:hover {
+    background: #FFF9F2;
+}
+
+.config-page .period-table input:not([type="checkbox"]),
+.config-page .period-table select {
+    min-width: 115px;
+    min-height: 44px;
+    font-size: 16px;
+}
+
+.config-page .period-note {
+    margin-top: 18px;
+    padding: 16px 18px;
+    border: 1px solid #F5D7B3;
+    border-left: 4px solid var(--orange);
+    border-radius: 9px;
+    background: var(--orange-light);
+    color: #854D0E;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.config-page .actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 30px;
+}
+
+.config-page .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 11px 20px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.config-page .btn:hover {
+    transform: translateY(-1px);
+}
+
+.config-page .btn-primary {
+    background: var(--deep-blue);
+    color: #fff;
+}
+
+.config-page .btn-primary:hover {
+    background: var(--deep-blue-dark);
+}
+
+.config-page .btn-orange {
+    background: var(--orange);
+    color: #fff;
+}
+
+.config-page .btn-orange:hover {
+    background: var(--orange-hover);
+}
+
+.config-page .btn-light {
+    border-color: #D5E1EC;
+    background: var(--deep-blue-light);
+    color: var(--deep-blue);
+}
+
+.config-page .btn-light:hover {
+    background: #DCEAF5;
+}
+
+.config-page .errorlist {
+    margin: 7px 0 0;
+    padding-left: 22px;
+    color: #B91C1C;
+    font-size: 15px;
+}
+
+@media (max-width: 900px) {
+    .config-page .steps {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .config-page .days-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .config-page {
+        padding: 18px;
+    }
+
+    .config-page .page-header {
+        padding: 24px;
+        margin-bottom: 26px;
+    }
+
+    .config-page .page-header h1 {
+        font-size: 26px;
+    }
+
+    .config-page .panel {
+        padding: 22px;
+    }
+
+    .config-page .form-grid,
+    .config-page .special-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .config-page .field.full {
+        grid-column: auto;
+    }
+
+    .config-page .actions {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 480px) {
+    .config-page {
+        padding: 12px;
+        font-size: 16px;
+    }
+
+    .config-page .page-header {
+        padding: 20px;
+    }
+
+    .config-page .page-header h1 {
+        font-size: 24px;
+    }
+
+    .config-page .steps,
+    .config-page .days-grid,
+    .config-page .time-pair {
+        grid-template-columns: 1fr;
+    }
+
+    .config-page .panel {
+        padding: 17px;
+    }
+
+    .config-page .panel h2 {
+        font-size: 21px;
+    }
+
+    .config-page .special-card {
+        padding: 16px;
+    }
+
+    .config-page .actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .config-page .btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="config-page">
+
+    <div class="page-header">
+        <h1>Configure Timetable</h1>
+        <p class="subtitle">
+            Step 1 of 4 — Configure the academic year, school timings,
+            working days, assembly and breaks.
+        </p>
+    </div>
+
+    <div class="steps">
+        <div class="step active"><span class="step-number">1</span> Configure</div>
+        <div class="step"><span class="step-number">2</span> Requirements</div>
+        <div class="step"><span class="step-number">3</span> Generate &amp; Edit</div>
+        <div class="step"><span class="step-number">4</span> Validate</div>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="period-note">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        {% if form.errors %}
+            <div class="period-note">
+                Please correct the errors in the configuration form.
+                {{ form.errors }}
+            </div>
+        {% endif %}
+
+        <!-- ACADEMIC SETTINGS -->
+        <section class="panel">
+            <h2>Academic Settings</h2>
+            <p class="panel-description">
+                Choose the academic year and number of teaching periods.
+            </p>
+
+            <div class="form-grid">
+                <div class="field">
+                    <label for="academic_year">Academic Year</label>
+                    <input
+                        type="text"
+                        id="academic_year"
+                        name="academic_year"
+                        value="{{ config.academic_year|default:'' }}"
+                        placeholder="2026-2027"
+                        pattern="[0-9]{4}-[0-9]{4}"
+                        title="Enter academic year in YYYY-YYYY format"
+                        required>
+                    <span class="help-text">Example: 2026-2027</span>
+                </div>
+
+                <div class="field">
+                    <label for="periods_per_day">Teaching Periods Per Day</label>
+                    <input
+                        type="number"
+                        id="periods_per_day"
+                        name="periods_per_day"
+                        min="1"
+                        max="12"
+                        value="{{ config.periods_per_day|default:7 }}"
+                        required>
+                    <span class="help-text">
+                        Assembly and breaks are configured separately below.
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- WORKING DAYS -->
+        <section class="panel">
+            <h2>Working Days</h2>
+            <p class="panel-description">
+                Select the days on which the weekly timetable should appear.
+            </p>
+
+            <div class="days-grid">
+                {% for day in days %}
+                    <label class="day-option">
+                        <input
+                            type="checkbox"
+                            name="working_days"
+                            value="{{ day }}"
+                            {% if day in config.working_days %}checked{% endif %}>
+                        {{ day }}
+                    </label>
+                {% empty %}
+                    <label class="day-option">
+                        <input type="checkbox" name="working_days" value="Monday" checked>
+                        Monday
+                    </label>
+                    <label class="day-option">
+                        <input type="checkbox" name="working_days" value="Tuesday" checked>
+                        Tuesday
+                    </label>
+                    <label class="day-option">
+                        <input type="checkbox" name="working_days" value="Wednesday" checked>
+                        Wednesday
+                    </label>
+                    <label class="day-option">
+                        <input type="checkbox" name="working_days" value="Thursday" checked>
+                        Thursday
+                    </label>
+                    <label class="day-option">
+                        <input type="checkbox" name="working_days" value="Friday" checked>
+                        Friday
+                    </label>
+                    <label class="day-option">
+                        <input type="checkbox" name="working_days" value="Saturday" checked>
+                        Saturday
+                    </label>
+                    <label class="day-option">
+                        <input type="checkbox" name="working_days" value="Sunday">
+                        Sunday
+                    </label>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- SCHOOL TIMINGS -->
+        <section class="panel">
+            <h2>School Timings</h2>
+            <p class="panel-description">
+                Configure school opening and closing times, plus each special
+                slot. These special slots should appear as merged rows across
+                the weekly timetable, not as separate daily cells.
+            </p>
+
+            <div class="form-grid">
+                <div class="field">
+                    <label for="school_start_time">School Start Time</label>
+                    <input
+                        type="time"
+                        id="school_start_time"
+                        name="school_start_time"
+                        value="{{ config.school_start_time|time:'H:i'|default:'09:00' }}"
+                        required>
+                </div>
+
+                <div class="field">
+                    <label for="school_end_time">School End Time</label>
+                    <input
+                        type="time"
+                        id="school_end_time"
+                        name="school_end_time"
+                        value="{{ config.school_end_time|time:'H:i'|default:'16:00' }}"
+                        required>
+                </div>
+            </div>
+
+            <div class="special-grid" style="margin-top:22px;">
+
+                <div class="special-card">
+                    <h3>Assembly</h3>
+                    <div class="time-pair">
+                        <div>
+                            <label for="assembly_start">Start Time</label>
+                            <input type="time" id="assembly_start" name="assembly_start"
+                                   value="{{ special_times.assembly_start|default:'09:00' }}" required>
+                        </div>
+                        <div>
+                            <label for="assembly_end">End Time</label>
+                            <input type="time" id="assembly_end" name="assembly_end"
+                                   value="{{ special_times.assembly_end|default:'09:15' }}" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="special-card">
+                    <h3>Morning Break</h3>
+                    <div class="time-pair">
+                        <div>
+                            <label for="morning_break_start">Start Time</label>
+                            <input type="time" id="morning_break_start" name="morning_break_start"
+                                   value="{{ special_times.morning_break_start|default:'10:45' }}" required>
+                        </div>
+                        <div>
+                            <label for="morning_break_end">End Time</label>
+                            <input type="time" id="morning_break_end" name="morning_break_end"
+                                   value="{{ special_times.morning_break_end|default:'11:00' }}" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="special-card">
+                    <h3>Lunch Break</h3>
+                    <div class="time-pair">
+                        <div>
+                            <label for="lunch_break_start">Start Time</label>
+                            <input type="time" id="lunch_break_start" name="lunch_break_start"
+                                   value="{{ special_times.lunch_break_start|default:'12:30' }}" required>
+                        </div>
+                        <div>
+                            <label for="lunch_break_end">End Time</label>
+                            <input type="time" id="lunch_break_end" name="lunch_break_end"
+                                   value="{{ special_times.lunch_break_end|default:'13:15' }}" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="special-card">
+                    <h3>Evening Break</h3>
+                    <div class="time-pair">
+                        <div>
+                            <label for="evening_break_start">Start Time</label>
+                            <input type="time" id="evening_break_start" name="evening_break_start"
+                                   value="{{ special_times.evening_break_start|default:'14:45' }}" required>
+                        </div>
+                        <div>
+                            <label for="evening_break_end">End Time</label>
+                            <input type="time" id="evening_break_end" name="evening_break_end"
+                                   value="{{ special_times.evening_break_end|default:'15:00' }}" required>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- TEACHING PERIODS -->
+        <section class="panel">
+            <h2>Teaching Period Timings</h2>
+            <p class="panel-description">
+                Configure the teaching slots. Do not create duplicate rows for
+                assembly and breaks here; they are configured above.
+            </p>
+
+            <div class="period-table-wrap">
+                <table class="period-table">
+                    <thead>
+                        <tr>
+                            <th>Period No.</th>
+                            <th>Period Name</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Period Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for period_number in "12345678" %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>
+                                <input type="text"
+                                       name="period_name_{{ forloop.counter }}"
+                                       value="Period {{ forloop.counter }}"
+                                       aria-label="Period {{ forloop.counter }} name">
+                            </td>
+                            <td>
+                                <input type="time"
+                                       name="period_start_{{ forloop.counter }}"
+                                       aria-label="Period {{ forloop.counter }} start time">
+                            </td>
+                            <td>
+                                <input type="time"
+                                       name="period_end_{{ forloop.counter }}"
+                                       aria-label="Period {{ forloop.counter }} end time">
+                            </td>
+                            <td>
+                                <select name="period_type_{{ forloop.counter }}"
+                                        aria-label="Period {{ forloop.counter }} type">
+                                    <option value="Teaching" selected>Teaching</option>
+                                    <option value="Activity">Activity</option>
+                                </select>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+
+        <div class="actions">
+            <a href="{% url 'academics:timetable' %}" class="btn btn-light">
+                ← Back to Timetable
+            </a>
+
+            <button type="submit" class="btn btn-primary">
+                Save Configuration
+            </button>
+
+            <a href="{% url 'academics:subject_period_requirements' %}"
+               class="btn btn-orange">
+                Next: Requirements →
+            </a>
+        </div>
+
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,1882 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}
+Bus Location
+{% endblock %}
+
+{% block extra_css %}
+<style>
+
+    /* =========================================================
+       BUS LOCATION
+       SMS DASHBOARD - BLUE + ORANGE THEME
+    ========================================================= */
+
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --orange-light: #FFF4E6;
+
+        --light-blue: #EEF6FF;
+        --light-green: #ECFDF5;
+        --light-purple: #F5F3FF;
+        --light-yellow: #FFFBEB;
+        --light-red: #FEF2F2;
+        --light-cyan: #ECFEFF;
+
+        --white: #FFFFFF;
+        --light-gray: #F8FAFC;
+
+        --text-primary: #1F2937;
+        --text-secondary: #64748B;
+        --text-light: #94A3B8;
+
+        --border: #E2E8F0;
+
+        --radius-sm: 8px;
+        --radius-md: 10px;
+        --radius-lg: 14px;
+        --radius-xl: 20px;
+
+        --shadow-card:
+            0 10px 35px rgba(15, 23, 42, 0.08);
+    }
+
+
+    /* =========================================================
+       PAGE
+    ========================================================= */
+
+    .location-page {
+        width: 100%;
+        max-width: 1550px;
+        margin: 0 auto;
+    }
+
+
+    /* =========================================================
+       HEADER
+    ========================================================= */
+
+    .location-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+
+        padding: 24px 28px;
+        margin-bottom: 24px;
+
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+
+        box-shadow: var(--shadow-card);
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 17px;
+    }
+
+    .header-icon {
+        width: 58px;
+        height: 58px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+
+        border-radius: 16px;
+
+        font-size: 25px;
+    }
+
+    .page-title {
+        margin: 0;
+
+        color: var(--deep-blue-dark);
+
+        font-size: 28px;
+        font-weight: 800;
+    }
+
+    .page-subtitle {
+        margin: 4px 0 0;
+
+        color: var(--text-secondary);
+
+        font-size: 16px;
+    }
+
+    .live-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+
+        padding: 11px 17px;
+
+        background: var(--light-green);
+        color: #047857;
+
+        border: 1px solid #A7F3D0;
+        border-radius: 12px;
+
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    .live-dot {
+        width: 9px;
+        height: 9px;
+
+        background: #10B981;
+
+        border-radius: 50%;
+
+        animation: livePulse 1.5s infinite;
+    }
+
+    @keyframes livePulse {
+
+        0% {
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, .5);
+        }
+
+        70% {
+            box-shadow: 0 0 0 7px rgba(16, 185, 129, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+        }
+    }
+
+
+    /* =========================================================
+       TOP STAT CARDS
+    ========================================================= */
+
+    .location-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+
+        margin-bottom: 24px;
+    }
+
+    .stat-card {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+
+        padding: 20px;
+
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+
+        box-shadow: var(--shadow-card);
+    }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 13px;
+
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+
+        font-size: 20px;
+
+        flex-shrink: 0;
+    }
+
+    .stat-card.orange .stat-icon {
+        background: var(--orange-light);
+        color: var(--orange-hover);
+    }
+
+    .stat-card.green .stat-icon {
+        background: var(--light-green);
+        color: #047857;
+    }
+
+    .stat-card.purple .stat-icon {
+        background: var(--light-purple);
+        color: #6D28D9;
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+
+        font-size: 13px;
+        font-weight: 700;
+
+        text-transform: uppercase;
+        letter-spacing: .3px;
+    }
+
+    .stat-value {
+        margin-top: 3px;
+
+        color: var(--deep-blue-dark);
+
+        font-size: 21px;
+        font-weight: 800;
+    }
+
+
+    /* =========================================================
+       MAIN GRID
+    ========================================================= */
+
+    .location-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 360px;
+        gap: 22px;
+    }
+
+
+    /* =========================================================
+       MAP CARD
+    ========================================================= */
+
+    .map-card {
+        background: var(--white);
+
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+
+        box-shadow: var(--shadow-card);
+
+        overflow: hidden;
+    }
+
+    .map-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+
+        padding: 19px 22px;
+
+        background: var(--deep-blue-light);
+
+        border-bottom: 1px solid var(--border);
+    }
+
+    .map-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        color: var(--deep-blue-dark);
+
+        font-size: 19px;
+        font-weight: 800;
+    }
+
+    .map-title i {
+        color: var(--orange);
+    }
+
+    .map-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .map-action-btn {
+        width: 38px;
+        height: 38px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border: 1px solid var(--border);
+        border-radius: 9px;
+
+        background: var(--white);
+        color: var(--deep-blue);
+
+        cursor: pointer;
+
+        transition: all .25s ease;
+    }
+
+    .map-action-btn:hover {
+        background: var(--deep-blue);
+        color: var(--white);
+    }
+
+    #busMap {
+        width: 100%;
+        height: 600px;
+        background: #EEF2F7;
+    }
+
+
+    /* =========================================================
+       SIDEBAR
+    ========================================================= */
+
+    .location-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .side-card {
+        padding: 20px;
+
+        background: var(--white);
+
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+
+        box-shadow: var(--shadow-card);
+    }
+
+    .side-title {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+
+        margin-bottom: 17px;
+
+        color: var(--deep-blue-dark);
+
+        font-size: 17px;
+        font-weight: 800;
+    }
+
+    .side-title i {
+        color: var(--orange);
+    }
+
+
+    /* =========================================================
+       BUS INFORMATION
+    ========================================================= */
+
+    .bus-profile {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+
+        padding-bottom: 17px;
+        margin-bottom: 16px;
+
+        border-bottom: 1px solid var(--border);
+    }
+
+    .bus-icon {
+        width: 50px;
+        height: 50px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background: var(--deep-blue);
+        color: var(--white);
+
+        border-radius: 13px;
+
+        font-size: 20px;
+    }
+
+    .bus-number {
+        color: var(--deep-blue-dark);
+
+        font-size: 18px;
+        font-weight: 800;
+    }
+
+    .bus-registration {
+        margin-top: 2px;
+
+        color: var(--text-secondary);
+
+        font-size: 13px;
+    }
+
+    .info-list {
+        display: grid;
+        gap: 11px;
+    }
+
+    .info-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+
+        padding: 11px 12px;
+
+        background: var(--light-gray);
+
+        border: 1px solid #EEF2F7;
+        border-radius: 9px;
+    }
+
+    .info-label {
+        color: var(--text-secondary);
+
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .info-value {
+        color: var(--text-primary);
+
+        font-size: 13px;
+        font-weight: 800;
+
+        text-align: right;
+    }
+
+
+    /* =========================================================
+       GPS STATUS
+    ========================================================= */
+
+    .gps-status {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        padding: 15px;
+
+        background: var(--light-green);
+
+        border: 1px solid #A7F3D0;
+        border-radius: 12px;
+    }
+
+    .gps-status-icon {
+        width: 40px;
+        height: 40px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background: var(--white);
+        color: #047857;
+
+        border-radius: 10px;
+    }
+
+    .gps-status-title {
+        color: #065F46;
+
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    .gps-status-text {
+        margin-top: 2px;
+
+        color: #047857;
+
+        font-size: 12px;
+    }
+
+
+    /* =========================================================
+       LOCATION VALUES
+    ========================================================= */
+
+    .coordinate-box {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .coordinate {
+        padding: 14px;
+
+        background: var(--light-blue);
+
+        border: 1px solid #D9EAFE;
+        border-radius: 11px;
+    }
+
+    .coordinate-label {
+        color: var(--text-secondary);
+
+        font-size: 12px;
+        font-weight: 700;
+
+        text-transform: uppercase;
+    }
+
+    .coordinate-value {
+        margin-top: 4px;
+
+        color: var(--deep-blue-dark);
+
+        font-size: 14px;
+        font-weight: 800;
+
+        word-break: break-all;
+    }
+
+
+    /* =========================================================
+       SPEED
+    ========================================================= */
+
+    .speed-box {
+        padding: 18px;
+
+        background: var(--orange-light);
+
+        border: 1px solid #FED7AA;
+        border-radius: 13px;
+
+        text-align: center;
+    }
+
+    .speed-label {
+        color: var(--text-secondary);
+
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .speed-value {
+        margin-top: 4px;
+
+        color: var(--orange-hover);
+
+        font-size: 32px;
+        font-weight: 900;
+    }
+
+    .speed-unit {
+        color: var(--text-secondary);
+
+        font-size: 13px;
+    }
+
+
+    /* =========================================================
+       IGNITION
+    ========================================================= */
+
+    .ignition-on {
+        background: var(--light-green);
+        color: #047857;
+    }
+
+    .ignition-off {
+        background: var(--light-red);
+        color: #B91C1C;
+    }
+
+    .ignition-unknown {
+        background: var(--light-yellow);
+        color: #92400E;
+    }
+
+    .ignition-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+
+        padding: 8px 11px;
+
+        border-radius: 8px;
+
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+
+    /* =========================================================
+       LAST UPDATE
+    ========================================================= */
+
+    .last-update {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+
+        margin-top: 15px;
+
+        color: var(--text-secondary);
+
+        font-size: 13px;
+    }
+
+    .last-update i {
+        color: var(--deep-blue);
+    }
+
+
+    /* =========================================================
+       NO LOCATION
+    ========================================================= */
+
+    .no-location {
+        position: absolute;
+
+        top: 50%;
+        left: 50%;
+
+        transform: translate(-50%, -50%);
+
+        width: 90%;
+        max-width: 420px;
+
+        padding: 30px;
+
+        text-align: center;
+
+        background: rgba(255,255,255,.96);
+
+        border: 1px solid var(--border);
+        border-radius: 18px;
+
+        box-shadow: var(--shadow-card);
+
+        z-index: 500;
+    }
+
+    .no-location-icon {
+        width: 65px;
+        height: 65px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        margin: 0 auto 15px;
+
+        background: var(--orange-light);
+        color: var(--orange-hover);
+
+        border-radius: 18px;
+
+        font-size: 26px;
+    }
+
+    .no-location-title {
+        color: var(--deep-blue-dark);
+
+        font-size: 20px;
+        font-weight: 800;
+    }
+
+    .no-location-text {
+        margin-top: 6px;
+
+        color: var(--text-secondary);
+
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+
+    /* =========================================================
+       MAP WRAPPER
+    ========================================================= */
+
+    .map-wrapper {
+        position: relative;
+    }
+
+
+    /* =========================================================
+       LEAFLET CUSTOM BUS MARKER
+    ========================================================= */
+
+    .custom-bus-marker {
+        width: 45px;
+        height: 45px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background: var(--deep-blue);
+
+        color: var(--white);
+
+        border: 4px solid var(--white);
+
+        border-radius: 50%;
+
+        box-shadow:
+            0 5px 18px rgba(15, 23, 42, .25);
+
+        font-size: 18px;
+    }
+
+
+    /* =========================================================
+       REFRESH MESSAGE
+    ========================================================= */
+
+    .refresh-status {
+        position: absolute;
+
+        right: 15px;
+        bottom: 15px;
+
+        z-index: 900;
+
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        padding: 9px 13px;
+
+        background: rgba(255,255,255,.95);
+
+        border: 1px solid var(--border);
+        border-radius: 9px;
+
+        color: var(--text-secondary);
+
+        font-size: 12px;
+        font-weight: 700;
+
+        box-shadow: 0 5px 18px rgba(15,23,42,.10);
+    }
+
+
+    /* =========================================================
+       RESPONSIVE
+    ========================================================= */
+
+    @media (max-width: 1200px) {
+
+        .location-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .location-sidebar {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .location-sidebar .side-card:last-child {
+            grid-column: span 2;
+        }
+    }
+
+
+    @media (max-width: 900px) {
+
+        .location-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .location-sidebar {
+            grid-template-columns: 1fr;
+        }
+
+        .location-sidebar .side-card:last-child {
+            grid-column: auto;
+        }
+    }
+
+
+    @media (max-width: 650px) {
+
+        .location-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .live-badge {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .location-stats {
+            grid-template-columns: 1fr;
+        }
+
+        #busMap {
+            height: 450px;
+        }
+
+        .coordinate-box {
+            grid-template-columns: 1fr;
+        }
+
+        .page-title {
+            font-size: 23px;
+        }
+    }
+
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="location-page">
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <div class="location-header">
+
+        <div class="header-left">
+
+            <div class="header-icon">
+                <i class="fa-solid fa-map-location-dot"></i>
+            </div>
+
+            <div>
+
+                <h1 class="page-title">
+                    Bus Location
+                </h1>
+
+                <p class="page-subtitle">
+                    Monitor your assigned bus location and GPS information.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        {% if bus and bus.tracker_is_active and bus.current_latitude and bus.current_longitude %}
+
+            <div class="live-badge">
+
+                <span class="live-dot"></span>
+
+                Live GPS Tracking
+
+            </div>
+
+        {% else %}
+
+            <div class="live-badge"
+                 style="background:var(--light-red);
+                        color:#B91C1C;
+                        border-color:#FECACA;">
+
+                <i class="fa-solid fa-circle-xmark"></i>
+
+                GPS Offline
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- =====================================================
+         STATISTICS
+    ====================================================== -->
+
+    <div class="location-stats">
+
+
+        <!-- BUS -->
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+
+                <i class="fa-solid fa-bus"></i>
+
+            </div>
+
+            <div>
+
+                <div class="stat-label">
+                    Bus
+                </div>
+
+                <div class="stat-value">
+
+                    {% if bus %}
+                        {{ bus.bus_number }}
+                    {% else %}
+                        -
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- SPEED -->
+
+        <div class="stat-card orange">
+
+            <div class="stat-icon">
+
+                <i class="fa-solid fa-gauge-high"></i>
+
+            </div>
+
+            <div>
+
+                <div class="stat-label">
+                    Speed
+                </div>
+
+                <div class="stat-value">
+
+                    {% if bus and bus.current_speed != None %}
+                        {{ bus.current_speed }} km/h
+                    {% else %}
+                        -
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- IGNITION -->
+
+        <div class="stat-card green">
+
+            <div class="stat-icon">
+
+                <i class="fa-solid fa-power-off"></i>
+
+            </div>
+
+            <div>
+
+                <div class="stat-label">
+                    Ignition
+                </div>
+
+                <div class="stat-value">
+
+                    {% if bus and bus.current_ignition == True %}
+                        ON
+                    {% elif bus and bus.current_ignition == False %}
+                        OFF
+                    {% else %}
+                        -
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- GPS -->
+
+        <div class="stat-card purple">
+
+            <div class="stat-icon">
+
+                <i class="fa-solid fa-satellite-dish"></i>
+
+            </div>
+
+            <div>
+
+                <div class="stat-label">
+                    GPS
+                </div>
+
+                <div class="stat-value">
+
+                    {% if bus and bus.tracker_is_active %}
+                        Active
+                    {% else %}
+                        Offline
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <div class="location-layout">
+
+
+        <!-- =================================================
+             MAP
+        ================================================== -->
+
+        <div class="map-card">
+
+            <div class="map-card-header">
+
+                <div class="map-title">
+
+                    <i class="fa-solid fa-location-dot"></i>
+
+                    Live Bus Map
+
+                </div>
+
+
+                <div class="map-actions">
+
+                    <button
+                        type="button"
+                        class="map-action-btn"
+                        title="Center Bus"
+                        onclick="centerBus()"
+                    >
+                        <i class="fa-solid fa-crosshairs"></i>
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="map-action-btn"
+                        title="Refresh"
+                        onclick="refreshLocationPage()"
+                    >
+                        <i class="fa-solid fa-rotate"></i>
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="map-wrapper">
+
+                <div id="busMap"></div>
+
+
+                {% if not bus or not bus.current_latitude or not bus.current_longitude %}
+
+                <div class="no-location">
+
+                    <div class="no-location-icon">
+
+                        <i class="fa-solid fa-location-crosshairs"></i>
+
+                    </div>
+
+                    <div class="no-location-title">
+                        Location Not Available
+                    </div>
+
+                    <div class="no-location-text">
+                        The bus has not sent a valid GPS location yet.
+                        Please check the tracker connection and try again.
+                    </div>
+
+                </div>
+
+                {% endif %}
+
+
+                <div class="refresh-status">
+
+                    <i class="fa-solid fa-rotate"></i>
+
+                    <span id="refreshText">
+                        Ready
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             SIDEBAR
+        ================================================== -->
+
+        <div class="location-sidebar">
+
+
+            <!-- BUS INFORMATION -->
+
+            <div class="side-card">
+
+                <div class="side-title">
+
+                    <i class="fa-solid fa-bus"></i>
+
+                    Bus Information
+
+                </div>
+
+
+                {% if bus %}
+
+                <div class="bus-profile">
+
+                    <div class="bus-icon">
+
+                        <i class="fa-solid fa-bus-simple"></i>
+
+                    </div>
+
+                    <div>
+
+                        <div class="bus-number">
+                            {{ bus.bus_number }}
+                        </div>
+
+                        <div class="bus-registration">
+                            {{ bus.registration_number }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="info-list">
+
+
+                    <div class="info-row">
+
+                        <span class="info-label">
+                            Route
+                        </span>
+
+                        <span class="info-value">
+
+                            {% if bus.route %}
+                                {{ bus.route.route_name }}
+                            {% else %}
+                                Not Assigned
+                            {% endif %}
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <span class="info-label">
+                            Device
+                        </span>
+
+                        <span class="info-value">
+
+                            {% if bus.tracker_device_id %}
+                                {{ bus.tracker_device_id }}
+                            {% else %}
+                                -
+                            {% endif %}
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <span class="info-label">
+                            Provider
+                        </span>
+
+                        <span class="info-value">
+                            {{ bus.tracker_provider|default:"-" }}
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+                {% else %}
+
+                <div style="
+                    text-align:center;
+                    padding:20px;
+                    color:var(--text-secondary);
+                ">
+
+                    <i class="fa-solid fa-bus"
+                       style="
+                           font-size:30px;
+                           color:var(--text-light);
+                           margin-bottom:10px;
+                       ">
+                    </i>
+
+                    <div>
+                        No bus assigned
+                    </div>
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- GPS STATUS -->
+
+            <div class="side-card">
+
+                <div class="side-title">
+
+                    <i class="fa-solid fa-satellite-dish"></i>
+
+                    GPS Status
+
+                </div>
+
+
+                {% if bus and bus.tracker_is_active %}
+
+                <div class="gps-status">
+
+                    <div class="gps-status-icon">
+
+                        <i class="fa-solid fa-satellite"></i>
+
+                    </div>
+
+                    <div>
+
+                        <div class="gps-status-title">
+                            Tracker Active
+                        </div>
+
+                        <div class="gps-status-text">
+                            GPS tracker is enabled.
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% else %}
+
+                <div class="gps-status"
+                     style="
+                        background:var(--light-red);
+                        border-color:#FECACA;
+                     ">
+
+                    <div class="gps-status-icon"
+                         style="
+                            color:#B91C1C;
+                         ">
+
+                        <i class="fa-solid fa-satellite-dish"></i>
+
+                    </div>
+
+                    <div>
+
+                        <div class="gps-status-title"
+                             style="color:#991B1B;">
+
+                            Tracker Offline
+
+                        </div>
+
+                        <div class="gps-status-text"
+                             style="color:#B91C1C;">
+
+                            Check GPS tracker connection.
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% endif %}
+
+
+                <div class="last-update">
+
+                    <i class="fa-regular fa-clock"></i>
+
+                    <span>
+
+                        Last Update:
+
+                        {% if bus and bus.last_location_update %}
+
+                            {{ bus.last_location_update|date:"d M Y, h:i A" }}
+
+                        {% else %}
+
+                            No update
+
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- CURRENT LOCATION -->
+
+            <div class="side-card">
+
+                <div class="side-title">
+
+                    <i class="fa-solid fa-location-dot"></i>
+
+                    Current Coordinates
+
+                </div>
+
+
+                <div class="coordinate-box">
+
+
+                    <div class="coordinate">
+
+                        <div class="coordinate-label">
+                            Latitude
+                        </div>
+
+                        <div
+                            id="latitudeValue"
+                            class="coordinate-value"
+                        >
+
+                            {% if bus and bus.current_latitude %}
+                                {{ bus.current_latitude }}
+                            {% else %}
+                                -
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="coordinate">
+
+                        <div class="coordinate-label">
+                            Longitude
+                        </div>
+
+                        <div
+                            id="longitudeValue"
+                            class="coordinate-value"
+                        >
+
+                            {% if bus and bus.current_longitude %}
+                                {{ bus.current_longitude }}
+                            {% else %}
+                                -
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- SPEED -->
+
+            <div class="side-card">
+
+                <div class="side-title">
+
+                    <i class="fa-solid fa-gauge-high"></i>
+
+                    Current Speed
+
+                </div>
+
+
+                <div class="speed-box">
+
+                    <div class="speed-label">
+                        Current Vehicle Speed
+                    </div>
+
+                    <div class="speed-value">
+
+                        {% if bus and bus.current_speed != None %}
+                            {{ bus.current_speed }}
+                        {% else %}
+                            0
+                        {% endif %}
+
+                    </div>
+
+                    <div class="speed-unit">
+                        kilometres per hour
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- IGNITION -->
+
+            <div class="side-card">
+
+                <div class="side-title">
+
+                    <i class="fa-solid fa-power-off"></i>
+
+                    Ignition Status
+
+                </div>
+
+
+                {% if bus and bus.current_ignition == True %}
+
+                    <span class="ignition-badge ignition-on">
+
+                        <i class="fa-solid fa-circle-check"></i>
+
+                        Ignition ON
+
+                    </span>
+
+                {% elif bus and bus.current_ignition == False %}
+
+                    <span class="ignition-badge ignition-off">
+
+                        <i class="fa-solid fa-circle-xmark"></i>
+
+                        Ignition OFF
+
+                    </span>
+
+                {% else %}
+
+                    <span class="ignition-badge ignition-unknown">
+
+                        <i class="fa-solid fa-circle-question"></i>
+
+                        Unknown
+
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     LEAFLET
+========================================================= -->
+
+<link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+
+<script>
+
+    /*
+     * =========================================================
+     * BUS LOCATION MAP
+     * =========================================================
+     *
+     * This page reads the current latitude/longitude stored
+     * in the Bus model.
+     *
+     * Later, when Onelap API/Webhook is connected, the backend
+     * can update these values automatically.
+     *
+     */
+
+
+    const busLatitude = {% if bus and bus.current_latitude %}{{ bus.current_latitude }}{% else %}null{% endif %};
+
+    const busLongitude = {% if bus and bus.current_longitude %}{{ bus.current_longitude }}{% else %}null{% endif %};
+
+    const busNumber = "{% if bus %}{{ bus.bus_number|escapejs }}{% else %}Bus{% endif %}";
+
+    const busSpeed = {% if bus and bus.current_speed != None %}{{ bus.current_speed }}{% else %}0{% endif %};
+
+
+    let busMap = null;
+
+    let busMarker = null;
+
+
+    /*
+     * =========================================================
+     * INITIALIZE MAP
+     * =========================================================
+     */
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        initializeBusMap();
+
+    });
+
+
+    function initializeBusMap() {
+
+        /*
+         * Default map center.
+         *
+         * If GPS coordinates are available,
+         * map automatically centers on the bus.
+         */
+
+        let defaultLatitude = 20.5937;
+        let defaultLongitude = 78.9629;
+        let defaultZoom = 5;
+
+
+        if (
+            busLatitude !== null &&
+            busLongitude !== null
+        ) {
+
+            defaultLatitude = busLatitude;
+            defaultLongitude = busLongitude;
+            defaultZoom = 16;
+
+        }
+
+
+        busMap = L.map("busMap", {
+            zoomControl: true
+        }).setView(
+            [
+                defaultLatitude,
+                defaultLongitude
+            ],
+            defaultZoom
+        );
+
+
+        /*
+         * OpenStreetMap tiles
+         */
+
+        L.tileLayer(
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            {
+                maxZoom: 19,
+                attribution:
+                    '&copy; OpenStreetMap contributors'
+            }
+        ).addTo(busMap);
+
+
+        /*
+         * Add bus marker
+         */
+
+        if (
+            busLatitude !== null &&
+            busLongitude !== null
+        ) {
+
+            addBusMarker(
+                busLatitude,
+                busLongitude
+            );
+
+        }
+
+
+        /*
+         * Small delay helps map render correctly
+         * when inside dashboard layouts.
+         */
+
+        setTimeout(function () {
+
+            busMap.invalidateSize();
+
+        }, 300);
+
+    }
+
+
+    /*
+     * =========================================================
+     * CUSTOM BUS MARKER
+     * =========================================================
+     */
+
+    function addBusMarker(latitude, longitude) {
+
+        const busIcon =
+            L.divIcon({
+
+                className: "",
+
+                html: `
+                    <div class="custom-bus-marker">
+                        <i class="fa-solid fa-bus"></i>
+                    </div>
+                `,
+
+                iconSize: [45, 45],
+
+                iconAnchor: [22, 22]
+
+            });
+
+
+        busMarker =
+            L.marker(
+                [
+                    latitude,
+                    longitude
+                ],
+                {
+                    icon: busIcon
+                }
+            ).addTo(busMap);
+
+
+        busMarker.bindPopup(`
+
+            <div style="
+                min-width:190px;
+                font-family:Inter,Arial,sans-serif;
+            ">
+
+                <div style="
+                    color:#123B63;
+                    font-size:16px;
+                    font-weight:800;
+                    margin-bottom:7px;
+                ">
+                    ${busNumber}
+                </div>
+
+                <div style="
+                    color:#64748B;
+                    font-size:13px;
+                    margin-bottom:4px;
+                ">
+                    <strong>Latitude:</strong>
+                    ${latitude}
+                </div>
+
+                <div style="
+                    color:#64748B;
+                    font-size:13px;
+                    margin-bottom:4px;
+                ">
+                    <strong>Longitude:</strong>
+                    ${longitude}
+                </div>
+
+                <div style="
+                    color:#D97706;
+                    font-size:13px;
+                    font-weight:700;
+                ">
+                    <strong>Speed:</strong>
+                    ${busSpeed} km/h
+                </div>
+
+            </div>
+
+        `);
+
+    }
+
+
+    /*
+     * =========================================================
+     * CENTER BUS
+     * =========================================================
+     */
+
+    function centerBus() {
+
+        if (!busMap) {
+            return;
+        }
+
+
+        if (
+            busLatitude === null ||
+            busLongitude === null
+        ) {
+
+            showRefreshMessage(
+                "Bus location is not available."
+            );
+
+            return;
+
+        }
+
+
+        busMap.setView(
+            [
+                busLatitude,
+                busLongitude
+            ],
+            17,
+            {
+                animate: true
+            }
+        );
+
+
+        if (busMarker) {
+            busMarker.openPopup();
+        }
+
+    }
+
+
+    /*
+     * =========================================================
+     * REFRESH
+     * =========================================================
+     */
+
+    function refreshLocationPage() {
+
+        const refreshText =
+            document.getElementById("refreshText");
+
+
+        if (refreshText) {
+
+            refreshText.innerHTML = `
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                Refreshing...
+            `;
+
+        }
+
+
+        /*
+         * Reload current page.
+         *
+         * The Django backend will provide the latest
+         * current_latitude/current_longitude values.
+         */
+
+        setTimeout(function () {
+
+            window.location.reload();
+
+        }, 500);
+
+    }
+
+
+    /*
+     * =========================================================
+     * MESSAGE
+     * =========================================================
+     */
+
+    function showRefreshMessage(message) {
+
+        const refreshText =
+            document.getElementById("refreshText");
+
+
+        if (refreshText) {
+
+            refreshText.innerHTML = `
+                <i class="fa-solid fa-circle-info"></i>
+                ${message}
+            `;
+
+
+            setTimeout(function () {
+
+                refreshText.innerHTML = `
+                    <i class="fa-solid fa-rotate"></i>
+                    Ready
+                `;
+
+            }, 3000);
+
+        }
+
+    }
+
+
+    /*
+     * =========================================================
+     * AUTO REFRESH
+     * =========================================================
+     *
+     * Every 60 seconds page refreshes so the latest GPS
+     * coordinates from the backend can be displayed.
+     *
+     * This can later be replaced by AJAX/API polling or
+     * WebSocket when Onelap integration is connected.
+     *
+     */
+
+    setInterval(function () {
+
+        if (
+            document.visibilityState === "visible"
+        ) {
+
+            window.location.reload();
+
+        }
+
+    }, 60000);
+
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,374 @@
+
+{% extends "dashboard/base.html" %}
+
+{% block title %}Event Details{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --border-color: #DCE5ED;
+        --text-muted: #64748B;
+        --white: #FFFFFF;
+    }
+
+    .ac-page {
+        padding: 16px;
+        color: var(--deep-blue);
+        font-size: 18px;
+    }
+
+    /* Header */
+    .ac-header {
+        margin-bottom: 16px;
+        padding: 14px 18px;
+        background: linear-gradient(100deg, #EAF2F8, #FFF4E6);
+        border-left: 4px solid var(--orange);
+        border-radius: 8px;
+    }
+
+    .ac-header h1 {
+        margin: 0;
+        color: var(--deep-blue);
+        font-size: 26px;
+        font-weight: 700;
+    }
+
+    .ac-subtitle {
+        margin: 5px 0 0;
+        color: var(--text-muted);
+        font-size: 18px;
+    }
+
+    /* Main container */
+    .ac-card {
+        max-width: 1000px;
+        padding: 18px;
+        background: var(--white);
+        border: 1px solid var(--border-color);
+        border-top: 3px solid var(--deep-blue);
+        border-radius: 9px;
+        box-shadow: 0 3px 10px rgba(11, 41, 69, 0.06);
+    }
+
+    /* Event heading */
+    .ac-event-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding-bottom: 12px;
+        margin-bottom: 12px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .ac-event-title {
+        margin: 0;
+        color: var(--deep-blue);
+        font-size: 22px;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+    }
+
+    .ac-status {
+        display: inline-flex;
+        align-items: center;
+        padding: 5px 10px;
+        border: 1px solid #F6D5AE;
+        border-radius: 6px;
+        background: #FFF4E6;
+        color: #8A4B08;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    /* Details layout */
+    .ac-details {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: 24px;
+        row-gap: 0;
+    }
+
+    .ac-detail-item {
+        min-width: 0;
+        padding: 11px 12px;
+        margin-bottom: 5px;
+        border: 1px solid transparent;
+        border-bottom-color: #E5EAF0;
+        border-radius: 5px;
+        overflow-wrap: anywhere;
+        transition: background 0.2s ease,
+                    border-color 0.2s ease;
+    }
+
+    .ac-detail-item:hover {
+        background: #FFF8EF;
+        border-color: #F6D5AE;
+    }
+
+    .ac-label {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--text-muted);
+        font-size: 18px;
+        font-weight: 500;
+    }
+
+    .ac-value {
+        color: var(--deep-blue);
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 1.5;
+    }
+
+    .ac-description {
+        grid-column: 1 / -1;
+        background: #F8FAFC;
+        border: 1px solid #E5EAF0;
+        border-left: 3px solid var(--orange);
+        margin-top: 8px;
+    }
+
+    .ac-description:hover {
+        background: #FFF8EF;
+        border-color: #F6D5AE;
+        border-left-color: var(--orange);
+    }
+
+    .ac-description .ac-value {
+        color: #334155;
+        font-weight: 400;
+    }
+
+    .ac-description .ac-value p {
+        margin: 0 0 5px;
+        font-size: 18px;
+        line-height: 1.5;
+    }
+
+    /* Action buttons */
+    .ac-actions {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+        padding-top: 14px;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .ac-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        min-height: 40px;
+        padding: 8px 13px;
+        border: 1px solid var(--deep-blue);
+        border-radius: 6px;
+        background: var(--deep-blue);
+        color: var(--white);
+        text-decoration: none;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s ease,
+                    border-color 0.2s ease,
+                    transform 0.2s ease;
+    }
+
+    .ac-btn:hover {
+        background: var(--orange-hover);
+        border-color: var(--orange-hover);
+        color: var(--white);
+        transform: translateY(-1px);
+    }
+
+    .ac-btn-edit {
+        background: var(--orange);
+        border-color: var(--orange);
+        color: var(--white);
+    }
+
+    .ac-btn-edit:hover {
+        background: var(--orange-hover);
+        border-color: var(--orange-hover);
+    }
+
+    .ac-btn-delete {
+        background: var(--white);
+        border-color: #DC6262;
+        color: #B42318;
+    }
+
+    .ac-btn-delete:hover {
+        background: #B42318;
+        border-color: #B42318;
+        color: var(--white);
+    }
+
+    /* Responsive */
+    @media (max-width: 700px) {
+        .ac-page {
+            padding: 10px;
+        }
+
+        .ac-header {
+            padding: 12px;
+        }
+
+        .ac-card {
+            padding: 12px;
+        }
+
+        .ac-details {
+            grid-template-columns: 1fr;
+        }
+
+        .ac-description {
+            grid-column: auto;
+        }
+
+        .ac-header h1 {
+            font-size: 24px;
+        }
+
+        .ac-actions {
+            gap: 8px;
+        }
+
+        .ac-btn {
+            min-height: 42px;
+        }
+    }
+</style>
+<div class="ac-page">
+
+    <!-- Header -->
+    <div class="ac-header">
+        <div>
+            <h1>Event Details</h1>
+            <p class="ac-subtitle">
+                View academic event information
+            </p>
+        </div>
+    </div>
+
+    <!-- Event Details -->
+    <div class="ac-card">
+
+        <div class="ac-event-heading">
+            <h2 class="ac-event-title">
+                {{ event.title }}
+            </h2>
+
+            <span class="ac-status">
+                {{ event.get_status_display }}
+            </span>
+        </div>
+
+        <div class="ac-details">
+
+            <div class="ac-detail-item">
+                <span class="ac-label">Event Type</span>
+                <div class="ac-value">
+                    {{ event.get_event_type_display }}
+                </div>
+            </div>
+
+            <div class="ac-detail-item">
+                <span class="ac-label">Academic Year</span>
+                <div class="ac-value">
+                    {{ event.academic_year }}
+                </div>
+            </div>
+
+            <div class="ac-detail-item">
+                <span class="ac-label">Start Date</span>
+                <div class="ac-value">
+                    {{ event.start_date|date:"d M Y" }}
+                </div>
+            </div>
+
+            <div class="ac-detail-item">
+                <span class="ac-label">End Date</span>
+                <div class="ac-value">
+                    {{ event.end_date|date:"d M Y" }}
+                </div>
+            </div>
+
+            <div class="ac-detail-item">
+                <span class="ac-label">Class / Section</span>
+                <div class="ac-value">
+                    {% if event.class_section %}
+                        {{ event.class_section.grade }} -
+                        {{ event.class_section.section }}
+                    {% else %}
+                        School-wide
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="ac-detail-item">
+                <span class="ac-label">Status</span>
+                <div class="ac-value">
+                    {{ event.get_status_display }}
+                </div>
+            </div>
+
+            <div class="ac-detail-item ac-description">
+                <span class="ac-label">Description</span>
+                <div class="ac-value">
+                    {% if event.description %}
+                        {{ event.description|linebreaks }}
+                    {% else %}
+                        No description provided.
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Actions -->
+        <div class="ac-actions">
+
+            {% if can_edit %}
+                <a
+                    class="ac-btn ac-btn-edit"
+                    href="{% url 'academic_calendar:event_edit' event.pk %}"
+                >
+                    <i class="fa-solid fa-pen"></i>
+                    Edit Event
+                </a>
+
+                <a
+                    class="ac-btn ac-btn-delete"
+                    href="{% url 'academic_calendar:event_delete' event.pk %}"
+                >
+                    <i class="fa-solid fa-trash"></i>
+                    Delete Event
+                </a>
+            {% endif %}
+
+            <a
+                class="ac-btn"
+                href="{% url 'academic_calendar:calendar' %}"
+            >
+                <i class="fa-solid fa-arrow-left"></i>
+                Back to Calendar
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

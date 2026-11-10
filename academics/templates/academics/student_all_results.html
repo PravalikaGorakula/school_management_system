@@ -1,0 +1,480 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}All Results | SMS{% endblock %}
+{% block page_title %}All Results{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --border-color: #DCE5ED;
+        --text-muted: #64748B;
+    }
+
+    .results-page {
+        padding: 12px;
+        color: var(--deep-blue-dark);
+        font-size: 15px;
+    }
+
+    .results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    .results-heading h2 {
+        margin: 0 0 4px;
+        color: var(--deep-blue);
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+    .results-heading p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 13px;
+    }
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 8px 12px;
+        background: var(--deep-blue);
+        color: #fff;
+        text-decoration: none;
+        border-radius: 7px;
+        font-weight: 600;
+        font-size: 13px;
+    }
+
+    .back-btn:hover {
+        background: var(--deep-blue-dark);
+        color: #fff;
+    }
+
+    .student-info {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    .info-card {
+        background: #fff;
+        border: 1px solid var(--border-color);
+        border-radius: 9px;
+        padding: 12px 14px;
+    }
+
+    .info-label {
+        color: var(--text-muted);
+        font-size: 12px;
+        margin-bottom: 5px;
+    }
+
+    .info-value {
+        color: var(--deep-blue);
+        font-weight: 700;
+        font-size: 15px;
+        overflow-wrap: anywhere;
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    .summary-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 13px;
+        background: var(--deep-blue-light);
+        border: 1px solid var(--border-color);
+        border-radius: 9px;
+    }
+
+    .summary-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+        border-radius: 8px;
+        background: var(--deep-blue);
+        color: #fff;
+        font-size: 17px;
+    }
+
+    .summary-card:nth-child(2) .summary-icon {
+        background: var(--orange);
+    }
+
+    .summary-label {
+        color: var(--text-muted);
+        font-size: 12px;
+        margin-bottom: 3px;
+    }
+
+    .summary-number {
+        color: var(--deep-blue);
+        font-size: 21px;
+        font-weight: 700;
+    }
+
+    .results-panel {
+        background: #fff;
+        border: 1px solid var(--border-color);
+        border-radius: 9px;
+        overflow: hidden;
+    }
+
+    .panel-heading {
+        padding: 12px 15px;
+        background: #fff;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    .panel-heading h3 {
+        margin: 0;
+        color: var(--deep-blue);
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .results-count {
+        color: var(--text-muted);
+        font-size: 12px;
+    }
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .results-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 850px;
+    }
+
+    .results-table thead {
+        background: var(--deep-blue);
+        color: #fff;
+    }
+
+    .results-table th {
+        padding: 11px 12px;
+        text-align: left;
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .results-table td {
+        padding: 11px 12px;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 13px;
+        vertical-align: middle;
+    }
+
+    .results-table tbody tr:hover {
+        background: #FFF8F0;
+    }
+
+    .results-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .subject-name {
+        color: var(--deep-blue);
+        font-weight: 700;
+    }
+
+    .exam-name {
+        font-weight: 600;
+        color: var(--deep-blue-dark);
+    }
+
+    .marks-value {
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .grade-badge,
+    .status-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 5px;
+        font-size: 11px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .grade-badge {
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+    }
+
+    .status-pass {
+        background: #E8F7EE;
+        color: #167345;
+    }
+
+    .status-fail {
+        background: #FDECEC;
+        color: #B42318;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 28px 15px;
+        color: var(--text-muted);
+    }
+
+    .empty-state i {
+        display: block;
+        font-size: 30px;
+        color: var(--orange);
+        margin-bottom: 10px;
+    }
+
+    .empty-state strong {
+        display: block;
+        color: var(--deep-blue);
+        font-size: 15px;
+        margin-bottom: 5px;
+    }
+
+    .empty-state p {
+        margin: 0;
+        font-size: 13px;
+    }
+
+    .error-message {
+        padding: 12px 14px;
+        margin-bottom: 12px;
+        border: 1px solid #F5C2C7;
+        border-radius: 8px;
+        color: #842029;
+        background: #F8D7DA;
+    }
+
+    @media (max-width: 700px) {
+        .results-page {
+            padding: 8px;
+        }
+
+        .student-info {
+            grid-template-columns: 1fr;
+        }
+
+        .results-heading h2 {
+            font-size: 19px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="results-page">
+
+    <div class="results-header">
+        <div class="results-heading">
+            <h2>My Academic Results</h2>
+            <p>View your published examination results by subject.</p>
+        </div>
+
+        <a href="{% url 'academics:student_subject_list' %}"
+           class="back-btn">
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to Subjects
+        </a>
+    </div>
+
+    {% if error_message %}
+        <div class="error-message">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            {{ error_message }}
+        </div>
+    {% endif %}
+
+    {% if student and class_section %}
+
+        <div class="student-info">
+            <div class="info-card">
+                <div class="info-label">Student Name</div>
+                <div class="info-value">
+                    {{ student.first_name }} {{ student.last_name }}
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-label">Application ID</div>
+                <div class="info-value">
+                    {{ student.application_id }}
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-label">Class & Section</div>
+                <div class="info-value">
+                    {{ class_section.grade }} - {{ class_section.section }}
+                    <span style="font-weight:400;">
+                        ({{ class_section.academic_year }})
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="summary-icon">
+                    <i class="fa-solid fa-file-lines"></i>
+                </div>
+                <div>
+                    <div class="summary-label">Published Exams</div>
+                    <div class="summary-number">{{ total_exams }}</div>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-icon">
+                    <i class="fa-solid fa-book-open"></i>
+                </div>
+                <div>
+                    <div class="summary-label">Subjects With Results</div>
+                    <div class="summary-number">{{ total_subjects }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-panel">
+            <div class="panel-heading">
+                <h3>
+                    <i class="fa-solid fa-chart-column"></i>
+                    Subject-wise Results
+                </h3>
+
+                <span class="results-count">
+                    {{ results|length }} result(s)
+                </span>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Examination</th>
+                            <th>Subject</th>
+                            <th>Marks</th>
+                            <th>Percentage</th>
+                            <th>Grade</th>
+                            <th>Result</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for result in results %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+
+                                <td>
+                                    <div class="exam-name">
+                                        {{ result.examination.exam_name }}
+                                    </div>
+                                    <small style="color:var(--text-muted);">
+                                        {{ result.examination.exam_type }}
+                                    </small>
+                                </td>
+
+                                <td>
+                                    <div class="subject-name">
+                                        {{ result.subject.subject_name }}
+                                    </div>
+                                    <small style="color:var(--text-muted);">
+                                        {{ result.subject.subject_code }}
+                                    </small>
+                                </td>
+
+                                <td class="marks-value">
+                                    {{ result.obtained_marks|floatformat:2 }}
+                                    /
+                                    {{ result.max_marks }}
+                                </td>
+
+                                <td>
+                                    {{ result.percentage|floatformat:2 }}%
+                                </td>
+
+                                <td>
+                                    <span class="grade-badge">
+                                        {{ result.grade|default:"—" }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    {% if result.obtained_marks >= result.assignment.passing_marks %}
+                                        <span class="status-badge status-pass">
+                                            Pass
+                                        </span>
+                                    {% else %}
+                                        <span class="status-badge status-fail">
+                                            Fail
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {{ result.remarks|default:"—" }}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="8">
+                                    <div class="empty-state">
+                                        <i class="fa-solid fa-clipboard-list"></i>
+                                        <strong>No Published Results Yet</strong>
+                                        <p>
+                                            Your published examination results
+                                            will appear here when they are available.
+                                        </p>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    {% elif not error_message %}
+        <div class="results-panel">
+            <div class="empty-state">
+                <i class="fa-solid fa-user-graduate"></i>
+                <strong>Student Record Not Found</strong>
+                <p>Please contact the school administrator.</p>
+            </div>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

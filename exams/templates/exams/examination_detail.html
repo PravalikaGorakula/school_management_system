@@ -1,0 +1,942 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Examination Details{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --orange-light: #FFF4E6;
+        --white: #FFFFFF;
+        --background: #F6F8FB;
+        --text-primary: #172033;
+        --text-secondary: #64748B;
+        --border: #E2E8F0;
+        --border-dark: #CBD5E1;
+        --success: #15803D;
+        --danger: #DC2626;
+    }
+
+    .exam-detail-page,
+    .exam-detail-page * {
+        box-sizing: border-box;
+    }
+
+    .exam-detail-page {
+        min-height: calc(100vh - 70px);
+        padding: 26px;
+        background: var(--background);
+        color: var(--text-primary);
+        font-size: 18px;
+    }
+
+    /* HEADER */
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 26px;
+        flex-wrap: wrap;
+    }
+
+    .heading-area {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-width: 0;
+    }
+
+    .back-btn,
+    .heading-icon {
+        width: 50px;
+        height: 50px;
+        min-width: 50px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .back-btn {
+        background: var(--white);
+        color: var(--deep-blue);
+        border: 1px solid var(--border);
+        text-decoration: none;
+        transition: 0.2s ease;
+    }
+
+    .back-btn:hover {
+        background: var(--deep-blue);
+        color: var(--white);
+    }
+
+    .heading-icon {
+        background: var(--orange-light);
+        color: var(--orange-hover);
+        font-size: 22px;
+    }
+
+    .heading-area h1 {
+        margin: 0;
+        color: var(--deep-blue);
+        font-size: 28px;
+        font-weight: 750;
+    }
+
+    .heading-area p {
+        margin: 6px 0 0;
+        color: var(--text-secondary);
+        font-size: 18px;
+        line-height: 1.5;
+    }
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    /* BUTTONS */
+
+    .btn {
+        min-height: 48px;
+        padding: 10px 18px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        font-family: inherit;
+        font-size: 18px;
+        font-weight: 600;
+        text-decoration: none;
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .btn-primary {
+        background: var(--orange);
+        color: var(--white);
+    }
+
+    .btn-primary:hover {
+        background: var(--orange-hover);
+        color: var(--white);
+        transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+        background: var(--white);
+        color: var(--deep-blue);
+        border-color: var(--border-dark);
+    }
+
+    .btn-secondary:hover {
+        background: var(--deep-blue-light);
+        border-color: var(--deep-blue);
+    }
+
+    .btn-blue {
+        background: var(--deep-blue);
+        color: var(--white);
+    }
+
+    .btn-blue:hover {
+        background: var(--deep-blue-dark);
+        color: var(--white);
+    }
+
+    /* MAIN GRID */
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 22px;
+        margin-bottom: 24px;
+    }
+
+    .card {
+        min-width: 0;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 3px 12px rgba(15, 23, 42, 0.045);
+        overflow: hidden;
+    }
+
+    .card-header {
+        min-height: 68px;
+        padding: 18px 22px;
+        background: var(--white);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .card-title {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        color: var(--deep-blue);
+        font-size: 21px;
+        font-weight: 750;
+    }
+
+    .card-title i {
+        color: var(--orange-hover);
+        font-size: 20px;
+    }
+
+    .card-body {
+        padding: 24px;
+    }
+
+    /* EXAM INFORMATION */
+
+    .exam-summary {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+        gap: 24px;
+    }
+
+    .exam-name-box {
+        min-height: 100%;
+        padding: 24px;
+        background: linear-gradient(
+            135deg,
+            var(--deep-blue),
+            var(--deep-blue-dark)
+        );
+        border-radius: 12px;
+        color: var(--white);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .exam-name-icon {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 18px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.13);
+        color: #FFD29B;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+    }
+
+    .exam-name-box h2 {
+        margin: 0 0 10px;
+        font-size: 26px;
+        font-weight: 750;
+        overflow-wrap: anywhere;
+    }
+
+    .exam-name-box p {
+        margin: 0;
+        color: #EAF2F8;
+        font-size: 18px;
+    }
+
+    .exam-meta {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .meta-item {
+        min-width: 0;
+        padding: 17px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #FCFDFE;
+    }
+
+    .meta-label {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin-bottom: 10px;
+        color: var(--text-secondary);
+        font-size: 16px;
+        font-weight: 500;
+    }
+
+    .meta-label i {
+        color: var(--orange-hover);
+        font-size: 17px;
+    }
+
+    .meta-value {
+        color: var(--deep-blue-dark);
+        font-size: 19px;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+    }
+
+    /* STATUS */
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 12px;
+        border-radius: 20px;
+        font-size: 16px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .status-published {
+        background: #EAF7EF;
+        color: #166534;
+    }
+
+    .status-draft {
+        background: #FFF7E6;
+        color: #92400E;
+    }
+
+    .status-upcoming {
+        background: var(--orange-light);
+        color: #9A4D00;
+    }
+
+    .status-completed {
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+    }
+
+    .status-cancelled {
+        background: #FEF2F2;
+        color: var(--danger);
+    }
+
+    /* ASSIGNMENT SECTION */
+
+    .assignment-card {
+        margin-top: 24px;
+    }
+
+    .assignment-count {
+        padding: 7px 13px;
+        border-radius: 20px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        font-size: 16px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .assignment-table {
+        width: 100%;
+        min-width: 1050px;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .assignment-table th {
+        padding: 16px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue-dark);
+        text-align: left;
+        font-size: 17px;
+        font-weight: 750;
+        border-bottom: 1px solid var(--border);
+        white-space: nowrap;
+    }
+
+    .assignment-table td {
+        padding: 16px;
+        color: var(--text-primary);
+        font-size: 17px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    .assignment-table tbody tr {
+        transition: background 0.2s ease;
+    }
+
+    .assignment-table tbody tr:hover {
+        background: #FFF9F2;
+    }
+
+    .assignment-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .row-number {
+        color: var(--text-secondary);
+        font-weight: 600;
+    }
+
+    .class-name {
+        color: var(--deep-blue);
+        font-weight: 750;
+    }
+
+    .subject-name {
+        color: var(--text-primary);
+        font-weight: 650;
+    }
+
+    .marks-value {
+        font-weight: 700;
+    }
+
+    .date-value {
+        color: var(--deep-blue);
+        font-weight: 600;
+    }
+
+    .time-value {
+        color: var(--text-secondary);
+        font-weight: 600;
+    }
+
+    /* REMOVE BUTTON */
+
+    .remove-btn {
+        width: 42px;
+        height: 42px;
+        border: 1px solid #FECACA;
+        background: #FEF2F2;
+        color: var(--danger);
+        border-radius: 8px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 17px;
+        transition: 0.2s ease;
+    }
+
+    .remove-btn:hover {
+        background: var(--danger);
+        color: var(--white);
+        border-color: var(--danger);
+    }
+
+    /* EMPTY STATE */
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 22px;
+    }
+
+    .empty-icon {
+        width: 72px;
+        height: 72px;
+        margin: 0 auto 18px;
+        border-radius: 50%;
+        background: var(--orange-light);
+        color: var(--orange-hover);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 27px;
+    }
+
+    .empty-state h3 {
+        margin: 0 0 9px;
+        color: var(--deep-blue);
+        font-size: 22px;
+    }
+
+    .empty-state p {
+        max-width: 550px;
+        margin: 0 auto;
+        color: var(--text-secondary);
+        font-size: 18px;
+        line-height: 1.6;
+    }
+
+    /* BOTTOM ACTIONS */
+
+    .bottom-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-top: 24px;
+    }
+
+    .bottom-actions-right {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 1000px) {
+        .exam-summary {
+            grid-template-columns: 1fr;
+        }
+
+        .exam-name-box {
+            min-height: 220px;
+        }
+    }
+
+    @media (max-width: 700px) {
+        .exam-detail-page {
+            padding: 16px;
+        }
+
+        .page-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .heading-area {
+            align-items: flex-start;
+            width: 100%;
+        }
+
+        .heading-area h1 {
+            font-size: 23px;
+        }
+
+        .heading-area p {
+            font-size: 16px;
+        }
+
+        .header-actions {
+            width: 100%;
+        }
+
+        .header-actions .btn {
+            flex: 1;
+            white-space: normal;
+            text-align: center;
+        }
+
+        .card-header {
+            padding: 17px;
+        }
+
+        .card-body {
+            padding: 17px;
+        }
+
+        .exam-meta {
+            grid-template-columns: 1fr;
+        }
+
+        .exam-name-box {
+            padding: 20px;
+        }
+
+        .exam-name-box h2 {
+            font-size: 23px;
+        }
+
+        .bottom-actions,
+        .bottom-actions-right {
+            width: 100%;
+            flex-direction: column;
+        }
+
+        .bottom-actions .btn,
+        .bottom-actions form,
+        .bottom-actions form .btn {
+            width: 100%;
+        }
+
+        .assignment-count {
+            white-space: normal;
+        }
+    }
+</style>
+
+
+<div class="exam-detail-page">
+
+    <!-- PAGE HEADER -->
+
+    <div class="page-header">
+
+        <div class="heading-area">
+
+            <a href="{% url 'exams:exam_list' %}"
+               class="back-btn"
+               title="Back to Examinations">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+
+            <div class="heading-icon">
+                <i class="fa-solid fa-file-pen"></i>
+            </div>
+
+            <div>
+                <h1>Examination Details</h1>
+                <p>View examination information and assigned subjects</p>
+            </div>
+
+        </div>
+
+        <div class="header-actions">
+
+            <a href="{% url 'exams:exam_edit' examination.pk %}"
+               class="btn btn-secondary">
+                <i class="fa-solid fa-pen"></i>
+                Edit
+            </a>
+
+            {% if examination.status != "published" %}
+            <a href="{% url 'exams:exam_assignment' examination.pk %}"
+               class="btn btn-primary">
+                <i class="fa-solid fa-plus"></i>
+                Assign Class / Subject
+            </a>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- EXAM INFORMATION -->
+
+    <div class="card">
+
+        <div class="card-header">
+            <div class="card-title">
+                <i class="fa-solid fa-circle-info"></i>
+                Examination Information
+            </div>
+        </div>
+
+        <div class="card-body">
+
+            <div class="exam-summary">
+
+                <div class="exam-name-box">
+
+                    <div class="exam-name-icon">
+                        <i class="fa-solid fa-file-lines"></i>
+                    </div>
+
+                    <h2>{{ examination.exam_name }}</h2>
+
+                    <p>
+                        {{ examination.get_exam_type_display|default:examination.exam_type }}
+                    </p>
+
+                </div>
+
+
+                <div class="exam-meta">
+
+                    <div class="meta-item">
+                        <div class="meta-label">
+                            <i class="fa-solid fa-calendar-days"></i>
+                            Academic Year
+                        </div>
+                        <div class="meta-value">
+                            {{ examination.academic_year|default:"—" }}
+                        </div>
+                    </div>
+
+                    <div class="meta-item">
+                        <div class="meta-label">
+                            <i class="fa-solid fa-flag"></i>
+                            Examination Status
+                        </div>
+                        <div class="meta-value">
+
+                            {% if examination.status == "published" %}
+                                <span class="status-badge status-published">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                    Published
+                                </span>
+                            {% elif examination.status == "draft" %}
+                                <span class="status-badge status-draft">
+                                    <i class="fa-solid fa-file"></i>
+                                    Draft
+                                </span>
+                            {% elif examination.status == "upcoming" %}
+                                <span class="status-badge status-upcoming">
+                                    <i class="fa-solid fa-clock"></i>
+                                    Upcoming
+                                </span>
+                            {% elif examination.status == "completed" %}
+                                <span class="status-badge status-completed">
+                                    <i class="fa-solid fa-check"></i>
+                                    Completed
+                                </span>
+                            {% elif examination.status == "cancelled" %}
+                                <span class="status-badge status-cancelled">
+                                    <i class="fa-solid fa-ban"></i>
+                                    Cancelled
+                                </span>
+                            {% else %}
+                                <span class="status-badge status-draft">
+                                    {{ examination.status|title }}
+                                </span>
+                            {% endif %}
+
+                        </div>
+                    </div>
+
+                    <div class="meta-item">
+                        <div class="meta-label">
+                            <i class="fa-solid fa-calendar-plus"></i>
+                            Examination Start Date
+                        </div>
+                        <div class="meta-value">
+                            {{ examination.start_date|date:"d M Y"|default:"—" }}
+                        </div>
+                    </div>
+
+                    <div class="meta-item">
+                        <div class="meta-label">
+                            <i class="fa-solid fa-calendar-check"></i>
+                            Examination End Date
+                        </div>
+                        <div class="meta-value">
+                            {{ examination.end_date|date:"d M Y"|default:"—" }}
+                        </div>
+                    </div>
+
+                    <div class="meta-item">
+                        <div class="meta-label">
+                            <i class="fa-solid fa-user"></i>
+                            Created By
+                        </div>
+                        <div class="meta-value">
+                            {% if examination.created_by %}
+                                {{ examination.created_by.get_full_name|default:examination.created_by.username }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="meta-item">
+                        <div class="meta-label">
+                            <i class="fa-solid fa-book"></i>
+                            Assigned Subjects
+                        </div>
+                        <div class="meta-value">
+                            {{ assignments|length }}
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ASSIGNED CLASSES AND SUBJECTS -->
+
+    <div class="card assignment-card">
+
+        <div class="card-header">
+
+            <div class="card-title">
+                <i class="fa-solid fa-book-open"></i>
+                Assigned Classes &amp; Subjects
+            </div>
+
+            <div class="assignment-count">
+                {{ assignments|length }}
+                Assignment{{ assignments|length|pluralize }}
+            </div>
+
+        </div>
+
+        {% if assignments %}
+
+        <div class="table-wrapper">
+
+            <table class="assignment-table">
+
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Class &amp; Section</th>
+                        <th>Subject</th>
+                        <th>Exam Date</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Maximum Marks</th>
+                        <th>Passing Marks</th>
+                        {% if examination.status != "published" %}
+                        <th>Action</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for assignment in assignments %}
+
+                    <tr>
+
+                        <td class="row-number">
+                            {{ forloop.counter }}
+                        </td>
+
+                        <td>
+                            <span class="class-name">
+                                {{ assignment.class_section }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="subject-name">
+                                {% if assignment.subject %}
+                                    {{ assignment.subject.subject_name }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="date-value">
+                                {{ assignment.exam_date|date:"d M Y"|default:"—" }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="time-value">
+                                {{ assignment.start_time|time:"h:i A"|default:"—" }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="time-value">
+                                {{ assignment.end_time|time:"h:i A"|default:"—" }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="marks-value">
+                                {{ assignment.max_marks }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="marks-value">
+                                {{ assignment.passing_marks }}
+                            </span>
+                        </td>
+
+                        {% if examination.status != "published" %}
+                        <td>
+                            <form method="post"
+                                  action="{% url 'exams:exam_assignment_remove' assignment.pk %}"
+                                  onsubmit="return confirm('Are you sure you want to remove this assignment?');">
+
+                                {% csrf_token %}
+
+                                <button type="submit"
+                                        class="remove-btn"
+                                        title="Remove Assignment"
+                                        aria-label="Remove assignment">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+
+                            </form>
+                        </td>
+                        {% endif %}
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                <i class="fa-solid fa-book-open"></i>
+            </div>
+
+            <h3>No Classes or Subjects Assigned</h3>
+
+            <p>
+                Assign a class and subject to this examination to configure
+                the exam date, timings and marks.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- BOTTOM ACTIONS -->
+
+    <div class="bottom-actions">
+
+        <a href="{% url 'exams:exam_list' %}"
+           class="btn btn-secondary">
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to Examinations
+        </a>
+
+        <div class="bottom-actions-right">
+
+            {% if examination.status != "published" %}
+
+            <form method="post"
+                  action="{% url 'exams:exam_publish' examination.pk %}"
+                  onsubmit="return confirm('Are you sure you want to publish this examination?');">
+
+                {% csrf_token %}
+
+                <button type="submit" class="btn btn-blue">
+                    <i class="fa-solid fa-bullhorn"></i>
+                    Publish Examination
+                </button>
+
+            </form>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

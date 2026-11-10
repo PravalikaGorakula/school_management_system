@@ -1,0 +1,564 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Assign Class & Subject{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --orange-light: #FFF4E6;
+        --white: #FFFFFF;
+        --background: #F6F8FB;
+        --text-primary: #172033;
+        --text-secondary: #64748B;
+        --border: #E2E8F0;
+        --border-dark: #CBD5E1;
+        --danger: #DC2626;
+    }
+
+    .assignment-page {
+        min-height: calc(100vh - 70px);
+        padding: 24px;
+        background: var(--background);
+        font-size: 18px;
+    }
+
+    .page-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 24px;
+    }
+
+    .back-btn,
+    .heading-icon {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 10px;
+    }
+
+    .back-btn {
+        background: var(--white);
+        border: 1px solid var(--border);
+        color: var(--deep-blue);
+        text-decoration: none;
+        transition: 0.2s ease;
+    }
+
+    .back-btn:hover {
+        background: var(--deep-blue);
+        color: var(--white);
+    }
+
+    .heading-icon {
+        background: var(--orange-light);
+        color: var(--orange-hover);
+        font-size: 22px;
+    }
+
+    .page-heading h1 {
+        margin: 0;
+        color: var(--deep-blue);
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+    .page-heading p {
+        margin: 6px 0 0;
+        color: var(--text-secondary);
+        font-size: 18px;
+    }
+
+    .exam-info-card,
+    .form-card {
+        max-width: 1000px;
+        margin: 0 auto 22px;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 3px 10px rgba(15, 23, 42, 0.05);
+        overflow: hidden;
+    }
+
+    .exam-info {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 20px 24px;
+    }
+
+    .exam-info-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-width: 0;
+    }
+
+    .exam-info-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 9px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        font-size: 21px;
+    }
+
+    .exam-info h2 {
+        margin: 0;
+        color: var(--deep-blue);
+        font-size: 21px;
+        overflow-wrap: anywhere;
+    }
+
+    .exam-info p {
+        margin: 6px 0 0;
+        color: var(--text-secondary);
+        font-size: 18px;
+    }
+
+    .exam-status {
+        padding: 8px 14px;
+        border-radius: 20px;
+        background: var(--orange-light);
+        color: #9A4D00;
+        font-size: 18px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .form-card-header {
+        padding: 22px 24px;
+        background: var(--deep-blue-light);
+        border-bottom: 1px solid var(--border);
+    }
+
+    .form-card-header h2 {
+        margin: 0;
+        color: var(--deep-blue-dark);
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+    .form-card-header p {
+        margin: 7px 0 0;
+        color: var(--text-secondary);
+        font-size: 18px;
+    }
+
+    .form-body {
+        padding: 26px 24px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 22px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+        min-width: 0;
+    }
+
+    .form-group label {
+        color: var(--text-primary);
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .required {
+        color: var(--danger);
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        min-height: 48px;
+        box-sizing: border-box;
+        padding: 10px 14px;
+        border: 1px solid var(--border-dark);
+        border-radius: 8px;
+        background: var(--white);
+        color: var(--text-primary);
+        font-family: inherit;
+        font-size: 18px;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        border-color: var(--deep-blue);
+        box-shadow: 0 0 0 3px rgba(18, 59, 99, 0.12);
+    }
+
+    .help-text {
+        color: var(--text-secondary);
+        font-size: 16px;
+        line-height: 1.5;
+    }
+
+    .field-errors {
+        color: var(--danger);
+        font-size: 16px;
+    }
+
+    .non-field-errors {
+        margin-bottom: 22px;
+        padding: 14px 16px;
+        border: 1px solid #FECACA;
+        border-radius: 8px;
+        background: #FEF2F2;
+        color: var(--danger);
+        font-size: 18px;
+    }
+
+    .marks-section {
+        grid-column: 1 / -1;
+        padding: 22px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #FAFCFE;
+    }
+
+    .marks-heading {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+        color: var(--deep-blue);
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .marks-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 22px;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 30px;
+        padding-top: 22px;
+        border-top: 1px solid var(--border);
+    }
+
+    .btn {
+        min-height: 48px;
+        padding: 10px 20px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 18px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+
+    .btn-primary {
+        background: var(--orange);
+        color: var(--white);
+    }
+
+    .btn-primary:hover {
+        background: var(--orange-hover);
+        color: var(--white);
+    }
+
+    .btn-secondary {
+        background: var(--white);
+        color: var(--deep-blue);
+        border-color: var(--border-dark);
+    }
+
+    .btn-secondary:hover {
+        background: var(--deep-blue);
+        border-color: var(--deep-blue);
+        color: var(--white);
+    }
+
+    @media (max-width: 700px) {
+        .assignment-page {
+            padding: 16px;
+        }
+
+        .page-heading h1 {
+            font-size: 23px;
+        }
+
+        .page-heading p {
+            font-size: 16px;
+        }
+
+        .form-grid,
+        .marks-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .marks-section {
+            grid-column: auto;
+            padding: 16px;
+        }
+
+        .exam-info {
+            align-items: flex-start;
+            flex-direction: column;
+            padding: 18px;
+        }
+
+        .form-body {
+            padding: 20px 16px;
+        }
+
+        .form-actions {
+            flex-direction: column-reverse;
+        }
+
+        .form-actions .btn {
+            width: 100%;
+            box-sizing: border-box;
+        }
+    }
+</style>
+
+<div class="assignment-page">
+
+    <div class="page-header">
+        <a href="{% url 'exams:examination_detail' examination.pk %}" class="back-btn" title="Back to Examination">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+
+        <div class="heading-icon">
+            <i class="fa-solid fa-book-open"></i>
+        </div>
+
+        <div class="page-heading">
+            <h1>Assign Class &amp; Subject</h1>
+            <p>Assign classes, subjects and examination timings.</p>
+        </div>
+    </div>
+
+    <div class="exam-info-card">
+        <div class="exam-info">
+            <div class="exam-info-left">
+                <div class="exam-info-icon">
+                    <i class="fa-solid fa-file-pen"></i>
+                </div>
+
+                <div>
+                    <h2>{{ examination.exam_name }}</h2>
+                    <p>
+                        {{ examination.academic_year }}
+                        {% if examination.exam_type %}
+                        &nbsp; | &nbsp;
+                        {{ examination.get_exam_type_display|default:examination.exam_type }}
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <div class="exam-status">
+                {{ examination.status|title }}
+            </div>
+        </div>
+    </div>
+
+    <div class="form-card">
+        <div class="form-card-header">
+            <h2>Class &amp; Subject Assignment</h2>
+            <p>Select a class and subject, set the exam timing and marks.</p>
+        </div>
+
+        <div class="form-body">
+
+            {% if form.non_field_errors %}
+            <div class="non-field-errors">
+                {% for error in form.non_field_errors %}
+                <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="{{ form.class_section.id_for_label }}">
+                            Class &amp; Section
+                            {% if form.class_section.field.required %}
+                            <span class="required">*</span>
+                            {% endif %}
+                        </label>
+
+                        {{ form.class_section }}
+
+                        {% for error in form.class_section.errors %}
+                        <div class="field-errors">{{ error }}</div>
+                        {% endfor %}
+                        
+                        <div class="help-text">
+                            Select a specific class and section, or choose
+                            "All Classes & Sections" to assign the subject to every class section.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.subject.id_for_label }}">
+                            Subject
+                            {% if form.subject.field.required %}
+                            <span class="required">*</span>
+                            {% endif %}
+                        </label>
+
+                        {{ form.subject }}
+
+                        {% for error in form.subject.errors %}
+                        <div class="field-errors">{{ error }}</div>
+                        {% endfor %}
+
+                        <div class="help-text">
+                            Select the subject for this examination.
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.exam_date.id_for_label }}">
+                            Exam Date
+                            {% if form.exam_date.field.required %}
+                            <span class="required">*</span>
+                            {% endif %}
+                        </label>
+
+                        {{ form.exam_date }}
+
+                        {% for error in form.exam_date.errors %}
+                        <div class="field-errors">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.start_time.id_for_label }}">
+                            Start Time
+                            {% if form.start_time.field.required %}
+                            <span class="required">*</span>
+                            {% endif %}
+                        </label>
+
+                        {{ form.start_time }}
+
+                        {% for error in form.start_time.errors %}
+                        <div class="field-errors">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.end_time.id_for_label }}">
+                            End Time
+                            {% if form.end_time.field.required %}
+                            <span class="required">*</span>
+                            {% endif %}
+                        </label>
+
+                        {{ form.end_time }}
+
+                        {% for error in form.end_time.errors %}
+                        <div class="field-errors">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="marks-section">
+                        <div class="marks-heading">
+                            <i class="fa-solid fa-chart-simple"></i>
+                            Marks Configuration
+                        </div>
+
+                        <div class="marks-grid">
+
+                            <div class="form-group">
+                                <label for="{{ form.max_marks.id_for_label }}">
+                                    Maximum Marks
+                                    {% if form.max_marks.field.required %}
+                                    <span class="required">*</span>
+                                    {% endif %}
+                                </label>
+
+                                {{ form.max_marks }}
+
+                                {% for error in form.max_marks.errors %}
+                                <div class="field-errors">{{ error }}</div>
+                                {% endfor %}
+
+                                <div class="help-text">Example: 100</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="{{ form.passing_marks.id_for_label }}">
+                                    Passing Marks
+                                    {% if form.passing_marks.field.required %}
+                                    <span class="required">*</span>
+                                    {% endif %}
+                                </label>
+
+                                {{ form.passing_marks }}
+
+                                {% for error in form.passing_marks.errors %}
+                                <div class="field-errors">{{ error }}</div>
+                                {% endfor %}
+
+                                <div class="help-text">
+                                    Minimum marks required to pass.
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="form-actions">
+                    <a href="{% url 'exams:examination_detail' examination.pk %}" class="btn btn-secondary">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        Back to Exam
+                    </a>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-link"></i>
+                        Assign Class &amp; Subject
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

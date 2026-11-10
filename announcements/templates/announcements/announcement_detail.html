@@ -1,0 +1,633 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}
+    {{ announcement.title }} | Announcements
+{% endblock %}
+
+{% block page_title %}
+    Announcement Details
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* =========================================================
+   ANNOUNCEMENT DETAIL - COMPACT NAVY & ORANGE
+========================================================= */
+
+.announcement-detail-page {
+    --deep-blue: #123B63;
+    --deep-blue-dark: #0B2945;
+    --deep-blue-light: #EAF2F8;
+    --orange: #F28C28;
+    --orange-hover: #D97706;
+    --text-dark: #293747;
+    --text-muted: #657386;
+    --border-color: #E0E6ED;
+    --white: #FFFFFF;
+
+    width: 100%;
+    max-width: 1050px;
+    margin: 0 auto;
+    padding: 18px 22px 28px;
+
+    color: var(--text-dark);
+    font-size: 18px;
+    box-sizing: border-box;
+}
+
+.announcement-detail-page *,
+.announcement-detail-page *::before,
+.announcement-detail-page *::after {
+    box-sizing: border-box;
+}
+
+/* =========================================================
+   BACK BUTTON
+========================================================= */
+
+.announcement-detail-page .back-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    min-height: 42px;
+    margin-bottom: 17px;
+    padding: 9px 14px;
+
+    color: var(--deep-blue);
+    background: var(--white);
+    border: 1px solid #D5DFE9;
+    border-radius: 7px;
+
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 500;
+
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.announcement-detail-page .back-btn:hover {
+    color: var(--white);
+    background: var(--deep-blue);
+    border-color: var(--deep-blue);
+}
+
+.announcement-detail-page .back-btn i {
+    font-size: 16px;
+    transition: transform 0.2s ease;
+}
+
+.announcement-detail-page .back-btn:hover i {
+    transform: translateX(-3px);
+}
+
+/* =========================================================
+   MAIN DETAIL CARD
+========================================================= */
+
+.announcement-detail-page .announcement-detail-card {
+    width: 100%;
+    overflow: hidden;
+
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 11px;
+
+    box-shadow: 0 3px 12px rgba(11, 41, 69, 0.05);
+}
+
+/* =========================================================
+   CARD HEADER
+========================================================= */
+
+.announcement-detail-page .detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    padding: 14px 19px;
+
+    background: #F5F8FB;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.announcement-detail-page .detail-priority {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* =========================================================
+   PRIORITY BADGES
+========================================================= */
+
+.announcement-detail-page .priority-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 6px 10px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.announcement-detail-page .priority-badge.urgent {
+    color: #A12626;
+    background: #FCECEC;
+    border-color: #F3D0D0;
+}
+
+.announcement-detail-page .priority-badge.important {
+    color: #88520A;
+    background: #FFF3DF;
+    border-color: #F2DFC0;
+}
+
+.announcement-detail-page .priority-badge.normal {
+    color: var(--deep-blue);
+    background: #EDF4FA;
+    border-color: #D8E5F0;
+}
+
+/* =========================================================
+   DATE
+========================================================= */
+
+.announcement-detail-page .detail-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    color: var(--text-muted);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+.announcement-detail-page .detail-date i {
+    color: var(--orange-hover);
+}
+
+/* =========================================================
+   TITLE
+========================================================= */
+
+.announcement-detail-page .detail-title-section {
+    padding: 19px 20px 15px;
+}
+
+.announcement-detail-page .detail-title {
+    margin: 0;
+
+    color: var(--deep-blue-dark);
+    font-size: 23px;
+    font-weight: 600;
+    line-height: 1.45;
+
+    overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   INFORMATION CARDS
+========================================================= */
+
+.announcement-detail-page .detail-information {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+
+    padding: 0 20px 19px;
+}
+
+.announcement-detail-page .detail-info-item {
+    min-width: 0;
+    padding: 12px 14px;
+
+    background: #F8FAFC;
+    border: 1px solid #E3E9F0;
+    border-radius: 8px;
+
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.announcement-detail-page .detail-info-item:hover {
+    background: #FFFDFC;
+    border-color: #E9BD8A;
+}
+
+.announcement-detail-page .detail-info-label {
+    display: block;
+    margin-bottom: 6px;
+
+    color: var(--text-muted);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.4;
+}
+
+.announcement-detail-page .detail-info-value {
+    display: block;
+
+    color: var(--deep-blue);
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.5;
+
+    overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   ANNOUNCEMENT MESSAGE
+========================================================= */
+
+.announcement-detail-page .detail-message {
+    margin: 0 20px 19px;
+    overflow: hidden;
+
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.announcement-detail-page .detail-message h3 {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    margin: 0;
+    padding: 12px 15px;
+
+    color: var(--white);
+    background: var(--deep-blue-dark);
+
+    font-size: 19px;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+.announcement-detail-page .detail-message h3 i {
+    color: var(--orange);
+    font-size: 18px;
+}
+
+.announcement-detail-page .detail-message-content {
+    min-height: 85px;
+    padding: 16px 17px;
+
+    color: #4F5D6D;
+    background: var(--white);
+
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.8;
+
+    overflow-wrap: anywhere;
+    word-break: normal;
+}
+
+/* Preserve paragraph spacing when using linebreaksbr */
+.announcement-detail-page .detail-message-content br {
+    display: block;
+    content: "";
+    margin-bottom: 5px;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.announcement-detail-page .detail-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+
+    padding: 12px 20px;
+
+    background: #F8FAFC;
+    border-top: 1px solid var(--border-color);
+}
+
+.announcement-detail-page .form-cancel-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    min-height: 41px;
+    padding: 9px 15px;
+
+    color: var(--deep-blue);
+    background: var(--white);
+    border: 1px solid #CBD7E3;
+    border-radius: 7px;
+
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 500;
+
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.announcement-detail-page .form-cancel-btn:hover {
+    color: var(--white);
+    background: var(--orange-hover);
+    border-color: var(--orange-hover);
+}
+
+/* =========================================================
+   SUCCESS / ERROR MESSAGES
+   Displays Django messages when the view provides them
+========================================================= */
+
+.announcement-detail-page .detail-messages {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.announcement-detail-page .detail-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+
+    padding: 12px 15px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.5;
+
+    overflow-wrap: anywhere;
+}
+
+.announcement-detail-page .detail-alert i {
+    margin-top: 4px;
+}
+
+.announcement-detail-page .detail-alert.success {
+    color: #176B3A;
+    background: #EAF7EF;
+    border-color: #C7E8D1;
+}
+
+.announcement-detail-page .detail-alert.error {
+    color: #B42318;
+    background: #FDEEEE;
+    border-color: #F4CCCC;
+}
+
+.announcement-detail-page .detail-alert.warning {
+    color: #805500;
+    background: #FFF6DF;
+    border-color: #F0DDA9;
+}
+
+.announcement-detail-page .detail-alert.info {
+    color: var(--deep-blue);
+    background: var(--deep-blue-light);
+    border-color: #D3E2EF;
+}
+
+/* =========================================================
+   ACCESSIBILITY
+========================================================= */
+
+.announcement-detail-page a:focus-visible {
+    outline: 2px solid var(--orange);
+    outline-offset: 3px;
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 850px) {
+    .announcement-detail-page {
+        padding: 16px;
+    }
+
+    .announcement-detail-page .detail-information {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+    .announcement-detail-page {
+        padding: 12px;
+    }
+
+    .announcement-detail-page .detail-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+        padding: 13px 15px;
+    }
+
+    .announcement-detail-page .detail-title-section {
+        padding: 16px 15px 13px;
+    }
+
+    .announcement-detail-page .detail-title {
+        font-size: 21px;
+    }
+
+    .announcement-detail-page .detail-information {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 9px;
+        padding: 0 15px 15px;
+    }
+
+    .announcement-detail-page .detail-info-item {
+        padding: 11px 13px;
+    }
+
+    .announcement-detail-page .detail-message {
+        margin: 0 15px 15px;
+    }
+
+    .announcement-detail-page .detail-message h3 {
+        padding: 11px 13px;
+    }
+
+    .announcement-detail-page .detail-message-content {
+        padding: 14px;
+    }
+
+    .announcement-detail-page .detail-footer {
+        padding: 11px 15px;
+    }
+}
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 380px) {
+    .announcement-detail-page {
+        padding: 10px;
+    }
+
+    .announcement-detail-page .detail-title {
+        font-size: 20px;
+    }
+
+    .announcement-detail-page .detail-date {
+        flex-wrap: wrap;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="announcement-detail-page">
+
+    <!-- Django Success / Error Messages -->
+    {% if messages %}
+    <div class="detail-messages" aria-live="polite">
+        {% for message in messages %}
+        <div class="detail-alert
+            {% if message.tags == 'success' %}success
+            {% elif message.tags == 'error' %}error
+            {% elif message.tags == 'warning' %}warning
+            {% else %}info{% endif %}">
+
+            <i class="
+                {% if message.tags == 'success' %}fa-solid fa-circle-check
+                {% elif message.tags == 'error' %}fa-solid fa-circle-exclamation
+                {% elif message.tags == 'warning' %}fa-solid fa-triangle-exclamation
+                {% else %}fa-solid fa-circle-info{% endif %}">
+            </i>
+
+            <span>{{ message }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Back Button -->
+    <a href="{% url 'announcements:list' %}" class="back-btn">
+        <i class="fa-solid fa-arrow-left"></i>
+        Back to Announcements
+    </a>
+
+    <!-- Main Detail Card -->
+    <div class="announcement-detail-card">
+
+        <!-- Header -->
+        <div class="detail-header">
+
+            <div class="detail-priority">
+
+                {% if announcement.priority == "urgent" %}
+                    <span class="priority-badge urgent">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        Urgent
+                    </span>
+
+                {% elif announcement.priority == "important" %}
+                    <span class="priority-badge important">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        Important
+                    </span>
+
+                {% else %}
+                    <span class="priority-badge normal">
+                        <i class="fa-solid fa-circle-info"></i>
+                        Normal
+                    </span>
+                {% endif %}
+
+            </div>
+
+            <div class="detail-date">
+                <i class="fa-regular fa-calendar"></i>
+                {{ announcement.publish_date|date:"d M Y, h:i A" }}
+            </div>
+
+        </div>
+
+        <!-- Title -->
+        <div class="detail-title-section">
+            <h2 class="detail-title">
+                {{ announcement.title }}
+            </h2>
+        </div>
+
+        <!-- Information Cards -->
+        <div class="detail-information">
+
+            <div class="detail-info-item">
+                <span class="detail-info-label">
+                    <i class="fa-solid fa-users"></i>
+                    Audience
+                </span>
+
+                <strong class="detail-info-value">
+                    {{ announcement.get_audience_display }}
+                </strong>
+            </div>
+
+            <div class="detail-info-item">
+                <span class="detail-info-label">
+                    <i class="fa-solid fa-user-pen"></i>
+                    Published By
+                </span>
+
+                <strong class="detail-info-value">
+                    {% if announcement.created_by %}
+                        {{ announcement.created_by.get_full_name|default:announcement.created_by.username }}
+                    {% else %}
+                        School Administration
+                    {% endif %}
+                </strong>
+            </div>
+
+            <div class="detail-info-item">
+                <span class="detail-info-label">
+                    <i class="fa-regular fa-calendar-check"></i>
+                    Expiry
+                </span>
+
+                <strong class="detail-info-value">
+                    {% if announcement.expiry_date %}
+                        {{ announcement.expiry_date|date:"d M Y, h:i A" }}
+                    {% else %}
+                        No expiry
+                    {% endif %}
+                </strong>
+            </div>
+
+        </div>
+
+        <!-- Announcement Message -->
+        <div class="detail-message">
+
+            <h3>
+                <i class="fa-solid fa-bullhorn"></i>
+                Announcement Message
+            </h3>
+
+            <div class="detail-message-content">
+                {{ announcement.message|linebreaksbr }}
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

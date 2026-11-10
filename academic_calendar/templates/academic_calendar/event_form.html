@@ -1,0 +1,271 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --border-color: #DCE5ED;
+        --text-muted: #64748B;
+        --white: #FFFFFF;
+    }
+
+    /* Main Form */
+    .ac-form {
+        width: 95%;
+        max-width: 1050px;
+        box-sizing: border-box;
+        margin: 14px auto;
+        padding: 18px 20px;
+        background: var(--white);
+        border: 1px solid var(--border-color);
+        border-top: 4px solid var(--deep-blue);
+        border-radius: 9px;
+        color: var(--deep-blue);
+        font-size: 18px;
+        box-shadow: 0 3px 10px rgba(11, 41, 69, 0.06);
+    }
+
+    /* Heading */
+    .ac-form h1 {
+        margin: 0 0 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--deep-blue);
+        font-size: 26px;
+        font-weight: 700;
+        line-height: 1.3;
+        position: relative;
+    }
+
+    .ac-form h1::after {
+        content: "";
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 55px;
+        height: 3px;
+        background: var(--orange);
+        border-radius: 3px;
+    }
+
+    /* Form Grid */
+    .ac-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 13px 18px;
+    }
+
+    .ac-field {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        min-width: 0;
+    }
+
+    .ac-field.full {
+        grid-column: 1 / -1;
+    }
+
+    /* Labels */
+    .ac-field label {
+        color: var(--deep-blue);
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    /* Input Fields */
+    .ac-field input,
+    .ac-field select,
+    .ac-field textarea {
+        width: 100%;
+        box-sizing: border-box;
+        min-height: 42px;
+        padding: 8px 11px;
+        border: 1px solid #C8D5E1;
+        border-radius: 6px;
+        background: #FDFEFF;
+        color: #263B50;
+        font-family: inherit;
+        font-size: 18px;
+        line-height: 1.4;
+        outline: none;
+        transition: border-color 0.2s ease,
+                    box-shadow 0.2s ease,
+                    background 0.2s ease;
+    }
+
+    .ac-field textarea {
+        min-height: 82px;
+        resize: vertical;
+    }
+
+    .ac-field input:hover,
+    .ac-field select:hover,
+    .ac-field textarea:hover {
+        border-color: #91AEC6;
+        background: var(--white);
+    }
+
+    .ac-field input:focus,
+    .ac-field select:focus,
+    .ac-field textarea:focus {
+        border-color: var(--orange);
+        background: var(--white);
+        box-shadow: 0 0 0 3px rgba(242, 140, 40, 0.13);
+    }
+
+    /* Checkbox and Radio */
+    .ac-field input[type="checkbox"],
+    .ac-field input[type="radio"] {
+        width: auto;
+        min-height: auto;
+        accent-color: var(--deep-blue);
+    }
+
+    /* Validation Errors */
+    .ac-error {
+        display: block;
+        margin: 2px 0 0;
+        color: #B42318;
+        font-size: 18px;
+        line-height: 1.4;
+    }
+
+    /* Buttons */
+    .ac-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        min-height: 42px;
+        padding: 8px 16px;
+        background: var(--deep-blue);
+        color: var(--white);
+        border: 1px solid var(--deep-blue);
+        border-radius: 6px;
+        text-decoration: none;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 18px;
+        font-weight: 600;
+        transition: background 0.2s ease,
+                    border-color 0.2s ease,
+                    transform 0.2s ease;
+    }
+
+    .ac-btn:hover {
+        background: var(--orange-hover);
+        border-color: var(--orange-hover);
+        color: var(--white);
+        transform: translateY(-1px);
+    }
+
+    /* Cancel Button */
+    .ac-btn-cancel {
+        background: var(--white);
+        color: var(--deep-blue);
+        border-color: #C8D5E1;
+    }
+
+    .ac-btn-cancel:hover {
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        border-color: var(--deep-blue);
+    }
+
+    /* Button Spacing */
+    .ac-form form > br {
+        display: none;
+    }
+
+    .ac-form form > .ac-btn,
+    .ac-form form > a.ac-btn {
+        margin-top: 16px;
+        margin-right: 7px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 600px) {
+        .ac-form {
+            width: 100%;
+            margin: 10px auto;
+            padding: 14px;
+        }
+
+        .ac-form h1 {
+            font-size: 24px;
+        }
+
+        .ac-grid {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .ac-field.full {
+            grid-column: auto;
+        }
+
+        .ac-form form > .ac-btn,
+        .ac-form form > a.ac-btn {
+            margin-top: 12px;
+            margin-right: 4px;
+        }
+    }
+</style>
+
+<div class="ac-form">
+
+    <h1>{{ page_title }}</h1>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {% for error in form.non_field_errors %}
+            <p class="ac-error">{{ error }}</p>
+        {% endfor %}
+
+        <div class="ac-grid">
+
+            {% for field in form %}
+
+                <div class="ac-field {% if field.name == 'title' or field.name == 'description' %}full{% endif %}">
+
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                    </label>
+
+                    {{ field }}
+
+                    {% for error in field.errors %}
+                        <small class="ac-error">{{ error }}</small>
+                    {% endfor %}
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+        <br>
+
+        <button class="ac-btn" type="submit">
+            {{ button_text }}
+        </button>
+
+        <a class="ac-btn ac-btn-cancel"
+           href="{% url 'academic_calendar:calendar' %}">
+            Cancel
+        </a>
+
+    </form>
+
+</div>
+
+{% endblock %}

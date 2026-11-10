@@ -1,0 +1,1234 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}
+Student Documents
+{% endblock %}
+
+{% block extra_css %}
+
+<!-- Bootstrap CSS -->
+<link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+>
+
+<!-- Font Awesome -->
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+>
+
+<style>
+/* =========================================================
+   SMS STUDENT DOCUMENTS MODULE
+   THEME: NAVY BLUE + SOFT ORANGE
+   NORMAL FONT SIZE: 18px
+========================================================= */
+
+:root {
+    --deep-blue: #123B63;
+    --deep-blue-dark: #0B2945;
+    --deep-blue-light: #EAF2F8;
+    --deep-blue-soft: #F5F8FB;
+
+    --orange: #F28C28;
+    --orange-hover: #D97706;
+    --orange-light: #FFF4E6;
+
+    --white: #FFFFFF;
+    --background: #F5F8FC;
+
+    --text-primary: #263746;
+    --text-secondary: #667585;
+    --text-light: #8493A3;
+
+    --border: #DFE6ED;
+    --border-dark: #C9D5E0;
+
+    --success-bg: #EAF7EF;
+    --success-text: #237447;
+
+    --radius-sm: 8px;
+    --radius-md: 10px;
+    --radius-lg: 12px;
+
+    --shadow-sm: 0 2px 8px rgba(18, 59, 99, 0.05);
+    --shadow-md: 0 5px 16px rgba(18, 59, 99, 0.08);
+
+    --transition: all 0.2s ease-in-out;
+}
+
+/* =========================================================
+   GLOBAL PAGE
+========================================================= */
+
+.documents-page {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 22px;
+
+    background: var(--background);
+    color: var(--text-primary);
+
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 18px;
+    line-height: 1.5;
+
+    box-sizing: border-box;
+}
+
+.documents-page *,
+.documents-page *::before,
+.documents-page *::after {
+    box-sizing: border-box;
+}
+
+/* =========================================================
+   PAGE TOOLBAR
+========================================================= */
+
+.documents-toolbar {
+    margin-bottom: 22px;
+    background: var(--white);
+
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.documents-toolbar .card-body {
+    padding: 17px 20px;
+}
+
+/* =========================================================
+   BACK BUTTON
+========================================================= */
+
+.documents-back-btn {
+    min-height: 48px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    padding: 10px 18px;
+
+    background: var(--white);
+
+    border: 1px solid var(--border-dark);
+    border-radius: var(--radius-sm);
+
+    color: var(--deep-blue);
+
+    font-size: 18px;
+    font-weight: 600;
+
+    text-decoration: none;
+    white-space: nowrap;
+
+    transition: var(--transition);
+}
+
+.documents-back-btn i {
+    color: var(--orange);
+    font-size: 18px;
+}
+
+.documents-back-btn:hover {
+    background: var(--deep-blue-light);
+    border-color: var(--deep-blue);
+    color: var(--deep-blue);
+
+    transform: translateY(-1px);
+}
+
+/* =========================================================
+   SEARCH FORM
+========================================================= */
+
+.documents-search-form {
+    width: 100%;
+}
+
+.documents-search-form .input-group {
+    width: 100%;
+    min-height: 48px;
+}
+
+/* Search icon */
+
+.search-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 15px;
+
+    background: var(--deep-blue-light);
+
+    border: 1px solid var(--border-dark);
+    border-right: none;
+
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+
+    color: var(--deep-blue);
+    font-size: 18px;
+}
+
+/* Search input */
+
+.documents-search-input {
+    height: 48px;
+    min-width: 0;
+
+    padding: 10px 14px;
+
+    background: var(--white);
+
+    border: 1px solid var(--border-dark);
+    border-left: none;
+
+    border-radius: 0;
+
+    color: var(--text-primary);
+    font-size: 18px;
+
+    box-shadow: none !important;
+    outline: none;
+}
+
+.documents-search-input::placeholder {
+    color: var(--text-light);
+    font-size: 18px;
+    opacity: 1;
+}
+
+.documents-search-input:focus {
+    background: var(--white);
+    border-color: var(--orange);
+
+    box-shadow: 0 0 0 3px rgba(242, 140, 40, 0.12) !important;
+    z-index: 2;
+}
+
+/* Search button */
+
+.documents-search-btn {
+    min-width: 115px;
+    min-height: 48px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 9px 17px;
+
+    background: var(--orange);
+
+    border: 1px solid var(--orange);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+
+    color: var(--white);
+
+    font-size: 18px;
+    font-weight: 600;
+
+    transition: var(--transition);
+}
+
+.documents-search-btn i {
+    font-size: 17px;
+}
+
+.documents-search-btn:hover {
+    background: var(--orange-hover);
+    border-color: var(--orange-hover);
+    color: var(--white);
+}
+
+.documents-search-btn:active {
+    background: var(--deep-blue) !important;
+    border-color: var(--deep-blue) !important;
+}
+
+/* =========================================================
+   MAIN DOCUMENT CARD
+========================================================= */
+
+.documents-card {
+    width: 100%;
+
+    background: var(--white);
+
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius-lg);
+
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+/* =========================================================
+   CARD HEADER
+========================================================= */
+
+.documents-card-header {
+    min-height: 90px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    padding: 20px 24px;
+
+    background: linear-gradient(
+        100deg,
+        #FFFFFF 0%,
+        #F8FAFD 100%
+    );
+
+    border-bottom: 1px solid var(--border);
+    border-left: 4px solid var(--orange);
+}
+
+/* Card title */
+
+.documents-card-title {
+    margin: 0;
+
+    color: var(--deep-blue);
+
+    font-size: 25px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+/* Card subtitle */
+
+.documents-card-subtitle {
+    margin: 6px 0 0;
+
+    color: var(--text-secondary);
+
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+/* =========================================================
+   STUDENT COUNT
+========================================================= */
+
+.student-count {
+    min-height: 42px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    padding: 8px 15px;
+
+    background: var(--orange-light);
+
+    border: 1px solid #F4D3AD;
+    border-radius: 30px;
+
+    color: var(--orange-hover);
+
+    font-size: 18px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.student-count i {
+    font-size: 18px;
+    color: var(--orange);
+}
+
+/* =========================================================
+   TABLE WRAPPER
+========================================================= */
+
+.documents-page .table-responsive {
+    width: 100%;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    background: var(--white);
+    -webkit-overflow-scrolling: touch;
+}
+
+/* =========================================================
+   STUDENT DOCUMENT TABLE
+========================================================= */
+
+.documents-table {
+    width: 100%;
+    min-width: 1050px;
+
+    margin: 0 !important;
+
+    border-collapse: separate;
+    border-spacing: 0;
+
+    background: var(--white);
+    color: var(--text-primary);
+
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 18px;
+}
+
+/* Table header */
+
+.documents-table thead th {
+    padding: 17px 18px;
+
+    background: var(--deep-blue-light);
+    color: var(--deep-blue);
+
+    border: none;
+    border-bottom: 2px solid #D1E0EC;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    line-height: 1.5;
+    letter-spacing: 0;
+
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.documents-table thead th:first-child {
+    padding-left: 22px;
+}
+
+/* Table body */
+
+.documents-table tbody td {
+    padding: 18px;
+
+    background: var(--white);
+    color: var(--text-primary);
+
+    border: none;
+    border-bottom: 1px solid #E7EDF3;
+
+    font-size: 18px;
+    font-weight: 400;
+
+    line-height: 1.5;
+    vertical-align: middle;
+}
+
+.documents-table tbody tr {
+    transition: var(--transition);
+}
+
+.documents-table tbody tr:hover td {
+    background: #FFF9F1;
+}
+
+.documents-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* =========================================================
+   SERIAL NUMBER
+========================================================= */
+
+.serial-column {
+    width: 70px;
+}
+
+.serial-number {
+    width: 70px;
+
+    color: var(--text-secondary) !important;
+
+    font-size: 18px !important;
+    font-weight: 600 !important;
+}
+
+/* =========================================================
+   STUDENT INFORMATION
+========================================================= */
+
+.student-info {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    min-width: 220px;
+}
+
+/* Student avatar */
+
+.student-avatar {
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--deep-blue-light);
+
+    border: 1px solid #D5E3EE;
+    border-radius: 10px;
+
+    color: var(--deep-blue);
+    font-size: 19px;
+
+    transition: var(--transition);
+}
+
+.documents-table tbody tr:hover .student-avatar {
+    background: var(--orange-light);
+    border-color: #F3D2A8;
+    color: var(--orange-hover);
+}
+
+/* Student details */
+
+.student-details {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+/* Student name */
+
+.student-name {
+    color: var(--deep-blue);
+
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.5;
+
+    overflow-wrap: anywhere;
+}
+
+/* Student role */
+
+.student-role {
+    color: var(--text-secondary);
+
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.4;
+}
+
+/* =========================================================
+   APPLICATION ID
+========================================================= */
+
+.application-id {
+    max-width: 100%;
+    min-height: 38px;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 7px 11px;
+
+    background: var(--deep-blue-soft);
+
+    border: 1px solid #D8E3EC;
+    border-radius: 7px;
+
+    color: var(--deep-blue);
+
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 18px;
+    font-weight: 600;
+
+    overflow-wrap: anywhere;
+}
+
+.application-id i {
+    color: var(--orange);
+    font-size: 17px;
+    flex-shrink: 0;
+}
+
+/* =========================================================
+   DOCUMENT COUNT
+========================================================= */
+
+.document-count {
+    min-width: 48px;
+    min-height: 40px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 7px 12px;
+
+    background: var(--orange-light);
+
+    border: 1px solid #F4D3AD;
+    border-radius: 30px;
+
+    color: var(--orange-hover);
+
+    font-size: 18px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.document-count i {
+    color: var(--orange);
+    font-size: 18px;
+}
+
+/* =========================================================
+   ACTION COLUMN
+========================================================= */
+
+.action-column {
+    width: 220px;
+    min-width: 220px;
+}
+
+/* =========================================================
+   VIEW DOCUMENTS BUTTON
+========================================================= */
+
+.view-documents-btn {
+    min-height: 46px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    padding: 10px 15px;
+
+    background: var(--orange);
+
+    border: 1px solid var(--orange);
+    border-radius: var(--radius-sm);
+
+    color: var(--white);
+
+    font-size: 18px;
+    font-weight: 600;
+
+    text-decoration: none;
+    white-space: nowrap;
+
+    box-shadow: 0 2px 5px rgba(242, 140, 40, 0.13);
+
+    transition: var(--transition);
+}
+
+.view-documents-btn > i:first-child {
+    font-size: 18px;
+}
+
+.view-documents-btn:hover {
+    background: var(--orange-hover);
+    border-color: var(--orange-hover);
+    color: var(--white);
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 5px 12px rgba(242, 140, 40, 0.22);
+}
+
+.view-documents-btn:active {
+    transform: translateY(0);
+}
+
+/* Arrow */
+
+.arrow-icon {
+    font-size: 15px;
+    transition: transform 0.2s ease;
+}
+
+.view-documents-btn:hover .arrow-icon {
+    transform: translateX(4px);
+}
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.no-data {
+    min-height: 330px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    padding: 42px 25px;
+
+    background: var(--white);
+    text-align: center;
+}
+
+/* Empty icon */
+
+.empty-icon {
+    width: 78px;
+    height: 78px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 18px;
+
+    background: var(--deep-blue-light);
+
+    border: 1px solid #D5E3EE;
+    border-radius: 50%;
+
+    color: var(--deep-blue);
+    font-size: 30px;
+
+    box-shadow: 0 3px 10px rgba(18, 59, 99, 0.05);
+}
+
+/* Empty title */
+
+.no-data h3 {
+    margin: 0 0 10px;
+
+    color: var(--deep-blue);
+
+    font-size: 25px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+/* Empty description */
+
+.no-data p {
+    max-width: 570px;
+
+    margin: 0 0 22px;
+
+    color: var(--text-secondary);
+
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.7;
+}
+
+/* =========================================================
+   CLEAR SEARCH BUTTON
+========================================================= */
+
+.clear-search-btn {
+    min-height: 46px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    padding: 10px 18px;
+
+    background: var(--white);
+
+    border: 1px solid var(--border-dark);
+    border-radius: var(--radius-sm);
+
+    color: var(--deep-blue);
+
+    font-size: 18px;
+    font-weight: 600;
+
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.clear-search-btn i {
+    color: var(--orange);
+    font-size: 18px;
+}
+
+.clear-search-btn:hover {
+    background: var(--deep-blue-light);
+    border-color: var(--deep-blue);
+    color: var(--deep-blue);
+
+    transform: translateY(-1px);
+}
+
+/* =========================================================
+   ACCESSIBILITY: KEYBOARD FOCUS
+========================================================= */
+
+.documents-back-btn:focus-visible,
+.documents-search-btn:focus-visible,
+.view-documents-btn:focus-visible,
+.clear-search-btn:focus-visible {
+    outline: 3px solid rgba(242, 140, 40, 0.45);
+    outline-offset: 3px;
+}
+
+/* =========================================================
+   TABLE SCROLLBAR
+========================================================= */
+
+.documents-page .table-responsive::-webkit-scrollbar {
+    height: 9px;
+}
+
+.documents-page .table-responsive::-webkit-scrollbar-track {
+    background: #EDF2F7;
+    border-radius: 10px;
+}
+
+.documents-page .table-responsive::-webkit-scrollbar-thumb {
+    background: #C5D2DE;
+    border-radius: 10px;
+}
+
+.documents-page .table-responsive::-webkit-scrollbar-thumb:hover {
+    background: var(--orange);
+}
+
+/* =========================================================
+   TABLET RESPONSIVE
+========================================================= */
+
+@media (max-width: 991px) {
+    .documents-page {
+        padding: 17px;
+    }
+
+    .documents-toolbar .card-body {
+        padding: 16px;
+    }
+
+    .documents-toolbar .row {
+        row-gap: 13px !important;
+    }
+
+    .documents-back-btn {
+        width: 100%;
+    }
+
+    .documents-search-form {
+        width: 100%;
+    }
+
+    .documents-card-title {
+        font-size: 24px;
+    }
+
+    .documents-card-header {
+        padding: 19px;
+    }
+
+    .documents-table {
+        min-width: 1050px;
+    }
+}
+
+/* =========================================================
+   MOBILE RESPONSIVE
+========================================================= */
+
+@media (max-width: 767px) {
+    .documents-page {
+        padding: 12px;
+    }
+
+    .documents-toolbar {
+        margin-bottom: 16px;
+    }
+
+    .documents-toolbar .card-body {
+        padding: 13px;
+    }
+
+    .documents-toolbar .row {
+        row-gap: 12px !important;
+    }
+
+    .documents-back-btn {
+        width: 100%;
+        min-height: 48px;
+    }
+
+    .documents-search-form {
+        margin-top: 2px;
+    }
+
+    .documents-search-input {
+        min-width: 0;
+        font-size: 18px;
+    }
+
+    .documents-search-input::placeholder {
+        font-size: 16px;
+    }
+
+    .documents-search-btn {
+        min-width: 100px;
+        padding: 8px 12px;
+    }
+
+    .documents-card-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+
+        padding: 17px;
+        border-left-width: 4px;
+    }
+
+    .documents-card-title {
+        font-size: 23px;
+    }
+
+    .documents-card-subtitle {
+        font-size: 18px;
+    }
+
+    .student-count {
+        align-self: flex-start;
+    }
+
+    .documents-table {
+        min-width: 1050px;
+    }
+
+    .documents-table thead th {
+        padding: 15px 16px;
+    }
+
+    .documents-table tbody td {
+        padding: 16px;
+    }
+
+    .no-data {
+        min-height: 300px;
+        padding: 32px 18px;
+    }
+}
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+    .documents-page {
+        padding: 10px;
+    }
+
+    .documents-toolbar .card-body {
+        padding: 11px;
+    }
+
+    .documents-back-btn {
+        padding: 9px 12px;
+        font-size: 18px;
+    }
+
+    .documents-search-form .input-group {
+        flex-wrap: nowrap;
+    }
+
+    .search-icon {
+        padding: 0 11px;
+    }
+
+    .documents-search-input {
+        padding: 9px 10px;
+    }
+
+    .documents-search-btn {
+        min-width: 88px;
+        gap: 6px;
+        padding: 8px 10px;
+    }
+
+    .documents-search-btn span {
+        font-size: 17px;
+    }
+
+    .documents-card-title {
+        font-size: 22px;
+    }
+
+    .documents-card-subtitle {
+        font-size: 18px;
+    }
+
+    .student-count {
+        font-size: 18px;
+    }
+
+    .no-data h3 {
+        font-size: 23px;
+    }
+
+    .no-data p {
+        font-size: 18px;
+    }
+
+    .empty-icon {
+        width: 68px;
+        height: 68px;
+        font-size: 27px;
+    }
+
+    .documents-table {
+        min-width: 1050px;
+    }
+}
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    .documents-page *,
+    .documents-page *::before,
+    .documents-page *::after {
+        transition: none !important;
+        animation: none !important;
+        scroll-behavior: auto !important;
+    }
+}
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="documents-page">
+
+    <!-- PAGE TOOLBAR -->
+    <div class="documents-toolbar">
+        <div class="card-body">
+
+            <div class="row align-items-center g-2">
+
+                <!-- BACK BUTTON -->
+                <div class="col-xl-4 col-lg-4 col-md-4">
+
+                    <a
+                        href="{% url 'documents:home' %}"
+                        class="documents-back-btn"
+                    >
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>Back to Documents</span>
+                    </a>
+
+                </div>
+
+                <!-- SEARCH FORM -->
+                <div class="col-xl-8 col-lg-8 col-md-8">
+
+                    <form
+                        method="get"
+                        class="documents-search-form"
+                    >
+                        <div class="input-group">
+
+                            <span class="input-group-text search-icon">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </span>
+
+                            <input
+                                type="text"
+                                name="search"
+                                value="{{ search }}"
+                                class="form-control documents-search-input"
+                                placeholder="Search student name or application ID..."
+                                aria-label="Search student name or application ID"
+                            >
+
+                            <button
+                                type="submit"
+                                class="btn documents-search-btn"
+                            >
+                                <i class="fa-solid fa-search"></i>
+                                <span>Search</span>
+                            </button>
+
+                        </div>
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN DOCUMENT CARD -->
+    <div class="documents-card">
+
+        <!-- CARD HEADER -->
+        <div class="documents-card-header">
+
+            <div>
+                <h2 class="documents-card-title">
+                    Student Document Records
+                </h2>
+
+                <p class="documents-card-subtitle">
+                    View documents associated with student applications.
+                </p>
+            </div>
+
+            {% if students %}
+            <div class="student-count">
+                <i class="fa-solid fa-users"></i>
+                <span>{{ students|length }} Students</span>
+            </div>
+            {% endif %}
+
+        </div>
+
+        <!-- STUDENT TABLE -->
+        {% if students %}
+
+        <div class="table-responsive">
+
+            <table class="documents-table">
+
+                <thead>
+                    <tr>
+                        <th class="serial-column">#</th>
+                        <th>Student Name</th>
+                        <th>Application ID</th>
+                        <th class="text-center">Documents Available</th>
+                        <th class="text-center action-column">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for row in students %}
+
+                    <tr>
+
+                        <!-- SERIAL NUMBER -->
+                        <td class="serial-number">
+                            {{ forloop.counter }}
+                        </td>
+
+                        <!-- STUDENT INFORMATION -->
+                        <td>
+                            <div class="student-info">
+
+                                <div class="student-avatar">
+                                    <i class="fa-solid fa-user"></i>
+                                </div>
+
+                                <div class="student-details">
+
+                                    <div class="student-name">
+                                        {{ row.student.first_name }}
+                                        {{ row.student.last_name }}
+                                    </div>
+
+                                    <div class="student-role">
+                                        Student
+                                    </div>
+
+                                </div>
+                            </div>
+                        </td>
+
+                        <!-- APPLICATION ID -->
+                        <td>
+                            <span class="application-id">
+                                <i class="fa-regular fa-id-card"></i>
+                                {{ row.student.application_id }}
+                            </span>
+                        </td>
+
+                        <!-- DOCUMENT COUNT -->
+                        <td class="text-center">
+                            <span class="document-count">
+                                <i class="fa-solid fa-file-lines"></i>
+                                {{ row.document_count }}
+                            </span>
+                        </td>
+
+                        <!-- ACTION -->
+                        <td class="text-center">
+
+                            <a
+                                href="{% url 'documents:student_document_details' row.student.application_id %}"
+                                class="view-documents-btn"
+                            >
+                                <i class="fa-solid fa-folder-open"></i>
+
+                                <span>View Documents</span>
+
+                                <i class="fa-solid fa-arrow-right arrow-icon"></i>
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <!-- EMPTY STATE -->
+        <div class="no-data">
+
+            <div class="empty-icon">
+                <i class="fa-solid fa-folder-open"></i>
+            </div>
+
+            <h3>No Students Found</h3>
+
+            <p>
+                No student applications match your search.
+                Try searching with a different student name
+                or application ID.
+            </p>
+
+            <a
+                href="{% url 'documents:student_documents' %}"
+                class="clear-search-btn"
+            >
+                <i class="fa-solid fa-rotate-left"></i>
+                <span>Clear Search</span>
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

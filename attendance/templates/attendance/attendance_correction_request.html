@@ -1,0 +1,46 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Request Attendance Correction{% endblock %}
+
+{% block content %}
+<style>
+.correction-page { max-width: 760px; margin: 0 auto; padding: 28px; color: #243447; }
+.correction-panel { padding: 24px; background: #fff; border: 1px solid #D8E2EC; border-radius: 10px; }
+.correction-page h1, .correction-page strong { color: #123B63; }
+.correction-page label { display: block; margin: 16px 0 6px; color: #123B63; font-weight: 700; }
+.correction-page select, .correction-page textarea { width: 100%; min-height: 44px; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px; font: inherit; }
+.correction-page textarea { min-height: 130px; resize: vertical; }
+.correction-page button { margin-top: 16px; min-height: 44px; padding: 9px 16px; border: 0; border-radius: 6px; background: #123B63; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+.correction-page button:hover { background: #D97706; }
+@media (max-width: 600px) { .correction-page { padding: 16px; } }
+</style>
+
+<main class="correction-page">
+    <section class="correction-panel">
+        <h1>Request Attendance Correction</h1>
+        <p><strong>Student:</strong> {{ record.student.first_name }} {{ record.student.last_name }} ({{ record.student.application_id }})</p>
+        <p><strong>Class / subject:</strong> {{ record.class_section }} / {{ record.subject }}</p>
+        <p><strong>Date:</strong> {{ record.date|date:"d M Y" }} · <strong>Current status:</strong> {{ record.get_status_display }}</p>
+
+        {% if messages %}
+        <div aria-live="polite">
+            {% for message in messages %}<p>{{ message }}</p>{% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <label for="new_status">Proposed status</label>
+            <select id="new_status" name="new_status" required>
+                <option value="">Select status</option>
+                {% for value, label in status_choices %}
+                {% if value != record.status %}<option value="{{ value }}">{{ label }}</option>{% endif %}
+                {% endfor %}
+            </select>
+            <label for="reason">Reason for correction</label>
+            <textarea id="reason" name="reason" maxlength="2000" required></textarea>
+            <button type="submit">Send Correction Request</button>
+        </form>
+    </section>
+</main>
+{% endblock %}

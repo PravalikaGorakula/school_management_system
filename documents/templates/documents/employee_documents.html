@@ -1,0 +1,1014 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}
+Employee Documents
+{% endblock %}
+
+{% block extra_css %}
+
+<!-- Bootstrap CSS -->
+<link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+>
+
+<!-- Font Awesome -->
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+>
+
+<style>
+/* =========================================================
+   SMS EMPLOYEE DOCUMENTS MODULE
+   THEME: NAVY BLUE + SOFT ORANGE
+   NORMAL FONT SIZE: 18px
+========================================================= */
+
+:root {
+    --deep-blue: #123B63;
+    --deep-blue-dark: #0B2945;
+    --deep-blue-light: #EAF2F8;
+    --deep-blue-soft: #F5F8FB;
+
+    --orange: #F28C28;
+    --orange-hover: #D97706;
+    --orange-light: #FFF4E6;
+
+    --white: #FFFFFF;
+    --background: #F5F8FC;
+
+    --text-primary: #263746;
+    --text-secondary: #667585;
+    --text-light: #8493A3;
+
+    --border: #DFE6ED;
+    --border-dark: #C9D5E0;
+
+    --radius-sm: 8px;
+    --radius-md: 10px;
+    --radius-lg: 12px;
+
+    --shadow-sm: 0 2px 8px rgba(18, 59, 99, 0.05);
+    --shadow-md: 0 5px 16px rgba(18, 59, 99, 0.08);
+
+    --transition: all 0.2s ease-in-out;
+}
+
+/* =========================================================
+   MAIN PAGE
+========================================================= */
+
+.documents-wrapper {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 22px;
+
+    background: var(--background);
+    color: var(--text-primary);
+
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 18px;
+    line-height: 1.5;
+
+    box-sizing: border-box;
+}
+
+.documents-wrapper *,
+.documents-wrapper *::before,
+.documents-wrapper *::after {
+    box-sizing: border-box;
+}
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.documents-header {
+    margin-bottom: 22px;
+    padding: 23px 25px;
+
+    background: var(--white);
+
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--orange);
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+}
+
+.documents-header h1 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin: 0;
+
+    color: var(--deep-blue);
+
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.documents-header h1 i {
+    color: var(--orange);
+    font-size: 27px;
+}
+
+.documents-header p {
+    margin: 8px 0 0;
+
+    color: var(--text-secondary);
+
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+/* =========================================================
+   TOOLBAR
+========================================================= */
+
+.documents-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+
+    margin-bottom: 22px;
+    padding: 18px 20px;
+
+    background: var(--white);
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+}
+
+/* =========================================================
+   BACK BUTTON
+========================================================= */
+
+.back-btn {
+    min-height: 48px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    padding: 10px 18px;
+
+    background: var(--white);
+
+    border: 1px solid var(--border-dark);
+    border-radius: var(--radius-sm);
+
+    color: var(--deep-blue);
+
+    font-size: 18px;
+    font-weight: 600;
+
+    text-decoration: none;
+    white-space: nowrap;
+
+    transition: var(--transition);
+}
+
+.back-btn i {
+    color: var(--orange);
+    font-size: 18px;
+}
+
+.back-btn:hover {
+    background: var(--deep-blue-light);
+    border-color: var(--deep-blue);
+    color: var(--deep-blue);
+
+    transform: translateY(-1px);
+}
+
+/* =========================================================
+   SEARCH FORM
+========================================================= */
+
+.search-form {
+    width: 100%;
+    max-width: 650px;
+
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+}
+
+.search-form input {
+    width: 100%;
+    min-width: 0;
+    height: 48px;
+
+    padding: 10px 15px;
+
+    background: var(--white);
+
+    border: 1px solid var(--border-dark);
+    border-right: none;
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+
+    color: var(--text-primary);
+
+    font-family: inherit;
+    font-size: 18px;
+
+    outline: none;
+    box-shadow: none;
+
+    transition: var(--transition);
+}
+
+.search-form input::placeholder {
+    color: var(--text-light);
+    font-size: 17px;
+    opacity: 1;
+}
+
+.search-form input:focus {
+    border-color: var(--orange);
+    box-shadow: 0 0 0 3px rgba(242, 140, 40, 0.12);
+    position: relative;
+    z-index: 1;
+}
+
+.search-btn {
+    min-width: 120px;
+    min-height: 48px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 10px 17px;
+
+    background: var(--orange);
+
+    border: 1px solid var(--orange);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+
+    color: var(--white);
+
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 600;
+
+    white-space: nowrap;
+    cursor: pointer;
+
+    transition: var(--transition);
+}
+
+.search-btn i {
+    font-size: 17px;
+}
+
+.search-btn:hover {
+    background: var(--orange-hover);
+    border-color: var(--orange-hover);
+    color: var(--white);
+}
+
+.search-btn:active {
+    background: var(--deep-blue);
+    border-color: var(--deep-blue);
+}
+
+/* =========================================================
+   TABLE CARD
+========================================================= */
+
+.documents-table-card {
+    width: 100%;
+
+    background: var(--white);
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+
+    overflow: hidden;
+}
+
+/* =========================================================
+   TABLE RESPONSIVE WRAPPER
+========================================================= */
+
+.documents-table-card {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* =========================================================
+   EMPLOYEE DOCUMENTS TABLE
+========================================================= */
+
+.documents-table {
+    width: 100%;
+    min-width: 1000px;
+
+    margin: 0;
+
+    border-collapse: separate;
+    border-spacing: 0;
+
+    background: var(--white);
+
+    color: var(--text-primary);
+
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 18px;
+}
+
+/* Table header */
+
+.documents-table thead th {
+    padding: 17px 19px;
+
+    background: var(--deep-blue-light);
+
+    color: var(--deep-blue);
+
+    border: none;
+    border-bottom: 2px solid #D1E0EC;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    line-height: 1.5;
+    text-align: left;
+    vertical-align: middle;
+
+    white-space: nowrap;
+}
+
+.documents-table thead th:first-child {
+    width: 75px;
+    padding-left: 23px;
+}
+
+.documents-table thead th:nth-child(4),
+.documents-table thead th:last-child {
+    text-align: center;
+}
+
+/* Table body */
+
+.documents-table tbody td {
+    padding: 19px;
+
+    background: var(--white);
+
+    color: var(--text-primary);
+
+    border: none;
+    border-bottom: 1px solid #E7EDF3;
+
+    font-size: 18px;
+    font-weight: 400;
+
+    line-height: 1.5;
+    vertical-align: middle;
+}
+
+.documents-table tbody tr {
+    transition: var(--transition);
+}
+
+.documents-table tbody tr:hover td {
+    background: #FFF9F1;
+}
+
+.documents-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Serial number */
+
+.documents-table tbody td:first-child {
+    width: 75px;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+/* =========================================================
+   EMPLOYEE NAME
+========================================================= */
+
+.employee-name {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    min-width: 220px;
+
+    color: var(--deep-blue);
+
+    font-size: 18px;
+    font-weight: 700;
+
+    overflow-wrap: anywhere;
+}
+
+.employee-name::before {
+    content: "\f007";
+
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--deep-blue-light);
+
+    border: 1px solid #D5E3EE;
+    border-radius: 10px;
+
+    color: var(--deep-blue);
+
+    font-family: "Font Awesome 6 Free";
+    font-size: 18px;
+    font-weight: 900;
+
+    transition: var(--transition);
+}
+
+.documents-table tbody tr:hover .employee-name::before {
+    background: var(--orange-light);
+    border-color: #F3D2A8;
+    color: var(--orange-hover);
+}
+
+/* =========================================================
+   APPLICATION ID
+========================================================= */
+
+.application-id {
+    max-width: 100%;
+    min-height: 38px;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 7px 11px;
+
+    background: var(--deep-blue-soft);
+
+    border: 1px solid #D8E3EC;
+    border-radius: 7px;
+
+    color: var(--deep-blue);
+
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 17px;
+    font-weight: 600;
+
+    overflow-wrap: anywhere;
+}
+
+.application-id::before {
+    content: "\f2c2";
+
+    color: var(--orange);
+
+    font-family: "Font Awesome 6 Free";
+    font-size: 17px;
+    font-weight: 400;
+
+    flex-shrink: 0;
+}
+
+/* =========================================================
+   DOCUMENT COUNT
+========================================================= */
+
+.document-count {
+    min-width: 48px;
+    min-height: 40px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 7px 13px;
+
+    background: var(--orange-light);
+
+    border: 1px solid #F4D3AD;
+    border-radius: 30px;
+
+    color: var(--orange-hover);
+
+    font-size: 18px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+.document-count::before {
+    content: "\f15c";
+
+    color: var(--orange);
+
+    font-family: "Font Awesome 6 Free";
+    font-size: 17px;
+    font-weight: 400;
+}
+
+/* =========================================================
+   VIEW DOCUMENTS BUTTON
+========================================================= */
+
+.view-btn {
+    min-height: 46px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    padding: 10px 15px;
+
+    background: var(--orange);
+
+    border: 1px solid var(--orange);
+    border-radius: var(--radius-sm);
+
+    color: var(--white);
+
+    font-size: 18px;
+    font-weight: 600;
+
+    text-decoration: none;
+    white-space: nowrap;
+
+    box-shadow: 0 2px 5px rgba(242, 140, 40, 0.13);
+
+    transition: var(--transition);
+}
+
+.view-btn i {
+    font-size: 18px;
+}
+
+.view-btn:hover {
+    background: var(--orange-hover);
+    border-color: var(--orange-hover);
+    color: var(--white);
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 5px 12px rgba(242, 140, 40, 0.22);
+}
+
+.view-btn:active {
+    transform: translateY(0);
+}
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.no-data {
+    min-height: 330px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    padding: 42px 25px;
+
+    background: var(--white);
+    text-align: center;
+}
+
+.no-data > i {
+    width: 78px;
+    height: 78px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 18px;
+
+    background: var(--deep-blue-light);
+
+    border: 1px solid #D5E3EE;
+    border-radius: 50%;
+
+    color: var(--deep-blue);
+
+    font-size: 30px;
+
+    box-shadow: 0 3px 10px rgba(18, 59, 99, 0.05);
+}
+
+.no-data h3 {
+    margin: 0 0 10px;
+
+    color: var(--deep-blue);
+
+    font-size: 25px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.no-data p {
+    max-width: 570px;
+
+    margin: 0;
+
+    color: var(--text-secondary);
+
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.7;
+}
+
+/* =========================================================
+   KEYBOARD ACCESSIBILITY
+========================================================= */
+
+.back-btn:focus-visible,
+.search-btn:focus-visible,
+.view-btn:focus-visible {
+    outline: 3px solid rgba(242, 140, 40, 0.45);
+    outline-offset: 3px;
+}
+
+/* =========================================================
+   TABLE SCROLLBAR
+========================================================= */
+
+.documents-table-card::-webkit-scrollbar {
+    height: 9px;
+}
+
+.documents-table-card::-webkit-scrollbar-track {
+    background: #EDF2F7;
+    border-radius: 10px;
+}
+
+.documents-table-card::-webkit-scrollbar-thumb {
+    background: #C5D2DE;
+    border-radius: 10px;
+}
+
+.documents-table-card::-webkit-scrollbar-thumb:hover {
+    background: var(--orange);
+}
+
+/* =========================================================
+   TABLET RESPONSIVE
+========================================================= */
+
+@media (max-width: 991px) {
+    .documents-wrapper {
+        padding: 17px;
+    }
+
+    .documents-header {
+        padding: 20px;
+    }
+
+    .documents-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 14px;
+        padding: 16px;
+    }
+
+    .back-btn {
+        align-self: flex-start;
+    }
+
+    .search-form {
+        max-width: 100%;
+    }
+
+    .documents-header h1 {
+        font-size: 26px;
+    }
+}
+
+/* =========================================================
+   MOBILE RESPONSIVE
+========================================================= */
+
+@media (max-width: 767px) {
+    .documents-wrapper {
+        padding: 12px;
+    }
+
+    .documents-header {
+        margin-bottom: 16px;
+        padding: 17px;
+    }
+
+    .documents-header h1 {
+        align-items: flex-start;
+        gap: 10px;
+        font-size: 23px;
+    }
+
+    .documents-header h1 i {
+        margin-top: 4px;
+        font-size: 22px;
+    }
+
+    .documents-header p {
+        font-size: 18px;
+    }
+
+    .documents-toolbar {
+        margin-bottom: 16px;
+        padding: 13px;
+    }
+
+    .back-btn {
+        width: 100%;
+        min-height: 48px;
+    }
+
+    .search-form {
+        width: 100%;
+    }
+
+    .search-form input {
+        font-size: 17px;
+    }
+
+    .search-form input::placeholder {
+        font-size: 15px;
+    }
+
+    .search-btn {
+        min-width: 100px;
+        padding: 8px 12px;
+    }
+
+    .documents-table {
+        min-width: 1000px;
+    }
+
+    .documents-table thead th {
+        padding: 15px 16px;
+    }
+
+    .documents-table tbody td {
+        padding: 16px;
+    }
+
+    .no-data {
+        min-height: 300px;
+        padding: 32px 18px;
+    }
+}
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+    .documents-wrapper {
+        padding: 10px;
+    }
+
+    .documents-header {
+        padding: 15px;
+    }
+
+    .documents-header h1 {
+        font-size: 22px;
+    }
+
+    .documents-header p {
+        font-size: 17px;
+    }
+
+    .documents-toolbar {
+        padding: 11px;
+    }
+
+    .back-btn {
+        padding: 9px 12px;
+        font-size: 17px;
+    }
+
+    .search-form input {
+        padding: 9px 10px;
+    }
+
+    .search-btn {
+        min-width: 88px;
+        gap: 6px;
+        padding: 8px 10px;
+        font-size: 16px;
+    }
+
+    .search-btn i {
+        font-size: 15px;
+    }
+
+    .no-data h3 {
+        font-size: 23px;
+    }
+
+    .no-data p {
+        font-size: 17px;
+    }
+
+    .no-data > i {
+        width: 68px;
+        height: 68px;
+        font-size: 27px;
+    }
+}
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    .documents-wrapper *,
+    .documents-wrapper *::before,
+    .documents-wrapper *::after {
+        transition: none !important;
+        animation: none !important;
+        scroll-behavior: auto !important;
+    }
+}
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="documents-wrapper">
+
+    <!-- PAGE HEADER -->
+    <div class="documents-header">
+
+        <h1>
+            <i class="fa-solid fa-user-tie"></i>
+            Employee Documents
+        </h1>
+
+        <p>
+            Select an employee to view all documents uploaded for that employee.
+        </p>
+
+    </div>
+
+    <!-- TOOLBAR -->
+    <div class="documents-toolbar">
+
+        <!-- BACK BUTTON -->
+        <a
+            href="{% url 'documents:home' %}"
+            class="back-btn"
+        >
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Back to Documents</span>
+        </a>
+
+        <!-- SEARCH FORM -->
+        <form
+            method="get"
+            class="search-form"
+        >
+
+            <input
+                type="text"
+                name="search"
+                value="{{ search|default:'' }}"
+                placeholder="Search employee name or application ID..."
+                aria-label="Search employee name or application ID"
+            >
+
+            <button
+                type="submit"
+                class="search-btn"
+            >
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <span>Search</span>
+            </button>
+
+        </form>
+
+    </div>
+
+    <!-- EMPLOYEE DOCUMENTS TABLE CARD -->
+    <div class="documents-table-card">
+
+        {% if employees %}
+
+        <table class="documents-table">
+
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Employee Name</th>
+                    <th>Application ID</th>
+                    <th>Documents Available</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for row in employees %}
+
+                <tr>
+
+                    <!-- SERIAL NUMBER -->
+                    <td>
+                        {{ forloop.counter }}
+                    </td>
+
+                    <!-- EMPLOYEE NAME -->
+                    <td>
+                        <div class="employee-name">
+                            {{ row.employee.first_name }}
+                            {{ row.employee.last_name }}
+                        </div>
+                    </td>
+
+                    <!-- APPLICATION ID -->
+                    <td>
+                        <div class="application-id">
+                            {{ row.employee.application_id }}
+                        </div>
+                    </td>
+
+                    <!-- DOCUMENT COUNT -->
+                    <td style="text-align: center;">
+                        <span class="document-count">
+                            {{ row.document_count }}
+                        </span>
+                    </td>
+
+                    <!-- ACTION -->
+                    <td style="text-align: center;">
+
+                        <a
+                            href="{% url 'documents:employee_document_details' row.employee.application_id %}"
+                            class="view-btn"
+                        >
+                            <i class="fa-solid fa-folder-open"></i>
+                            <span>View Documents</span>
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        {% else %}
+
+        <!-- EMPTY STATE -->
+        <div class="no-data">
+
+            <i class="fa-solid fa-folder-open"></i>
+
+            <h3>No Employees Found</h3>
+
+            <p>
+                No employee applications match your search.
+                Try searching with a different employee name
+                or application ID.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

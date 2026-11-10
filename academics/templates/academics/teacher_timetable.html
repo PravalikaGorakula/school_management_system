@@ -1,0 +1,677 @@
+{% extends "dashboard/base.html" %}
+{% load timetable_filters %}
+
+{% block title %}
+My Timetable | School Management System
+{% endblock %}
+
+{% block page_title %}
+My Timetable
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+.teacher-page {
+    padding: 25px;
+}
+
+.page-header {
+    margin-bottom: 25px;
+}
+
+.page-header h2 {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.page-header p {
+    margin-top: 8px;
+    color: #64748b;
+    font-size: 16px;
+}
+
+
+/* ===============================
+   SUMMARY
+================================ */
+
+.summary-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 18px;
+
+    margin-bottom: 25px;
+}
+
+.summary-card {
+    background: white;
+
+    border-radius: 14px;
+
+    padding: 22px;
+
+    box-shadow:
+        0 4px 15px
+        rgba(15, 23, 42, 0.08);
+}
+
+.summary-card h4 {
+    margin: 0;
+
+    font-size: 15px;
+
+    color: #64748b;
+}
+
+.summary-card strong {
+    display: block;
+
+    margin-top: 8px;
+
+    font-size: 30px;
+
+    color: #8b4513;
+}
+
+
+/* ===============================
+   CARD
+================================ */
+
+.teacher-card {
+    background: white;
+
+    border-radius: 15px;
+
+    margin-bottom: 25px;
+
+    box-shadow:
+        0 4px 15px
+        rgba(15, 23, 42, 0.08);
+
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 20px 24px;
+
+    border-bottom:
+        1px solid #e2e8f0;
+}
+
+.card-header h3 {
+    margin: 0;
+
+    font-size: 21px;
+
+    color: #1e293b;
+}
+
+.card-header p {
+    margin: 6px 0 0;
+
+    color: #64748b;
+
+    font-size: 14px;
+}
+
+.card-body {
+    padding: 24px;
+}
+
+
+/* ===============================
+   CLASSES
+================================ */
+
+.class-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 18px;
+}
+
+.class-card {
+    border:
+        1px solid #e2e8f0;
+
+    border-radius: 12px;
+
+    padding: 18px;
+
+    background: #fff7ed;
+}
+
+.class-card h4 {
+    margin: 0;
+
+    font-size: 20px;
+
+    color: #8b4513;
+}
+
+.class-card p {
+    margin: 7px 0;
+
+    color: #475569;
+
+    font-size: 15px;
+}
+
+
+/* ===============================
+   TIMETABLE
+================================ */
+
+.table-wrapper {
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+.timetable-table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    min-width: 1100px;
+}
+
+.timetable-table th {
+    background: #8b4513;
+
+    color: white;
+
+    padding: 15px 12px;
+
+    font-size: 15px;
+
+    text-align: center;
+}
+
+.timetable-table td {
+    border:
+        1px solid #e2e8f0;
+
+    padding: 10px;
+
+    text-align: center;
+
+    vertical-align: middle;
+}
+
+.day-cell {
+    font-weight: 700;
+
+    background: #fff7ed;
+
+    color: #8b4513;
+
+    min-width: 110px;
+}
+
+.period-cell {
+    min-width: 145px;
+}
+
+.timetable-entry {
+    background: #f8fafc;
+
+    border-radius: 10px;
+
+    padding: 12px;
+
+    min-height: 95px;
+}
+
+.entry-subject {
+    font-size: 16px;
+
+    font-weight: 700;
+
+    color: #8b4513;
+}
+
+.entry-class {
+    margin-top: 6px;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    color: #334155;
+}
+
+.entry-room {
+    margin-top: 5px;
+
+    font-size: 13px;
+
+    color: #64748b;
+}
+
+.empty-cell {
+    color: #94a3b8;
+
+    font-size: 20px;
+}
+
+
+/* ===============================
+   EMPTY
+================================ */
+
+.empty-state {
+    text-align: center;
+
+    padding: 40px;
+
+    color: #64748b;
+}
+
+
+/* ===============================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 1000px) {
+
+    .summary-grid,
+    .class-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+</style>
+
+
+<div class="teacher-page">
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <div class="page-header">
+
+        <h2>
+            <i class="fa-solid fa-calendar-days"></i>
+
+            My Classes & Timetable
+        </h2>
+
+        <p>
+            View your assigned classes and weekly teaching timetable.
+        </p>
+
+    </div>
+
+
+    <!-- =========================
+         SUMMARY
+    ========================== -->
+
+    <div class="summary-grid">
+
+        <div class="summary-card">
+
+            <h4>
+                Assigned Classes
+            </h4>
+
+            <strong>
+                {{ assigned_classes|length }}
+            </strong>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <h4>
+                Subjects Assigned
+            </h4>
+
+            <strong>
+                {{ assignments|length }}
+            </strong>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <h4>
+                Weekly Periods
+            </h4>
+
+            <strong>
+                {{ entries|length }}
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         MY CLASSES
+    ========================== -->
+
+    <div class="teacher-card">
+
+        <div class="card-header">
+
+            <h3>
+                <i class="fa-solid fa-chalkboard"></i>
+
+                My Assigned Classes
+            </h3>
+
+            <p>
+                Classes assigned to you for teaching.
+            </p>
+
+        </div>
+
+
+        <div class="card-body">
+
+            {% if assigned_classes %}
+
+                <div class="class-grid">
+
+                    {% for class in assigned_classes %}
+
+                        <div class="class-card">
+
+                            <h4>
+                                {{ class.grade }} -
+                                {{ class.section }}
+                            </h4>
+
+                            <p>
+                                <strong>
+                                    Academic Year:
+                                </strong>
+
+                                {{ class.academic_year }}
+                            </p>
+
+                            <p>
+                                <strong>
+                                    Status:
+                                </strong>
+
+                                {{ class.status }}
+                            </p>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-state">
+
+                    <i class="fa-solid fa-school"></i>
+
+                    <p>
+                        No classes have been assigned to you yet.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         SUBJECT ASSIGNMENTS
+    ========================== -->
+
+    <div class="teacher-card">
+
+        <div class="card-header">
+
+            <h3>
+                <i class="fa-solid fa-book"></i>
+
+                My Subject Assignments
+            </h3>
+
+            <p>
+                Subjects and classes assigned to you.
+            </p>
+
+        </div>
+
+
+        <div class="card-body">
+
+            {% if assignments %}
+
+                <div class="class-grid">
+
+                    {% for assignment in assignments %}
+
+                        <div class="class-card">
+
+                            <h4>
+                                {{ assignment.subject.subject_name }}
+                            </h4>
+
+                            <p>
+
+                                <strong>
+                                    Class:
+                                </strong>
+
+                                {{ assignment.class_section.grade }}
+                                -
+                                {{ assignment.class_section.section }}
+
+                            </p>
+
+                            <p>
+
+                                <strong>
+                                    Academic Year:
+                                </strong>
+
+                                {{ assignment.academic_year }}
+
+                            </p>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-state">
+
+                    <p>
+                        No subject assignments found.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         WEEKLY TIMETABLE
+    ========================== -->
+
+    <div class="teacher-card">
+
+        <div class="card-header">
+
+            <h3>
+
+                <i class="fa-solid fa-clock"></i>
+
+                My Weekly Timetable
+
+            </h3>
+
+            <p>
+                Your class, subject and period schedule.
+            </p>
+
+        </div>
+
+
+        <div class="card-body">
+
+            {% if entries %}
+
+                <div class="table-wrapper">
+
+                    <table class="timetable-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Day
+                                </th>
+
+                                {% for period in periods %}
+
+                                    <th>
+                                        Period {{ period }}
+                                    </th>
+
+                                {% endfor %}
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for day in days %}
+
+                                <tr>
+
+                                    <td class="day-cell">
+                                        {{ day }}
+                                    </td>
+
+
+                                    {% for period in periods %}
+
+                                        <td class="period-cell">
+
+                                            {% with entry=timetable_grid|get_item:day|get_item:period %}
+
+                                                {% if entry %}
+
+                                                    <div class="timetable-entry">
+
+                                                        <div class="entry-subject">
+
+                                                            {{ entry.subject.subject_name }}
+
+                                                        </div>
+
+
+                                                        <div class="entry-class">
+
+                                                            <i class="fa-solid fa-school"></i>
+
+                                                            {{ entry.class_section.grade }}
+                                                            -
+                                                            {{ entry.class_section.section }}
+
+                                                        </div>
+
+
+                                                        {% if entry.room %}
+
+                                                            <div class="entry-room">
+
+                                                                <i class="fa-solid fa-door-open"></i>
+
+                                                                Room:
+                                                                {{ entry.room }}
+
+                                                            </div>
+
+                                                        {% endif %}
+
+                                                    </div>
+
+                                                {% else %}
+
+                                                    <div class="empty-cell">
+                                                        —
+                                                    </div>
+
+                                                {% endif %}
+
+                                            {% endwith %}
+
+                                        </td>
+
+                                    {% endfor %}
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-state">
+
+                    <i class="fa-solid fa-calendar-xmark"></i>
+
+                    <h3>
+                        No Timetable Assigned
+                    </h3>
+
+                    <p>
+                        Your timetable will appear here once the
+                        Vice Principal assigns your periods.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

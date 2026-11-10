@@ -1,0 +1,515 @@
+
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+Buses
+{% endblock %}
+
+{% block content %}
+
+<style>
+/* =========================================
+   BUSES PAGE - DASHBOARD QUICK CARD STYLE
+========================================= */
+
+.buses-page {
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 28px;
+    box-sizing: border-box;
+    color: #243447;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.buses-page *,
+.buses-page *::before,
+.buses-page *::after {
+    box-sizing: border-box;
+}
+
+/* PAGE HEADER */
+
+.buses-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    background: linear-gradient(
+        120deg,
+        #0B2945,
+        #123B63
+    );
+
+    color: #FFFFFF;
+    padding: 30px;
+    margin-bottom: 34px;
+
+    border-radius: 18px;
+    box-shadow: 0 4px 16px rgba(18, 59, 99, 0.07);
+}
+
+.buses-header-icon {
+    width: 64px;
+    height: 64px;
+    min-width: 64px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(255, 255, 255, 0.13);
+    color: #FFD19A;
+
+    border-radius: 15px;
+    font-size: 29px;
+}
+
+.buses-header-content {
+    min-width: 0;
+}
+
+.buses-header-content h1 {
+    margin: 0 0 7px;
+    color: #FFFFFF;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.buses-header-content p {
+    margin: 0;
+    color: #E5EDF5;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+/* BUS CARDS GRID */
+
+.buses-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 26px;
+    align-items: stretch;
+}
+
+/* BUS MODULE CARD */
+
+.bus-module-card {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    width: 100%;
+    min-width: 0;
+    min-height: 255px;
+    padding: 28px 26px 54px;
+
+    color: #243447;
+    text-decoration: none;
+
+    background: #FFFFFF;
+    border: 1px solid #E0E7EF;
+    border-radius: 14px;
+
+    box-shadow: 0 4px 16px rgba(18, 59, 99, 0.07);
+
+    overflow: hidden;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+/* ORANGE BOTTOM LINE */
+
+.bus-module-card::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 4px;
+    background: #F28C28;
+
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.2s ease;
+}
+
+.bus-module-card:hover {
+    color: #243447;
+    text-decoration: none;
+
+    transform: translateY(-5px);
+    border-color: #F5C38F;
+
+    box-shadow: 0 10px 25px rgba(18, 59, 99, 0.13);
+}
+
+.bus-module-card:hover::after {
+    transform: scaleX(1);
+}
+
+.bus-module-card:focus-visible {
+    outline: 3px solid #F28C28;
+    outline-offset: 4px;
+}
+
+/* CARD ICON */
+
+.bus-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 66px;
+    height: 66px;
+    min-width: 66px;
+
+    margin-bottom: 19px;
+
+    border-radius: 16px;
+    background: #FFF4E6;
+    color: #D97706;
+
+    font-size: 28px;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.bus-module-card:hover .bus-card-icon {
+    background: #F28C28;
+    color: #FFFFFF;
+}
+
+/* ALTERNATING ICON COLORS */
+
+.bus-module-card:nth-child(3n + 2) .bus-card-icon {
+    background: #EAF2F8;
+    color: #123B63;
+}
+
+.bus-module-card:nth-child(3n + 3) .bus-card-icon {
+    background: #EAF7F0;
+    color: #25845A;
+}
+
+.bus-module-card:nth-child(3n + 2):hover .bus-card-icon,
+.bus-module-card:nth-child(3n + 3):hover .bus-card-icon {
+    background: #F28C28;
+    color: #FFFFFF;
+}
+
+/* CARD TITLE */
+
+.bus-card-title {
+    margin: 0 0 10px;
+
+    color: #0B2945;
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1.5;
+
+    overflow-wrap: anywhere;
+}
+
+/* CARD DESCRIPTION */
+
+.bus-card-description {
+    margin: 0;
+
+    color: #5F6F80;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.7;
+
+    overflow-wrap: anywhere;
+}
+
+/* ARROW */
+
+.bus-card-arrow {
+    position: absolute;
+    right: 24px;
+    bottom: 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 38px;
+    height: 38px;
+
+    border-radius: 50%;
+    background: #EAF2F8;
+    color: #123B63;
+
+    font-size: 16px;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.bus-module-card:hover .bus-card-arrow {
+    background: #F28C28;
+    color: #FFFFFF;
+    transform: translateX(3px);
+}
+
+/* TABLET */
+
+@media (max-width: 1200px) {
+    .buses-cards-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 22px;
+    }
+
+    .bus-module-card {
+        min-height: 245px;
+    }
+}
+
+/* MOBILE */
+
+@media (max-width: 768px) {
+    .buses-page {
+        padding: 18px;
+    }
+
+    .buses-header {
+        padding: 24px;
+        margin-bottom: 28px;
+    }
+
+    .buses-header-content h1 {
+        font-size: 26px;
+    }
+
+    .buses-cards-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .bus-module-card {
+        min-height: 230px;
+        padding: 24px 22px 54px;
+    }
+
+    .bus-card-title {
+        font-size: 20px;
+    }
+}
+
+/* SMALL MOBILE */
+
+@media (max-width: 420px) {
+    .buses-page {
+        padding: 12px;
+    }
+
+    .buses-header {
+        gap: 14px;
+        padding: 20px;
+    }
+
+    .buses-header-icon {
+        width: 52px;
+        height: 52px;
+        min-width: 52px;
+        font-size: 23px;
+    }
+
+    .buses-header-content h1 {
+        font-size: 23px;
+    }
+
+    .buses-header-content p {
+        font-size: 16px;
+    }
+
+    .bus-module-card {
+        min-height: 220px;
+        padding: 22px 20px 52px;
+    }
+
+    .bus-card-icon {
+        width: 58px;
+        height: 58px;
+        min-width: 58px;
+        font-size: 24px;
+    }
+}
+</style>
+
+<div class="buses-page">
+
+    <!-- PAGE HEADER -->
+
+    <div class="buses-header">
+
+        <div class="buses-header-icon">
+            <i class="fa-solid fa-bus"></i>
+        </div>
+
+        <div class="buses-header-content">
+            <h1>Buses</h1>
+
+            <p>
+                Manage and monitor school transport operations.
+            </p>
+        </div>
+
+    </div>
+
+    <!-- BUS MODULE CARDS -->
+
+    <div class="buses-cards-grid">
+
+        <!-- ALL BUSES -->
+
+        <a href="{% url 'transport:vp_all_buses' %}"
+           class="bus-module-card">
+
+            <div class="bus-card-icon">
+                <i class="fa-solid fa-bus"></i>
+            </div>
+
+            <h2 class="bus-card-title">All Buses</h2>
+
+            <p class="bus-card-description">
+                View all school buses, registration details,
+                drivers, routes and current status.
+            </p>
+
+            <div class="bus-card-arrow">
+                <i class="fa-solid fa-arrow-right"></i>
+            </div>
+
+        </a>
+
+        <!-- STUDENT ASSIGNMENT -->
+
+        <a href="{% url 'transport:vp_student_assignment' %}"
+           class="bus-module-card">
+
+            <div class="bus-card-icon">
+                <i class="fa-solid fa-user-graduate"></i>
+            </div>
+
+            <h2 class="bus-card-title">Student Assignment</h2>
+
+            <p class="bus-card-description">
+                View and manage students assigned to school
+                buses, routes and pickup stops.
+            </p>
+
+            <div class="bus-card-arrow">
+                <i class="fa-solid fa-arrow-right"></i>
+            </div>
+
+        </a>
+
+        <!-- TRIP HISTORY -->
+
+        <a href="#"
+           class="bus-module-card">
+
+            <div class="bus-card-icon">
+                <i class="fa-solid fa-route"></i>
+            </div>
+
+            <h2 class="bus-card-title">Trip History</h2>
+
+            <p class="bus-card-description">
+                View complete bus trip history including dates,
+                routes, drivers and trip status.
+            </p>
+
+            <div class="bus-card-arrow">
+                <i class="fa-solid fa-arrow-right"></i>
+            </div>
+
+        </a>
+
+        <!-- BUS LOCATION -->
+
+        <a href="#"
+           class="bus-module-card">
+
+            <div class="bus-card-icon">
+                <i class="fa-solid fa-location-dot"></i>
+            </div>
+
+            <h2 class="bus-card-title">Bus Location</h2>
+
+            <p class="bus-card-description">
+                Monitor bus locations, GPS status, speed
+                and latest location updates.
+            </p>
+
+            <div class="bus-card-arrow">
+                <i class="fa-solid fa-arrow-right"></i>
+            </div>
+
+        </a>
+
+        <!-- SAFETY ALERTS -->
+
+        <a href="#"
+           class="bus-module-card">
+
+            <div class="bus-card-icon">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+
+            <h2 class="bus-card-title">Safety Alerts</h2>
+
+            <p class="bus-card-description">
+                Monitor overspeed, GPS, route deviation,
+                emergency and other safety alerts.
+            </p>
+
+            <div class="bus-card-arrow">
+                <i class="fa-solid fa-arrow-right"></i>
+            </div>
+
+        </a>
+
+        <!-- BUS ISSUES -->
+
+        <a href="#"
+           class="bus-module-card">
+
+            <div class="bus-card-icon">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+
+            <h2 class="bus-card-title">Bus Issues</h2>
+
+            <p class="bus-card-description">
+                View reported bus issues, maintenance
+                problems and their current status.
+            </p>
+
+            <div class="bus-card-arrow">
+                <i class="fa-solid fa-arrow-right"></i>
+            </div>
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

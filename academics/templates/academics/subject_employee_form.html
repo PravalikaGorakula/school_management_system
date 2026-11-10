@@ -1,0 +1,437 @@
+{% extends "dashboard/base.html" %}
+
+{% block content %}
+
+<style>
+
+    .page-wrapper {
+        padding: 25px;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 25px;
+    }
+
+    .page-title h1 {
+        margin: 0;
+        color: #123B63;
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+    .breadcrumb {
+        margin-top: 7px;
+        color: #64748B;
+        font-size: 16px;
+    }
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 11px 18px;
+        border-radius: 9px;
+        background: #EEF6FF;
+        color: #123B63;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .back-btn:hover {
+        background: #EAF2F8;
+    }
+
+    .form-card {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 14px;
+        box-shadow: 0 10px 35px rgba(15, 23, 42, 0.08);
+        padding: 28px;
+        max-width: 850px;
+    }
+
+    .form-card h2 {
+        margin: 0 0 22px;
+        color: #123B63;
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #1F2937;
+        font-size: 17px;
+        font-weight: 600;
+    }
+
+    .form-control {
+        width: 100%;
+        min-height: 48px;
+        padding: 10px 13px;
+        border: 1px solid #CBD5E1;
+        border-radius: 9px;
+        background: #FFFFFF;
+        color: #1F2937;
+        font-size: 17px;
+        outline: none;
+        box-sizing: border-box;
+    }
+
+    .form-control:focus {
+        border-color: #123B63;
+        box-shadow: 0 0 0 3px rgba(18, 59, 99, 0.10);
+    }
+
+    .help-text {
+        margin-top: 6px;
+        color: #64748B;
+        font-size: 14px;
+    }
+
+    .checkbox-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 8px;
+    }
+
+    .checkbox-row input {
+        width: 19px;
+        height: 19px;
+        accent-color: #F28C28;
+    }
+
+    .checkbox-row label {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 500;
+    }
+
+    .error-box {
+        background: #FEF2F2;
+        border: 1px solid #FECACA;
+        color: #B91C1C;
+        border-radius: 9px;
+        padding: 13px 16px;
+        margin-bottom: 20px;
+        font-size: 16px;
+    }
+
+    .field-error {
+        margin-top: 6px;
+        color: #DC2626;
+        font-size: 14px;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 28px;
+        padding-top: 22px;
+        border-top: 1px solid #E2E8F0;
+    }
+
+    .btn {
+        min-height: 46px;
+        padding: 10px 20px;
+        border-radius: 9px;
+        border: none;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-cancel {
+        background: #F1F5F9;
+        color: #475569;
+    }
+
+    .btn-cancel:hover {
+        background: #E2E8F0;
+    }
+
+    .btn-save {
+        background: #F28C28;
+        color: #FFFFFF;
+    }
+
+    .btn-save:hover {
+        background: #D97706;
+    }
+
+    @media (max-width: 768px) {
+
+        .page-wrapper {
+            padding: 16px;
+        }
+
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .page-title h1 {
+            font-size: 24px;
+        }
+
+        .form-card {
+            padding: 20px;
+        }
+
+        .form-actions {
+            flex-direction: column-reverse;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+
+</style>
+
+
+<div class="page-wrapper">
+
+    <!-- =====================================================
+         PAGE HEADER
+    ====================================================== -->
+
+    <div class="page-header">
+
+        <div class="page-title">
+
+            <h1>
+                <i class="fa-solid fa-user-plus"></i>
+                Assign Employee
+            </h1>
+
+            <div class="breadcrumb">
+                {{ breadcrumb }}
+            </div>
+
+        </div>
+
+        <a
+            href="{% url 'academics:subjects' %}"
+            class="back-btn"
+        >
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to Subjects
+        </a>
+
+    </div>
+
+
+    <!-- =====================================================
+         FORM CARD
+    ====================================================== -->
+
+    <div class="form-card">
+
+        <h2>
+            Assign Employee to Subject
+        </h2>
+
+
+        <!-- NON FIELD ERRORS -->
+
+        {% if form.non_field_errors %}
+
+            <div class="error-box">
+
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+
+            <!-- =================================================
+                 SUBJECT
+            ================================================== -->
+
+            <div class="form-group">
+
+                <label for="{{ form.subject.id_for_label }}">
+                    Subject
+                </label>
+
+                {{ form.subject }}
+
+                {% if form.subject.errors %}
+
+                    <div class="field-error">
+                        {{ form.subject.errors }}
+                    </div>
+
+                {% endif %}
+
+                <div class="help-text">
+                    Select the subject that you want to assign.
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 EMPLOYEE / TEACHER
+            ================================================== -->
+
+            <div class="form-group">
+
+                <label for="{{ form.employee.id_for_label }}">
+                    Employee / Teacher
+                </label>
+
+                {{ form.employee }}
+
+                {% if form.employee.errors %}
+
+                    <div class="field-error">
+                        {{ form.employee.errors }}
+                    </div>
+
+                {% endif %}
+
+                <div class="help-text">
+                    Select the teacher who will handle this subject.
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 CLASS & SECTION
+            ================================================== -->
+
+            <div class="form-group">
+
+                <label for="{{ form.class_section.id_for_label }}">
+                    Class & Section
+                </label>
+
+                {{ form.class_section }}
+
+                {% if form.class_section.errors %}
+
+                    <div class="field-error">
+                        {{ form.class_section.errors }}
+                    </div>
+
+                {% endif %}
+
+                <div class="help-text">
+                    Select the class and section for this subject assignment.
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 ACADEMIC YEAR
+            ================================================== -->
+
+            <div class="form-group">
+
+                <label for="{{ form.academic_year.id_for_label }}">
+                    Academic Year
+                </label>
+
+                {{ form.academic_year }}
+
+                {% if form.academic_year.errors %}
+
+                    <div class="field-error">
+                        {{ form.academic_year.errors }}
+                    </div>
+
+                {% endif %}
+
+                <div class="help-text">
+                    Example: 2026-27
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 ACTIVE ASSIGNMENT
+            ================================================== -->
+
+            <div class="form-group">
+
+                <div class="checkbox-row">
+
+                    {{ form.is_active }}
+
+                    <label for="{{ form.is_active.id_for_label }}">
+                        Active Assignment
+                    </label>
+
+                </div>
+
+                {% if form.is_active.errors %}
+
+                    <div class="field-error">
+                        {{ form.is_active.errors }}
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- =================================================
+                 ACTIONS
+            ================================================== -->
+
+            <div class="form-actions">
+
+                <a
+                    href="{% url 'academics:subjects' %}"
+                    class="btn btn-cancel"
+                >
+                    <i class="fa-solid fa-xmark"></i>
+                    Cancel
+                </a>
+
+                <button
+                    type="submit"
+                    class="btn btn-save"
+                >
+                    <i class="fa-solid fa-user-plus"></i>
+                    Assign Employee
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

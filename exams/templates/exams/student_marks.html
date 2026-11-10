@@ -1,0 +1,926 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+My Marks
+{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --orange-light: #FFF4E6;
+        --white: #FFFFFF;
+        --background: #F6F8FB;
+        --text-primary: #172033;
+        --text-secondary: #64748B;
+        --border: #E2E8F0;
+        --border-dark: #CBD5E1;
+        --success: #198754;
+        --danger: #DC2626;
+    }
+
+    .marks-page {
+        min-height: calc(100vh - 70px);
+        padding: 24px;
+        background: var(--background);
+    }
+
+    /* HEADER */
+
+    .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+    .heading-area {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .heading-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 10px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 23px;
+    }
+
+    .heading-area h1 {
+        margin: 0;
+        color: var(--deep-blue);
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+    .heading-area p {
+        margin: 5px 0 0;
+        color: var(--text-secondary);
+        font-size: 18px;
+    }
+
+    /* FILTER */
+
+    .filter-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 20px 22px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+    }
+
+    .filter-title {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin-bottom: 16px;
+        color: var(--deep-blue);
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .filter-form {
+        display: flex;
+        align-items: end;
+        gap: 14px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        min-width: 280px;
+    }
+
+    .form-group label {
+        color: var(--text-primary);
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .form-group select {
+        height: 46px;
+        padding: 0 13px;
+        border: 1px solid var(--border-dark);
+        border-radius: 7px;
+        background: var(--white);
+        color: var(--text-primary);
+        font-size: 18px;
+        outline: none;
+    }
+
+    .form-group select:focus {
+        border-color: var(--deep-blue);
+        box-shadow: 0 0 0 3px rgba(18, 59, 99, 0.08);
+    }
+
+    .filter-btn {
+        height: 46px;
+        padding: 0 20px;
+        border: none;
+        border-radius: 7px;
+        background: var(--deep-blue);
+        color: var(--white);
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .filter-btn:hover {
+        background: var(--deep-blue-dark);
+    }
+
+    /* STUDENT INFO */
+
+    .student-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 22px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+    }
+
+    .student-icon {
+        width: 62px;
+        height: 62px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+    }
+
+    .student-info h2 {
+        margin: 0 0 5px;
+        color: var(--deep-blue);
+        font-size: 23px;
+    }
+
+    .student-info p {
+        margin: 3px 0;
+        color: var(--text-secondary);
+        font-size: 18px;
+    }
+
+    /* STATISTICS */
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 21px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+    }
+
+    .stat-icon {
+        width: 52px;
+        height: 52px;
+        flex-shrink: 0;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        font-size: 22px;
+    }
+
+    .stat-card:nth-child(2) .stat-icon {
+        background: var(--orange-light);
+        color: var(--orange-hover);
+    }
+
+    .stat-card:nth-child(3) .stat-icon {
+        background: #EAF7EF;
+        color: var(--success);
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-size: 18px;
+        margin-bottom: 4px;
+    }
+
+    .stat-value {
+        color: var(--deep-blue);
+        font-size: 26px;
+        font-weight: 700;
+    }
+
+    /* TABLE CARD */
+
+    .table-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+    }
+
+    .table-header {
+        padding: 19px 22px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .table-title {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: var(--deep-blue);
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .marks-table {
+        width: 100%;
+        min-width: 950px;
+        border-collapse: collapse;
+    }
+
+    .marks-table th {
+        padding: 15px 16px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue-dark);
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+        font-size: 18px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .marks-table td {
+        padding: 16px;
+        color: var(--text-primary);
+        border-bottom: 1px solid var(--border);
+        font-size: 18px;
+        vertical-align: middle;
+    }
+
+    .marks-table tbody tr:hover {
+        background: #FAFCFE;
+    }
+
+    .subject-name {
+        color: var(--deep-blue);
+        font-weight: 700;
+    }
+
+    .subject-code {
+        color: var(--text-secondary);
+    }
+
+    .marks-value {
+        color: var(--deep-blue);
+        font-weight: 700;
+    }
+
+    .percentage {
+        font-weight: 700;
+    }
+
+    /* PROGRESS */
+
+    .percentage-wrapper {
+        min-width: 150px;
+    }
+
+    .percentage-text {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 7px;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 8px;
+        overflow: hidden;
+        border-radius: 10px;
+        background: #E2E8F0;
+    }
+
+    .progress-fill {
+        height: 100%;
+        border-radius: 10px;
+        background: var(--deep-blue);
+    }
+
+    /* GRADE */
+
+    .grade-badge {
+        min-width: 50px;
+        padding: 7px 10px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 7px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    /* STATUS */
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 12px;
+        border-radius: 20px;
+        font-size: 17px;
+        font-weight: 600;
+    }
+
+    .status-published {
+        background: #EAF7EF;
+        color: var(--success);
+    }
+
+    .status-pending {
+        background: var(--orange-light);
+        color: var(--orange-hover);
+    }
+
+    /* REPORT BUTTON */
+
+    .report-btn {
+        height: 42px;
+        padding: 0 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        border-radius: 7px;
+        background: var(--orange);
+        border: 1px solid var(--orange);
+        color: var(--white);
+        text-decoration: none;
+        font-size: 17px;
+        font-weight: 600;
+    }
+
+    .report-btn:hover {
+        background: var(--orange-hover);
+        border-color: var(--orange-hover);
+    }
+
+    /* EMPTY */
+
+    .empty-state {
+        padding: 65px 20px;
+        text-align: center;
+    }
+
+    .empty-icon {
+        width: 70px;
+        height: 70px;
+        margin: 0 auto 16px;
+        border-radius: 50%;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+    }
+
+    .empty-state h3 {
+        margin: 0 0 8px;
+        color: var(--deep-blue);
+        font-size: 21px;
+    }
+
+    .empty-state p {
+        margin: 0;
+        color: var(--text-secondary);
+        font-size: 18px;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 1000px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .form-group {
+            min-width: 100%;
+        }
+
+        .filter-btn {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 700px) {
+        .marks-page {
+            padding: 16px;
+        }
+
+        .page-header {
+            align-items: flex-start;
+        }
+
+        .heading-area h1 {
+            font-size: 24px;
+        }
+
+        .student-card {
+            align-items: flex-start;
+        }
+    }
+</style>
+
+
+<div class="marks-page">
+
+    <!-- =========================
+         PAGE HEADER
+    ========================== -->
+
+    <div class="page-header">
+
+        <div class="heading-area">
+
+            <div class="heading-icon">
+                <i class="fa-solid fa-award"></i>
+            </div>
+
+            <div>
+
+                <h1>
+                    My Marks
+                </h1>
+
+                <p>
+                    View your examination marks and academic performance
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         EXAM FILTER
+    ========================== -->
+
+    <div class="filter-card">
+
+        <div class="filter-title">
+            <i class="fa-solid fa-filter"></i>
+            Select Examination
+        </div>
+
+        <form method="get">
+
+            <div class="filter-form">
+
+                <div class="form-group">
+
+                    <label for="examination">
+                        Examination
+                    </label>
+
+                    <select
+                        id="examination"
+                        name="examination"
+                    >
+
+                        <option value="">
+                            All Published Examinations
+                        </option>
+
+                        {% for exam in examinations %}
+
+                            <option
+                                value="{{ exam.pk }}"
+                                {% if selected_examination and selected_examination.pk == exam.pk %}
+                                    selected
+                                {% elif request.GET.examination == exam.pk|stringformat:"s" %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ exam.exam_name }}
+
+                                {% if exam.academic_year %}
+                                    - {{ exam.academic_year }}
+                                {% endif %}
+
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="filter-btn"
+                >
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    View Marks
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+    <div class="stats-grid">
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                <i class="fa-solid fa-star"></i>
+            </div>
+
+            <div>
+
+                <div class="stat-label">
+                    Total Obtained
+                </div>
+
+                <div class="stat-value">
+
+                    {% if total_obtained %}
+                        {{ total_obtained }}
+                    {% else %}
+                        0
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+
+            <div>
+
+                <div class="stat-label">
+                    Maximum Marks
+                </div>
+
+                <div class="stat-value">
+
+                    {% if total_maximum %}
+                        {{ total_maximum }}
+                    {% else %}
+                        0
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                <i class="fa-solid fa-percent"></i>
+            </div>
+
+            <div>
+
+                <div class="stat-label">
+                    Overall Percentage
+                </div>
+
+                <div class="stat-value">
+
+                    {% if overall_percentage %}
+                        {{ overall_percentage }}%
+                    {% else %}
+                        0%
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         MARKS TABLE
+    ========================== -->
+
+    <div class="table-card">
+
+        <div class="table-header">
+
+            <div class="table-title">
+
+                <i class="fa-solid fa-table"></i>
+
+                Subject-wise Marks
+
+            </div>
+
+        </div>
+
+
+        {% if marks %}
+
+            <div class="table-wrapper">
+
+                <table class="marks-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>#</th>
+
+                            <th>Subject</th>
+
+                            <th>Subject Code</th>
+
+                            <th>Maximum Marks</th>
+
+                            <th>Obtained Marks</th>
+
+                            <th>Percentage</th>
+
+                            <th>Grade</th>
+
+                            <th>Status</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for mark in marks %}
+
+                            <tr>
+
+                                <!-- NUMBER -->
+
+                                <td>
+                                    {{ forloop.counter }}
+                                </td>
+
+
+                                <!-- SUBJECT -->
+
+                                <td>
+
+                                    <span class="subject-name">
+
+                                        {% if mark.subject.subject_name %}
+                                            {{ mark.subject.subject_name }}
+                                        {% else %}
+                                            {{ mark.subject }}
+                                        {% endif %}
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- SUBJECT CODE -->
+
+                                <td>
+
+                                    <span class="subject-code">
+
+                                        {% if mark.subject.subject_code %}
+                                            {{ mark.subject.subject_code }}
+                                        {% elif mark.subject.code %}
+                                            {{ mark.subject.code }}
+                                        {% else %}
+                                            —
+                                        {% endif %}
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- MAX MARKS -->
+
+                                <td>
+
+                                    <strong>
+                                        {{ mark.max_marks }}
+                                    </strong>
+
+                                </td>
+
+
+                                <!-- OBTAINED -->
+
+                                <td>
+
+                                    <span class="marks-value">
+                                        {{ mark.obtained_marks }}
+                                    </span>
+
+                                </td>
+
+
+                                <!-- PERCENTAGE -->
+
+                                <td>
+
+                                    <div class="percentage-wrapper">
+
+                                        <div class="percentage-text">
+
+                                            <span class="percentage">
+
+                                                {% if mark.percentage %}
+                                                    {{ mark.percentage }}%
+                                                {% else %}
+                                                    —
+                                                {% endif %}
+
+                                            </span>
+
+                                        </div>
+
+
+                                        {% if mark.percentage %}
+
+                                            <div class="progress-bar">
+
+                                                <div
+                                                    class="progress-fill"
+                                                    style="width: {{ mark.percentage }}%;"
+                                                ></div>
+
+                                            </div>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- GRADE -->
+
+                                <td>
+
+                                    <span class="grade-badge">
+
+                                        {% if mark.grade %}
+                                            {{ mark.grade }}
+                                        {% else %}
+                                            —
+                                        {% endif %}
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- STATUS -->
+
+                                <td>
+
+                                    {% if mark.status == "published" %}
+
+                                        <span class="status-badge status-published">
+
+                                            <i class="fa-solid fa-circle-check"></i>
+
+                                            Published
+
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="status-badge status-pending">
+
+                                            <i class="fa-solid fa-clock"></i>
+
+                                            {{ mark.status|title|default:"Pending" }}
+
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    <i class="fa-solid fa-file-circle-xmark"></i>
+                </div>
+
+                <h3>
+                    No Marks Available
+                </h3>
+
+                <p>
+                    Your published examination marks will appear here.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- =========================
+         REPORT CARD
+    ========================== -->
+
+    {% if selected_examination and student %}
+
+        <div style="
+            margin-top:20px;
+            display:flex;
+            justify-content:flex-end;
+        ">
+
+            <a
+                href="{% url 'exams:report_card' student.pk %}?examination={{ selected_examination.pk }}"
+                class="report-btn"
+            >
+                <i class="fa-solid fa-file-lines"></i>
+                View Report Card
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,857 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}School Management System{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'dashboard/css/theme.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/css/sidebar.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <style>
+        .topbar {
+            width: 100%;
+            height: 78px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            background: #fff;
+            border-bottom: 1px solid #E2E8F0;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            min-width: 0;
+        }
+
+        .topbar .sidebar-toggle {
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #E2E8F0;
+            border-radius: 10px;
+            background: #fff;
+            color: #123B63;
+            font-size: 17px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .topbar .sidebar-toggle:hover {
+            background: #EAF2F8;
+            border-color: #F28C28;
+            color: #F28C28;
+        }
+
+        .topbar .page-heading {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-width: 0;
+        }
+
+        .topbar .page-heading h1 {
+            margin: 0;
+            color: #123B63;
+            font-size: 22px;
+            font-weight: 700;
+            line-height: 1.25;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .topbar .page-heading span {
+            display: block;
+            margin-top: 4px;
+            color: #64748B;
+            font-size: 13px;
+            font-weight: 500;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-shrink: 0;
+        }
+
+        .topbar .topbar-icon {
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border: 1px solid #E2E8F0;
+            border-radius: 10px;
+            background: #fff;
+            color: #123B63;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .topbar .topbar-icon:hover {
+            background: #FFF4E6;
+            border-color: #F28C28;
+            color: #F28C28;
+        }
+
+        .topbar .notification-dot {
+            position: absolute;
+            top: 7px;
+            right: 7px;
+            width: 7px;
+            height: 7px;
+            background: #F28C28;
+            border: 2px solid #fff;
+            border-radius: 50%;
+        }
+
+        .topbar .topbar-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 10px 6px 6px;
+            border: 1px solid transparent;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .topbar .topbar-user:hover {
+            background: #EAF2F8;
+            border-color: #E2E8F0;
+        }
+
+        .topbar .topbar-avatar {
+            width: 42px;
+            height: 42px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #123B63;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .topbar .topbar-user-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-width: 110px;
+        }
+
+        .topbar .topbar-user-info strong {
+            display: block;
+            margin: 0;
+            color: #123B63;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1.3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .topbar .topbar-user-info span {
+            display: block;
+            margin-top: 3px;
+            color: #64748B;
+            font-size: 12px;
+            font-weight: 500;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 900px) {
+            .topbar {
+                height: 70px;
+                padding: 0 20px;
+            }
+
+            .topbar .page-heading h1 {
+                font-size: 20px;
+            }
+
+            .topbar .page-heading span {
+                font-size: 12px;
+            }
+
+            .topbar-right {
+                gap: 8px;
+            }
+
+            .topbar .topbar-user-info {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .topbar {
+                height: 64px;
+                padding: 0 14px;
+            }
+
+            .topbar-left {
+                gap: 10px;
+            }
+
+            .topbar .sidebar-toggle,
+            .topbar .topbar-icon {
+                width: 38px;
+                height: 38px;
+            }
+
+            .topbar .page-heading h1 {
+                font-size: 17px;
+            }
+
+            .topbar .page-heading span {
+                display: none;
+            }
+
+            .topbar .topbar-avatar {
+                width: 38px;
+                height: 38px;
+                font-size: 14px;
+            }
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+    <div class="dashboard-wrapper">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+
+            <div class="sidebar-logo">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-school"></i>
+                </div>
+
+                <div class="logo-text">
+                    <h2>SMS</h2>
+                    <span>School Management</span>
+                </div>
+            </div>
+
+            <!-- Sidebar User -->
+            <div class="sidebar-user">
+                <div class="sidebar-user-avatar">
+                    {% if user.first_name %}
+                    {{ user.first_name|first|upper }}
+                    {% else %}
+                    {{ user.username|first|upper }}
+                    {% endif %}
+                </div>
+
+                <div class="sidebar-user-info">
+                    <strong>
+                        {% if user.get_full_name %}
+                        {{ user.get_full_name }}
+                        {% else %}
+                        {{ user.username }}
+                        {% endif %}
+                    </strong>
+                    <span>{{ role_display }}</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-navigation">
+
+                <!-- =================================================
+                 CHAIRMAN ONLY MENU
+                 Chairman login ayinappudu ee menu matrame vastundi.
+            ================================================== -->
+
+                {% if request.user.profile.role == "chairman" %}
+
+                <div class="menu-section">
+
+                    <div class="menu-section-title">MANAGEMENT</div>
+
+                    <a href="{% url 'dashboard:chairman_dashboard' %}"
+                        class="sidebar-link {% if request.resolver_match.url_name == 'chairman_dashboard' %}active{% endif %}">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-house"></i>
+                        </span>
+                        <span class="sidebar-link-text">Dashboard</span>
+                    </a>
+
+                    <a href="{% url 'dashboard:chairman_students' %}"
+                        class="sidebar-link {% if request.resolver_match.url_name == 'chairman_students' %}active{% endif %}">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-user-graduate"></i>
+                        </span>
+                        <span class="sidebar-link-text">Students</span>
+                    </a>
+
+                    <a href="{% url 'dashboard:chairman_employees' %}"
+                        class="sidebar-link {% if request.resolver_match.url_name == 'chairman_employees' %}active{% endif %}">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-users"></i>
+                        </span>
+                        <span class="sidebar-link-text">Employees</span>
+                    </a>
+
+                    <a href="{% url 'dashboard:chairman_academics' %}"
+                        class="sidebar-link {% if request.resolver_match.url_name == 'chairman_academics' %}active{% endif %}">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-book-open"></i>
+                        </span>
+                        <span class="sidebar-link-text">Academics</span>
+                    </a>
+
+                    <a href="{% url 'dashboard:chairman_finance' %}"
+                        class="sidebar-link {% if request.resolver_match.url_name == 'chairman_finance' %}active{% endif %}">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-indian-rupee-sign"></i>
+                        </span>
+                        <span class="sidebar-link-text">Finance</span>
+                    </a>
+
+                    <a href="{% url 'dashboard:chairman_transport' %}"
+                        class="sidebar-link {% if request.resolver_match.url_name == 'chairman_transport' %}active{% endif %}">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-bus"></i>
+                        </span>
+                        <span class="sidebar-link-text">Transport</span>
+                    </a>
+
+                    <a href="{% url 'dashboard:chairman_approvals' %}"
+                        class="sidebar-link {% if request.resolver_match.url_name == 'chairman_approvals' %}active{% endif %}">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-check-double"></i>
+                        </span>
+                        <span class="sidebar-link-text">Approvals</span>
+                    </a>
+
+                    <a href="{% url 'dashboard:chairman_reports' %}"
+                        class="sidebar-link {% if request.resolver_match.url_name == 'chairman_reports' %}active{% endif %}">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-chart-column"></i>
+                        </span>
+                        <span class="sidebar-link-text">Reports</span>
+                    </a>
+
+                    <a href="{% url 'announcements:list' %}"
+                        class="sidebar-link {% if request.resolver_match.app_name == 'announcements' %}active{% endif %}">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-bullhorn"></i>
+                        </span>
+                        <span class="sidebar-link-text">Announcements</span>
+                    </a>
+
+                    <a href="{% url 'notifications:list' %}"
+                        class="sidebar-link {% if request.resolver_match.app_name == 'notifications' %}active{% endif %}">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-bell"></i>
+                        </span>
+                        <span class="sidebar-link-text">Notifications</span>
+                    </a>
+
+                    <a href="{% url 'accounts:profile' %}"
+                        class="sidebar-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-user"></i>
+                        </span>
+                        <span class="sidebar-link-text">My Profile</span>
+                    </a>
+
+                    <a href="{% url 'accounts:logout' %}" class="sidebar-link logout-link">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </span>
+                        <span class="sidebar-link-text">Logout</span>
+                    </a>
+
+                </div>
+
+                {% else %}
+
+                <!-- =================================================
+                     COMMON MENU FOR NON-CHAIRMAN ROLES
+                ================================================== -->
+
+                <div class="menu-section">
+                    <div class="menu-section-title">MAIN</div>
+
+                    <a href="{% url 'dashboard:home' %}"
+                        class="sidebar-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </span>
+                        <span class="sidebar-link-text">Dashboard</span>
+                    </a>
+
+                    <a href="{% url 'accounts:profile' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-user"></i>
+                        </span>
+                        <span class="sidebar-link-text">Profile</span>
+                    </a>
+
+                    <a href="{% url 'announcements:list' %}"
+                        class="sidebar-link {% if request.resolver_match.app_name == 'announcements' %}active{% endif %}">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-bullhorn"></i>
+                        </span>
+                        <span class="sidebar-link-text">Announcements</span>
+                    </a>
+
+                    <a href="{% url 'notifications:list' %}"
+                        class="sidebar-link {% if request.resolver_match.app_name == 'notifications' %}active{% endif %}">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-bell"></i>
+                        </span>
+                        <span class="sidebar-link-text">Notifications</span>
+                    </a>
+
+                    <a href="{% url 'academic_calendar:calendar' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-calendar-days"></i>
+                        </span>
+                        <span class="sidebar-link-text">Academic Calendar</span>
+                    </a>
+
+                    <a href="{% url 'documents:home' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-folder-open"></i>
+                        </span>
+                        <span class="sidebar-link-text">Documents</span>
+                    </a>
+
+                    <a href="{% url 'leave_management:apply_leave' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-calendar-xmark"></i>
+                        </span>
+                        <span class="sidebar-link-text">Leaves</span>
+                    </a>
+
+                    <a href="{% url 'attendance:attendance_dashboard' %}"
+                        class="sidebar-link {% if request.resolver_match.app_name == 'attendance' %}active{% endif %}">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-clipboard-user"></i>
+                        </span>
+                        <span class="sidebar-link-text">Attendance</span>
+                    </a>
+                </div>
+
+                <!-- ROLE-SPECIFIC MENUS -->
+                <div class="menu-section">
+
+                    <div class="menu-section-title">
+                        {% if role == "admission_staff" %}
+                        ADMISSIONS
+                        {% elif role == "system_administrator" %}
+                        ADMINISTRATION
+                        {% elif role == "vice_principal" %}
+                        ACADEMIC MANAGEMENT
+                        {% elif role == "teacher" %}
+                        TEACHING
+                        {% elif role == "student" %}
+                        STUDENT
+                        {% elif role == "principal" %}
+                        MANAGEMENT
+                        {% elif role == "accountant" %}
+                        FINANCE
+                        {% elif role == "parent" %}
+                        PARENT
+                        {% elif role == "bus_driver" %}
+                        TRANSPORT
+                        {% endif %}
+                    </div>
+
+                    <!-- ADMISSION STAFF -->
+                    {% if role == "admission_staff" %}
+
+                    <a href="{% url 'admissions:home' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon"><i class="fa-solid fa-file-signature"></i></span>
+                        <span class="sidebar-link-text">Admissions</span>
+                    </a>
+
+                    <a href="{% url 'admissions:student_applications' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon"><i class="fa-solid fa-user-graduate"></i></span>
+                        <span class="sidebar-link-text">Student Applications</span>
+                    </a>
+
+                    <a href="{% url 'admissions:employee_applications' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon"><i class="fa-solid fa-user-tie"></i></span>
+                        <span class="sidebar-link-text">Employee Applications</span>
+                    </a>
+
+                    {% endif %}
+
+                    <!-- SYSTEM ADMINISTRATOR -->
+                    {% if role == "system_administrator" %}
+
+                    <a href="{% url 'admissions:system_admin_user_credentials' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon"><i class="fa-solid fa-users-gear"></i></span>
+                        <span class="sidebar-link-text">User / Account Credentials</span>
+                    </a>
+
+                    <a href="{% url 'admissions:system_admin_approvals' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon"><i class="fa-solid fa-circle-check"></i></span>
+                        <span class="sidebar-link-text">Approvals</span>
+                    </a>
+
+                    <a href="{% url 'accounts:system_logs' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon"><i class="fa-solid fa-file-lines"></i></span>
+                        <span class="sidebar-link-text">System Logs</span>
+                    </a>
+
+                    {% endif %}
+
+                    <!-- VICE PRINCIPAL -->
+                    {% if role == "vice_principal" %}
+
+                    <a href="{% url 'admissions:vp_student_approvals' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon"><i class="fa-solid fa-user-check"></i></span>
+                        <span class="sidebar-link-text">Student Approvals</span>
+                    </a>
+
+                    <a href="{% url 'admissions:vp_employee_approvals' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon"><i class="fa-solid fa-user-tie"></i></span>
+                        <span class="sidebar-link-text">Employee Approvals</span>
+                    </a>
+
+                    <a href="{% url 'academics:class_sections' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon"><i class="fa-solid fa-book-open"></i></span>
+                        <span class="sidebar-link-text">Class & Sections</span>
+                    </a>
+
+                    <a href="{% url 'academics:subjects' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon"><i class="fa-solid fa-book-open"></i></span>
+                        <span class="sidebar-link-text">Subjects</span>
+                    </a>
+
+                    <a href="{% url 'academics:timetable' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon"><i class="fa-solid fa-clock"></i></span>
+                        <span class="sidebar-link-text">Timetable</span>
+                    </a>
+
+                    <a href="{% url 'exams:exam_list' %}"
+                        class="sidebar-link {% if request.resolver_match.app_name == 'exams' %}active{% endif %}">
+                        <span class="sidebar-link-icon"><i class="fa-solid fa-file-pen"></i></span>
+                        <span class="sidebar-link-text">Examinations</span>
+                    </a>
+
+                    <a href="{% url 'transport:vp_buses_dashboard' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon"><i class="fa-solid fa-bus"></i></span>
+                        <span class="sidebar-link-text">Buses</span>
+                    </a>
+
+                    {% endif %}
+
+                    <!-- TEACHER -->
+                    {% if role == "teacher" %}
+
+                    <a href="{% url 'academics:teacher_timetable' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon"><i class="fa-solid fa-chalkboard"></i></span>
+                        <span class="sidebar-link-text">My Classes</span>
+                    </a>
+
+                    <a href="{% url 'academics:teacher_students' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon"><i class="fa-solid fa-user-graduate"></i></span>
+                        <span class="sidebar-link-text">Students</span>
+                    </a>
+
+                    <a href="{% url 'exams:teacher_marks' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon"><i class="fa-solid fa-pen-to-square"></i></span>
+                        <span class="sidebar-link-text">Marks</span>
+                    </a>
+
+                    {% endif %}
+
+                    <!-- STUDENT AND PARENT -->
+                    {% if role == "student" or role == "parent" %}
+
+                    <a href="{% url 'transport:student_live_bus' %}"
+                        class="sidebar-link {% if request.resolver_match.url_name == 'student_live_bus' %}active{% endif %}">
+                        <span class="sidebar-link-icon"><i class="fa-solid fa-bus"></i></span>
+                        <span class="sidebar-link-text">Live Bus</span>
+                    </a>
+
+                    <a href="{% url 'academics:student_timetable' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon"><i class="fa-solid fa-clock"></i></span>
+                        <span class="sidebar-link-text">Timetable</span>
+                    </a>
+
+                    <a href="{% url 'academics:student_subject_list' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon"><i class="fa-solid fa-book"></i></span>
+                        <span class="sidebar-link-text">Subjects</span>
+                    </a>
+
+                    {% if role == "student" %}
+                    <a href="{% url 'exams:student_marks' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon"><i class="fa-solid fa-award"></i></span>
+                        <span class="sidebar-link-text">Marks</span>
+                    </a>
+                    {% endif %}
+                    {% endif %}
+
+                    <!-- PRINCIPAL -->
+                    {% if role == "principal" %}
+
+                    
+
+                    <a href="{% url 'dashboard:chairman_students' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-user-graduate"></i>
+                        </span>
+                        <span class="sidebar-link-text">Students</span>
+                    </a>
+
+                    <a href="{% url 'dashboard:chairman_employees' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-users"></i>
+                        </span>
+                        <span class="sidebar-link-text">Employees</span>
+                    </a>
+
+                    <a href="{% url 'dashboard:chairman_academics' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-book-open"></i>
+                        </span>
+                        <span class="sidebar-link-text">Academics</span>
+                    </a>
+
+                    <a href="{% url 'dashboard:chairman_transport' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-bus"></i>
+                        </span>
+                        <span class="sidebar-link-text">Transport</span>
+                    </a>
+
+                    <a href="{% url 'dashboard:chairman_approvals' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-check-double"></i>
+                        </span>
+                        <span class="sidebar-link-text">Approvals</span>
+                    </a>
+
+                    <a href="{% url 'dashboard:chairman_reports' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-chart-column"></i>
+                        </span>
+                        <span class="sidebar-link-text">Reports</span>
+                    </a>
+
+                    {% endif %}
+
+                    {% if role == "accountant" %}
+
+
+
+                    <a href="{% url 'finance:fee_management' %}"
+                        class="sidebar-link {% if request.resolver_match.url_name == 'fee_management' or request.resolver_match.url_name == 'fee_list' or request.resolver_match.url_name == 'fee_create' or request.resolver_match.url_name == 'fee_structure_list' or request.resolver_match.url_name == 'fee_structure_create' or request.resolver_match.url_name == 'fee_structure_edit' or request.resolver_match.url_name == 'fee_structure_publish' or request.resolver_match.url_name == 'payment_list' or request.resolver_match.url_name == 'payment_create' or request.resolver_match.url_name == 'receipt' %}active{% endif %}">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-money-bill-wave"></i>
+                        </span>
+                        <span class="sidebar-link-text">Fee Management</span>
+                    </a>
+
+                    <a href="{% url 'finance:salary_list' %}"
+                        class="sidebar-link {% if request.resolver_match.url_name == 'salary_list' or request.resolver_match.url_name == 'salary_create' or request.resolver_match.url_name == 'salary_mark_paid' %}active{% endif %}">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-credit-card"></i>
+                        </span>
+                        <span class="sidebar-link-text">Payroll</span>
+                    </a>
+
+                    <a href="{% url 'finance:expense_list' %}"
+                        class="sidebar-link {% if request.resolver_match.url_name == 'expense_list' or request.resolver_match.url_name == 'expense_create' %}active{% endif %}">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-receipt"></i>
+                        </span>
+                        <span class="sidebar-link-text">Expense Management</span>
+                    </a>
+
+                    <a href="{% url 'finance:reconciliation' %}"
+                        class="sidebar-link {% if request.resolver_match.url_name == 'reconciliation' or request.resolver_match.url_name == 'reconciliation_create' or request.resolver_match.url_name == 'reconciliation_match' %}active{% endif %}">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-scale-balanced"></i>
+                        </span>
+                        <span class="sidebar-link-text">Reconciliation</span>
+                    </a>
+
+                    <a href="{% url 'finance:reports' %}"
+                        class="sidebar-link {% if request.resolver_match.url_name == 'reports' %}active{% endif %}">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-chart-column"></i>
+                        </span>
+                        <span class="sidebar-link-text">Financial Reports</span>
+                    </a>
+                    <a href="{% url 'finance:alerts' %}"
+                        class="sidebar-link {% if request.resolver_match.url_name == 'alerts' %}active{% endif %}">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-bell"></i>
+                        </span>
+                        <span class="sidebar-link-text">Alerts</span>
+                    </a>
+                    <a href="{% url 'finance:audit_logs' %}"
+                        class="sidebar-link {% if request.resolver_match.url_name == 'audit_logs' %}active{% endif %}">
+                        <span class="sidebar-link-icon">
+                            <i class="fa-solid fa-clipboard-list"></i>
+                        </span>
+                        <span class="sidebar-link-text">Audit Logs</span>
+                    </a>
+
+                    {% endif %}
+                    <!-- PARENT -->
+                    {% if role == "parent" %}
+
+                    <a href="#" class="sidebar-link">
+                        <span class="sidebar-link-icon"><i class="fa-solid fa-children"></i></span>
+                        <span class="sidebar-link-text">Children</span>
+                    </a>
+
+                    {% endif %}
+
+                    <!-- BUS DRIVER -->
+                    {% if role == "bus_driver" %}
+
+                    <a href="{% url 'transport:driver_my_bus' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon"><i class="fa-solid fa-bus"></i></span>
+                        <span class="sidebar-link-text">My Bus</span>
+                    </a>
+
+                    <a href="{% url 'transport:driver_students' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon"><i class="fa-solid fa-users"></i></span>
+                        <span class="sidebar-link-text">My Students</span>
+                    </a>
+
+                    <a href="{% url 'transport:driver_bus_location' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon"><i class="fa-solid fa-location-dot"></i></span>
+                        <span class="sidebar-link-text">My Bus Location</span>
+                    </a>
+
+                    <a href="{% url 'transport:driver_trip_history' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon"><i class="fa-solid fa-clock-rotate-left"></i></span>
+                        <span class="sidebar-link-text">My Trip History</span>
+                    </a>
+
+                    <a href="{% url 'transport:driver_safety_alerts' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
+                        <span class="sidebar-link-text">My Safety & Alerts</span>
+                    </a>
+
+                    {% endif %}
+
+                </div>
+
+                {% endif %}
+
+            </nav>
+
+            <!-- Footer Logout: non-chairman roles only.
+             Chairman ki Logout already Chairman menu lo undi. -->
+            {% if request.user.profile.role != "chairman" %}
+            <div class="sidebar-footer">
+                <a href="{% url 'accounts:logout' %}" class="sidebar-link logout-link">
+                    <span class="sidebar-link-icon">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </span>
+                    <span class="sidebar-link-text">Logout</span>
+                </a>
+            </div>
+            {% endif %}
+
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-area">
+
+            <header class="topbar">
+
+                <div class="topbar-left">
+                    <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+
+                    <div class="page-heading">
+                        <h1>{% block page_title %}Dashboard{% endblock %}</h1>
+                        <span>School Management System</span>
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+
+                    <button type="button" class="topbar-icon" aria-label="Notifications"
+                        onclick="window.location.href='{% url 'notifications:list' %}'">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="notification-dot"></span>
+                    </button>
+
+                    <div class="topbar-user">
+                        <div class="topbar-avatar">
+                            {% if user.first_name %}
+                            {{ user.first_name|first|upper }}
+                            {% else %}
+                            {{ user.username|first|upper }}
+                            {% endif %}
+                        </div>
+
+                        <div class="topbar-user-info">
+                            <strong>
+                                {% if user.get_full_name %}
+                                {{ user.get_full_name }}
+                                {% else %}
+                                {{ user.username }}
+                                {% endif %}
+                            </strong>
+                            <span>{{ role_display }}</span>
+                        </div>
+                    </div>
+
+                </div>
+            </header>
+
+            <section class="page-content">
+                {% block content %}{% endblock %}
+            </section>
+
+        </main>
+    </div>
+
+    <script src="{% static 'dashboard/js/sidebar.js' %}"></script>
+    <script src="{% static 'dashboard/js/dashboard.js' %}"></script>
+
+    {% block extra_js %}{% endblock %}
+
+</body>
+
+</html>

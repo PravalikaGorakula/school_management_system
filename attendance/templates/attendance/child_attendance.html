@@ -1,0 +1,388 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Child Attendance{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'attendance/css/attendance.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="page-content">
+
+    <!-- HEADER -->
+    <div class="attendance-page-header">
+
+        <div>
+
+            <h1 class="attendance-page-title">
+                Child Attendance
+            </h1>
+
+            <p class="attendance-page-subtitle">
+                View your child's attendance and attendance percentage.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- CHILD SELECT -->
+    {% if links %}
+
+    <div class="attendance-filter">
+
+        <div class="attendance-filter-title">
+
+            <i class="fas fa-child"></i>
+
+            Select Child
+
+        </div>
+
+
+        <form method="get">
+
+            <div class="row g-3">
+
+                <div class="col-lg-8 col-md-8">
+
+                    <select
+                        name="student_id"
+                        class="attendance-form-control">
+
+                        {% for link in links %}
+
+                        <option
+                            value="{{ link.student.id }}"
+                            {% if selected_student_id == link.student.id|stringformat:"s" %}
+                                selected
+                            {% endif %}>
+
+                            {{ link.student.first_name }}
+                            {{ link.student.last_name }}
+                            -
+                            {{ link.student.application_id }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="col-lg-4 col-md-4">
+
+                    <button
+                        type="submit"
+                        class="btn-attendance-primary">
+
+                        <i class="fas fa-search"></i>
+
+                        View Attendance
+
+                    </button>
+
+                </div>
+
+                <div class="col-md-4">
+                    <label for="child-month">Month</label>
+                    <input class="attendance-form-control" type="month" id="child-month" name="month" value="{{ selected_month }}">
+                </div>
+                <div class="col-md-4">
+                    <label for="child-start">From</label>
+                    <input class="attendance-form-control" type="date" id="child-start" name="start_date" value="{{ report_start_date }}">
+                </div>
+                <div class="col-md-4">
+                    <label for="child-end">To</label>
+                    <input class="attendance-form-control" type="date" id="child-end" name="end_date" value="{{ report_end_date }}">
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- PERCENTAGE -->
+    <div class="attendance-percentage-card mb-4">
+
+        <div class="attendance-percentage-title">
+            Overall Attendance
+        </div>
+
+        <div class="attendance-percentage-value">
+
+            {% if percentage != None %}{{ percentage }}%{% else %}N/A{% endif %}
+
+        </div>
+
+        <div class="attendance-progress">
+            <div
+    class="attendance-progress-bar"
+                data-attendance-percentage="{{ percentage|default:0 }}">
+</div>
+           
+
+        </div>
+
+    </div>
+
+
+    <!-- STATS -->
+    <div class="attendance-stats-grid">
+
+        <div class="attendance-stat-card">
+
+            <div class="attendance-stat-icon">
+                <i class="fas fa-calendar"></i>
+            </div>
+
+            <div class="attendance-stat-label">
+                Eligible Working Days
+            </div>
+
+            <div class="attendance-stat-value">
+                {{ total|default:"0" }}
+            </div>
+
+        </div>
+
+
+        <div class="attendance-stat-card">
+
+            <div class="attendance-stat-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+
+            <div class="attendance-stat-label">
+                Present
+            </div>
+
+            <div class="attendance-stat-value">
+                {{ present|default:"0" }}
+            </div>
+
+        </div>
+
+
+        <div class="attendance-stat-card">
+
+            <div class="attendance-stat-icon">
+                <i class="fas fa-times-circle"></i>
+            </div>
+
+            <div class="attendance-stat-label">
+                Absent
+            </div>
+
+            <div class="attendance-stat-value">
+                {{ absent|default:"0" }}
+            </div>
+
+        </div>
+
+
+        <div class="attendance-stat-card">
+
+            <div class="attendance-stat-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+
+            <div class="attendance-stat-label">
+                Late
+            </div>
+
+            <div class="attendance-stat-value">
+                {{ late|default:"0" }}
+            </div>
+
+        </div>
+
+    </div>
+
+    {% if selected_holiday %}
+    <div class="attendance-content-card mb-4" role="status">
+        <strong>{{ selected_holiday.status }}:</strong> {{ selected_holiday.name }}.
+    </div>
+    {% endif %}
+
+    {% if holiday_entries %}
+    <div class="attendance-content-card mb-4" role="status">
+        {% for entry in holiday_entries %}
+        <strong>{{ entry.status }}:</strong> {{ entry.date|date:"d M Y" }} · {{ entry.name }}{% if not forloop.last %}<br>{% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+
+    <!-- RECORDS -->
+    <div class="attendance-content-card">
+
+        <div class="attendance-content-card-header">
+
+            <h2 class="attendance-content-card-title">
+
+                Attendance History
+
+            </h2>
+
+        </div>
+
+
+        <div class="attendance-content-card-body">
+
+            {% if records %}
+
+            <div class="attendance-table-wrapper">
+
+                <table class="attendance-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Subject
+                            </th>
+
+                            <th>
+                                Class
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Remarks
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for record in records %}
+
+                        <tr>
+
+                            <td>
+                                {{ record.date|date:"d M Y" }}
+                            </td>
+
+
+                            <td>
+                                {{ record.subject.subject_name }}
+                            </td>
+
+
+                            <td>
+
+                                {{ record.class_section.grade }}
+                                -
+                                {{ record.class_section.section }}
+
+                            </td>
+
+
+                            <td>
+
+                                {% if record.status == "Present" %}
+
+                                <span class="attendance-status attendance-status-present">
+                                    Present
+                                </span>
+
+                                {% elif record.status == "Absent" %}
+
+                                <span class="attendance-status attendance-status-absent">
+                                    Absent
+                                </span>
+
+                                {% elif record.status == "Late" %}
+
+                                <span class="attendance-status attendance-status-late">
+                                    Late
+                                </span>
+
+                                {% else %}
+
+                                <span class="attendance-status">
+                                    {{ record.status }}
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                {{ record.remarks|default:"-" }}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="attendance-empty">
+
+                <div class="attendance-empty-icon">
+
+                    <i class="fas fa-child"></i>
+
+                </div>
+
+                <h3 class="attendance-empty-title">
+
+                    No Attendance Records
+
+                </h3>
+
+                <p class="attendance-empty-text">
+
+                    Your child's attendance records will appear here.
+
+                </p>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+document.querySelectorAll("[data-attendance-percentage]").forEach(function (bar) {
+    const percentage = Number(bar.dataset.attendancePercentage);
+    bar.style.width = `${Number.isFinite(percentage) ? Math.max(0, Math.min(100, percentage)) : 0}%`;
+});
+</script>
+
+{% endblock %}

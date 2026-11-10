@@ -1,0 +1,12 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% block title %}Receipt {{ payment.receipt_number }} | SMS{% endblock %}
+{% block page_title %}Fee Payment Receipt{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'finance/css/finance.css' %}"><style>@media print{.sidebar,.topbar,.no-print{display:none!important}.dashboard-main,.page-content{margin:0!important;padding:0!important}.finance-page{padding:0!important}}</style>{% endblock %}
+{% block content %}
+<div class="finance-page"><div class="finance-actions no-print" style="margin-bottom:16px"><a class="finance-btn finance-secondary" href="{% url 'finance:payment_list' %}">Back to Payments</a><button class="finance-btn finance-primary" onclick="window.print()">Print / Save PDF</button></div>
+<section class="finance-panel" style="max-width:850px;margin:0 auto"><div style="text-align:center;border-bottom:2px solid #123B63;padding-bottom:18px"><h2 style="color:#123B63;margin:0">SCHOOL MANAGEMENT SYSTEM</h2><p>Official Fee Payment Receipt</p><strong style="font-size:20px">Receipt No: {{ payment.receipt_number }}</strong></div>
+<div class="finance-grid" style="margin-top:22px"><div><span>Student</span><h3>{{ payment.fee.student.first_name }} {{ payment.fee.student.last_name }}</h3></div><div><span>Application ID</span><h3>{{ payment.fee.student.application_id }}</h3></div><div><span>Payment Date</span><h3>{{ payment.paid_at|date:"d M Y, h:i A" }}</h3></div><div><span>Academic Year</span><h3>{{ payment.fee.academic_year }}</h3></div></div>
+<table class="finance-table"><tbody><tr><th>Fee Description</th><td>{{ payment.fee.description|default:payment.fee.get_fee_type_display }}</td></tr><tr><th>Payment Method</th><td>{{ payment.get_payment_method_display }}</td></tr><tr><th>Transaction Reference</th><td>{{ payment.transaction_reference|default:"—" }}</td></tr><tr><th>Amount Received</th><td><strong>₹{{ payment.amount|floatformat:2 }}</strong></td></tr><tr><th>Collected By</th><td>{{ payment.collected_by|default:"—" }}</td></tr><tr><th>Remarks</th><td>{{ payment.remarks|default:"—" }}</td></tr></tbody></table>
+<p style="margin-top:26px">This receipt acknowledges the payment recorded in the school system. Please retain it for your records.</p><div style="display:flex;justify-content:space-between;margin-top:45px"><span>Parent / Student Signature</span><span>Authorized Signature</span></div></section></div>
+{% endblock %}

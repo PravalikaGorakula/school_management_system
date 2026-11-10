@@ -1,0 +1,1065 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+Marks History
+{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --orange-light: #FFF4E6;
+        --white: #FFFFFF;
+        --background: #F6F8FB;
+        --text-primary: #172033;
+        --text-secondary: #64748B;
+        --border: #E2E8F0;
+        --border-dark: #CBD5E1;
+        --success: #198754;
+        --danger: #DC2626;
+    }
+
+    .history-page {
+        padding: 24px;
+        background: var(--background);
+        min-height: calc(100vh - 70px);
+    }
+
+    /* HEADER */
+
+    .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+    .heading-area {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .heading-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 10px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+    }
+
+    .heading-area h1 {
+        margin: 0;
+        color: var(--deep-blue);
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+    .heading-area p {
+        margin: 5px 0 0;
+        color: var(--text-secondary);
+        font-size: 18px;
+    }
+
+    .back-btn {
+        min-height: 44px;
+        padding: 0 17px;
+        border: 1px solid var(--border-dark);
+        border-radius: 8px;
+        background: var(--white);
+        color: var(--deep-blue);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .back-btn:hover {
+        background: var(--deep-blue-light);
+        border-color: var(--deep-blue);
+    }
+
+    /* CARD */
+
+    .card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+
+    .card-header {
+        padding: 19px 22px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+    }
+
+    .card-title {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: var(--deep-blue);
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .record-count {
+        color: var(--text-secondary);
+        font-size: 18px;
+    }
+
+    .card-body {
+        padding: 22px;
+    }
+
+    /* FILTERS */
+
+    .filter-grid {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr auto;
+        gap: 14px;
+        align-items: end;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .form-group label {
+        color: var(--text-primary);
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .form-control,
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        height: 46px;
+        box-sizing: border-box;
+        padding: 0 13px;
+        border: 1px solid var(--border-dark);
+        border-radius: 7px;
+        background: var(--white);
+        color: var(--text-primary);
+        font-size: 18px;
+        outline: none;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        border-color: var(--deep-blue);
+        box-shadow: 0 0 0 3px rgba(18, 59, 99, 0.08);
+    }
+
+    .search-btn {
+        height: 46px;
+        padding: 0 19px;
+        border: none;
+        border-radius: 7px;
+        background: var(--deep-blue);
+        color: var(--white);
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .search-btn:hover {
+        background: var(--deep-blue-dark);
+    }
+
+    /* TABLE */
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .history-table {
+        width: 100%;
+        min-width: 1250px;
+        border-collapse: collapse;
+    }
+
+    .history-table th {
+        padding: 15px 16px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue-dark);
+        text-align: left;
+        font-size: 18px;
+        font-weight: 700;
+        border-bottom: 1px solid var(--border);
+        white-space: nowrap;
+    }
+
+    .history-table td {
+        padding: 15px 16px;
+        color: var(--text-primary);
+        font-size: 18px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle;
+    }
+
+    .history-table tbody tr:hover {
+        background: #FAFCFE;
+    }
+
+    .student-name {
+        color: var(--deep-blue);
+        font-weight: 700;
+    }
+
+    .exam-name {
+        font-weight: 600;
+    }
+
+    .subject-name {
+        color: var(--text-primary);
+        font-weight: 600;
+    }
+
+    .secondary-text {
+        color: var(--text-secondary);
+    }
+
+    .marks {
+        font-weight: 700;
+        color: var(--deep-blue);
+    }
+
+    .percentage {
+        font-weight: 600;
+    }
+
+    /* GRADE */
+
+    .grade-badge {
+        min-width: 48px;
+        padding: 7px 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 7px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    /* STATUS */
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 12px;
+        border-radius: 20px;
+        font-size: 17px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .status-draft {
+        background: #FFF7E6;
+        color: #A16207;
+    }
+
+    .status-submitted {
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+    }
+
+    .status-published {
+        background: #EAF7EF;
+        color: var(--success);
+    }
+
+    .status-pending {
+        background: #F1F5F9;
+        color: var(--text-secondary);
+    }
+
+    /* ACTION */
+
+    .view-btn {
+        width: 42px;
+        height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 7px;
+        border: 1px solid var(--border);
+        background: var(--white);
+        color: var(--deep-blue);
+        text-decoration: none;
+        font-size: 18px;
+    }
+
+    .view-btn:hover {
+        background: var(--deep-blue-light);
+        border-color: var(--deep-blue);
+    }
+
+    /* EMPTY */
+
+    .empty-state {
+        padding: 60px 20px;
+        text-align: center;
+    }
+
+    .empty-icon {
+        width: 68px;
+        height: 68px;
+        margin: 0 auto 15px;
+        border-radius: 50%;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 27px;
+    }
+
+    .empty-state h3 {
+        margin: 0 0 7px;
+        color: var(--deep-blue);
+        font-size: 21px;
+    }
+
+    .empty-state p {
+        margin: 0;
+        color: var(--text-secondary);
+        font-size: 18px;
+    }
+
+    /* PAGINATION */
+
+    .pagination {
+        padding: 18px 22px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .page-link {
+        min-width: 42px;
+        height: 42px;
+        padding: 0 12px;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        background: var(--white);
+        color: var(--deep-blue);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        font-size: 17px;
+        font-weight: 600;
+    }
+
+    .page-link:hover,
+    .page-link.active {
+        background: var(--deep-blue);
+        border-color: var(--deep-blue);
+        color: var(--white);
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 1200px) {
+        .filter-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .search-btn {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 800px) {
+        .history-page {
+            padding: 16px;
+        }
+
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .filter-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .heading-area h1 {
+            font-size: 24px;
+        }
+    }
+</style>
+
+
+<div class="history-page">
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <div class="page-header">
+
+        <div class="heading-area">
+
+            <div class="heading-icon">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
+
+            <div>
+
+                <h1>
+                    Marks History
+                </h1>
+
+                <p>
+                    View and track student examination marks
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <a
+            href="{% url 'exams:exam_list' %}"
+            class="back-btn"
+        >
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to Examinations
+        </a>
+
+    </div>
+
+
+    <!-- =========================
+         FILTER CARD
+    ========================== -->
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <div class="card-title">
+                <i class="fa-solid fa-filter"></i>
+                Search & Filter Marks
+            </div>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <form method="get">
+
+                <div class="filter-grid">
+
+                    <!-- SEARCH -->
+
+                    <div class="form-group">
+
+                        <label for="search">
+                            Search Student
+                        </label>
+
+                        <input
+                            type="text"
+                            id="search"
+                            name="search"
+                            value="{{ request.GET.search|default:'' }}"
+                            placeholder="Student name / admission ID"
+                        >
+
+                    </div>
+
+
+                    <!-- EXAM -->
+
+                    <div class="form-group">
+
+                        <label for="examination">
+                            Examination
+                        </label>
+
+                        <select
+                            id="examination"
+                            name="examination"
+                        >
+
+                            <option value="">
+                                All Examinations
+                            </option>
+
+                            {% for exam in examinations %}
+
+                                <option
+                                    value="{{ exam.pk }}"
+                                    {% if request.GET.examination == exam.pk|stringformat:"s" %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    {{ exam.exam_name }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- CLASS -->
+
+                    <div class="form-group">
+
+                        <label for="class_section">
+                            Class
+                        </label>
+
+                        <select
+                            id="class_section"
+                            name="class_section"
+                        >
+
+                            <option value="">
+                                All Classes
+                            </option>
+
+                            {% for class_section in class_sections %}
+
+                                <option
+                                    value="{{ class_section.pk }}"
+                                    {% if request.GET.class_section == class_section.pk|stringformat:"s" %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    {{ class_section }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- SUBJECT -->
+
+                    <div class="form-group">
+
+                        <label for="subject">
+                            Subject
+                        </label>
+
+                        <select
+                            id="subject"
+                            name="subject"
+                        >
+
+                            <option value="">
+                                All Subjects
+                            </option>
+
+                            {% for subject in subjects %}
+
+                                <option
+                                    value="{{ subject.pk }}"
+                                    {% if request.GET.subject == subject.pk|stringformat:"s" %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    {{ subject.subject_name }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- STATUS -->
+
+                    <div class="form-group">
+
+                        <label for="status">
+                            Status
+                        </label>
+
+                        <select
+                            id="status"
+                            name="status"
+                        >
+
+                            <option value="">
+                                All Status
+                            </option>
+
+                            <option
+                                value="draft"
+                                {% if request.GET.status == "draft" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Draft
+                            </option>
+
+                            <option
+                                value="submitted"
+                                {% if request.GET.status == "submitted" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Submitted
+                            </option>
+
+                            <option
+                                value="published"
+                                {% if request.GET.status == "published" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Published
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- BUTTON -->
+
+                    <div class="form-group">
+
+                        <button
+                            type="submit"
+                            class="search-btn"
+                        >
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            Search
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         MARKS TABLE
+    ========================== -->
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <div class="card-title">
+                <i class="fa-solid fa-table-list"></i>
+                Marks Records
+            </div>
+
+            <div class="record-count">
+                {{ marks|length }} record{{ marks|length|pluralize }}
+            </div>
+
+        </div>
+
+
+        {% if marks %}
+
+        <div class="table-wrapper">
+
+            <table class="history-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>#</th>
+
+                        <th>Examination</th>
+
+                        <th>Student</th>
+
+                        <th>Class</th>
+
+                        <th>Subject</th>
+
+                        <th>Marks</th>
+
+                        <th>Percentage</th>
+
+                        <th>Grade</th>
+
+                        <th>Remarks</th>
+
+                        <th>Entered By</th>
+
+                        <th>Status</th>
+
+                        <th>Updated</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for mark in marks %}
+
+                    <tr>
+
+                        <!-- NUMBER -->
+
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+
+
+                        <!-- EXAM -->
+
+                        <td>
+
+                            <span class="exam-name">
+
+                                {% if mark.examination %}
+                                    {{ mark.examination.exam_name }}
+                                {% else %}
+                                    —
+                                {% endif %}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- STUDENT -->
+
+                        <td>
+
+                            <span class="student-name">
+
+                                {% if mark.student.full_name %}
+
+                                    {{ mark.student.full_name }}
+
+                                {% else %}
+
+                                    {{ mark.student.first_name }}
+                                    {{ mark.student.last_name }}
+
+                                {% endif %}
+
+                            </span>
+
+                            {% if mark.student.admission_id %}
+
+                                <br>
+
+                                <span class="secondary-text">
+                                    {{ mark.student.admission_id }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- CLASS -->
+
+                        <td>
+
+                            <span class="secondary-text">
+                                {{ mark.class_section }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- SUBJECT -->
+
+                        <td>
+
+                            <span class="subject-name">
+
+                                {% if mark.subject %}
+                                    {{ mark.subject.subject_name }}
+                                {% else %}
+                                    —
+                                {% endif %}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- MARKS -->
+
+                        <td>
+
+                            <span class="marks">
+
+                                {{ mark.obtained_marks }}
+
+                                /
+
+                                {{ mark.max_marks }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- PERCENTAGE -->
+
+                        <td>
+
+                            <span class="percentage">
+
+                                {% if mark.percentage %}
+                                    {{ mark.percentage }}%
+                                {% else %}
+                                    —
+                                {% endif %}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- GRADE -->
+
+                        <td>
+
+                            <span class="grade-badge">
+
+                                {% if mark.grade %}
+                                    {{ mark.grade }}
+                                {% else %}
+                                    —
+                                {% endif %}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- REMARKS -->
+
+                        <td>
+
+                            <span class="secondary-text">
+
+                                {% if mark.remarks %}
+                                    {{ mark.remarks }}
+                                {% else %}
+                                    —
+                                {% endif %}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- ENTERED BY -->
+
+                        <td>
+
+                            <span class="secondary-text">
+
+                                {% if mark.entered_by %}
+
+                                    {{ mark.entered_by.get_full_name|default:mark.entered_by.username }}
+
+                                {% else %}
+
+                                    —
+
+                                {% endif %}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- STATUS -->
+
+                        <td>
+
+                            {% if mark.status == "published" %}
+
+                                <span class="status-badge status-published">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                    Published
+                                </span>
+
+                            {% elif mark.status == "submitted" %}
+
+                                <span class="status-badge status-submitted">
+                                    <i class="fa-solid fa-paper-plane"></i>
+                                    Submitted
+                                </span>
+
+                            {% elif mark.status == "draft" %}
+
+                                <span class="status-badge status-draft">
+                                    <i class="fa-solid fa-file"></i>
+                                    Draft
+                                </span>
+
+                            {% else %}
+
+                                <span class="status-badge status-pending">
+                                    {{ mark.status|title }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- UPDATED -->
+
+                        <td>
+
+                            <span class="secondary-text">
+
+                                {% if mark.updated_at %}
+                                    {{ mark.updated_at|date:"d M Y, h:i A" }}
+                                {% else %}
+                                    —
+                                {% endif %}
+
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- =========================
+             PAGINATION
+        ========================== -->
+
+        {% if marks.has_other_pages %}
+
+        <div class="pagination">
+
+            {% if marks.has_previous %}
+
+                <a
+                    href="?page={{ marks.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search|urlencode }}{% endif %}{% if request.GET.examination %}&examination={{ request.GET.examination }}{% endif %}{% if request.GET.class_section %}&class_section={{ request.GET.class_section }}{% endif %}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}"
+                    class="page-link"
+                >
+                    <i class="fa-solid fa-chevron-left"></i>
+                </a>
+
+            {% endif %}
+
+
+            {% for page_num in marks.paginator.page_range %}
+
+                {% if page_num == marks.number %}
+
+                    <span class="page-link active">
+                        {{ page_num }}
+                    </span>
+
+                {% else %}
+
+                    <a
+                        href="?page={{ page_num }}{% if request.GET.search %}&search={{ request.GET.search|urlencode }}{% endif %}{% if request.GET.examination %}&examination={{ request.GET.examination }}{% endif %}{% if request.GET.class_section %}&class_section={{ request.GET.class_section }}{% endif %}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}"
+                        class="page-link"
+                    >
+                        {{ page_num }}
+                    </a>
+
+                {% endif %}
+
+            {% endfor %}
+
+
+            {% if marks.has_next %}
+
+                <a
+                    href="?page={{ marks.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search|urlencode }}{% endif %}{% if request.GET.examination %}&examination={{ request.GET.examination }}{% endif %}{% if request.GET.class_section %}&class_section={{ request.GET.class_section }}{% endif %}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}"
+                    class="page-link"
+                >
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+
+            {% endif %}
+
+        </div>
+
+        {% endif %}
+
+
+        {% else %}
+
+        <!-- EMPTY -->
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                <i class="fa-solid fa-file-circle-xmark"></i>
+            </div>
+
+            <h3>
+                No Marks Records Found
+            </h3>
+
+            <p>
+                No marks records match your current search or filters.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

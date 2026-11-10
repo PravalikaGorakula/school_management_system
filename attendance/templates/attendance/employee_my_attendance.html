@@ -1,0 +1,1237 @@
+
+{% extends "dashboard/base.html" %}
+
+{% block title %}My Attendance{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --orange-light: #FFF4E6;
+        --green: #25845A;
+        --green-light: #EAF7F0;
+        --red: #C74747;
+        --red-light: #FDECEC;
+        --purple: #7654A8;
+        --purple-light: #F2EDFA;
+        --text-primary: #243447;
+        --text-secondary: #5F6F80;
+        --border-color: #E0E7EF;
+        --page-background: #F5F7FA;
+        --card-background: #FFFFFF;
+        --radius-small: 10px;
+        --radius-medium: 14px;
+        --radius-large: 18px;
+        --shadow-card: 0 4px 16px rgba(18, 59, 99, 0.07);
+        --shadow-hover: 0 10px 25px rgba(18, 59, 99, 0.13);
+    }
+
+    .attendance-page {
+        width: 100%;
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 28px;
+        box-sizing: border-box;
+        color: var(--text-primary);
+        font-family: "Segoe UI", Arial, sans-serif;
+        font-size: 18px;
+        line-height: 1.6;
+    }
+
+    .attendance-page *,
+    .attendance-page *::before,
+    .attendance-page *::after {
+        box-sizing: border-box;
+    }
+
+    /* PAGE HEADER */
+
+    .attendance-page .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 20px;
+        padding: 32px;
+        margin-bottom: 30px;
+        border: none;
+        border-radius: var(--radius-large);
+        background: linear-gradient(
+            120deg,
+            var(--deep-blue-dark),
+            var(--deep-blue)
+        );
+        color: #FFFFFF;
+        box-shadow: var(--shadow-card);
+    }
+
+    .attendance-page .page-header h1 {
+        margin: 0 0 8px;
+        color: #FFFFFF;
+        font-size: 30px;
+        font-weight: 700;
+        line-height: 1.35;
+    }
+
+    .attendance-page .page-header p {
+        margin: 0;
+        color: #E5EDF5;
+        font-size: 18px;
+    }
+
+    .attendance-page .header-date {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 18px;
+        border-radius: var(--radius-small);
+        background: rgba(255, 255, 255, 0.12);
+        color: #FFFFFF;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .attendance-page .header-date i {
+        color: #FFD19A;
+        font-size: 21px;
+    }
+
+    /* SECTION SPACING */
+
+    .attendance-page .attendance-section {
+        margin-bottom: 32px;
+    }
+
+    .attendance-page .section-title {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        margin: 0 0 22px;
+        padding-bottom: 14px;
+        border-bottom: 2px solid var(--border-color);
+        color: var(--deep-blue-dark);
+        font-size: 23px;
+        font-weight: 700;
+    }
+
+    .attendance-page .section-title-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
+        border-radius: 12px;
+        background: var(--orange-light);
+        color: var(--orange-hover);
+        font-size: 21px;
+    }
+
+    /* CARDS */
+
+    .attendance-page .today-card,
+    .attendance-page .history-card {
+        min-width: 0;
+        background: var(--card-background);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-medium);
+        box-shadow: var(--shadow-card);
+        transition: box-shadow 0.2s ease;
+    }
+
+    .attendance-page .today-card:hover,
+    .attendance-page .history-card:hover {
+        box-shadow: var(--shadow-hover);
+    }
+
+    .attendance-page .today-card {
+        padding: 28px;
+    }
+
+    /* TODAY HEADER */
+
+    .attendance-page .today-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 18px;
+        padding-bottom: 22px;
+        margin-bottom: 24px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .attendance-page .today-title {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        min-width: 0;
+    }
+
+    .attendance-page .today-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 58px;
+        height: 58px;
+        flex-shrink: 0;
+        border-radius: 15px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        font-size: 25px;
+    }
+
+    .attendance-page .today-title h2 {
+        margin: 0;
+        color: var(--deep-blue-dark);
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+    .attendance-page .today-title span {
+        display: block;
+        margin-top: 5px;
+        color: var(--text-secondary);
+        font-size: 18px;
+    }
+
+    /* STATUS BADGES */
+
+    .attendance-page .status-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 8px 15px;
+        border-radius: 9px;
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1.5;
+        white-space: nowrap;
+    }
+
+    .attendance-page .status-present {
+        background: var(--green-light);
+        color: var(--green);
+    }
+
+    .attendance-page .status-late {
+        background: #FFF4D6;
+        color: #A16207;
+    }
+
+    .attendance-page .status-absent {
+        background: var(--red-light);
+        color: var(--red);
+    }
+
+    .attendance-page .status-half {
+        background: var(--orange-light);
+        color: var(--orange-hover);
+    }
+
+    .attendance-page .status-leave {
+        background: var(--purple-light);
+        color: var(--purple);
+    }
+
+    .attendance-page .status-not-started {
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+    }
+
+    /* INFORMATION GRID */
+
+    .attendance-page .attendance-info {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 20px;
+        margin-bottom: 26px;
+    }
+
+    .attendance-page .info-box {
+        min-width: 0;
+        padding: 22px;
+        border: 1px solid var(--border-color);
+        border-left: 4px solid var(--deep-blue);
+        border-radius: var(--radius-medium);
+        background: #FBFCFD;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .attendance-page .info-box:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-card);
+    }
+
+    .attendance-page .info-box:nth-child(2) {
+        border-left-color: var(--orange);
+        background: #FFFCF7;
+    }
+
+    .attendance-page .info-box:nth-child(3) {
+        border-left-color: var(--green);
+        background: #F8FCF9;
+    }
+
+    .attendance-page .info-box:nth-child(4) {
+        border-left-color: var(--purple);
+        background: #FBF9FE;
+    }
+
+    .attendance-page .info-label {
+        margin-bottom: 9px;
+        color: var(--text-secondary);
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .attendance-page .info-value {
+        color: var(--deep-blue-dark);
+        font-size: 25px;
+        font-weight: 750;
+        line-height: 1.4;
+        overflow-wrap: anywhere;
+    }
+
+    /* ATTENDANCE ACTIONS */
+
+    .attendance-page .attendance-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 14px;
+        padding-top: 23px;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .attendance-page .attendance-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 50px;
+        padding: 12px 23px;
+        border: 1px solid transparent;
+        border-radius: var(--radius-small);
+        font-family: inherit;
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .attendance-page .attendance-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+    }
+
+    .attendance-page .check-in-btn {
+        background: var(--orange);
+        color: #FFFFFF;
+    }
+
+    .attendance-page .check-in-btn:hover {
+        background: var(--orange-hover);
+    }
+
+    .attendance-page .check-out-btn {
+        background: var(--deep-blue);
+        color: #FFFFFF;
+    }
+
+    .attendance-page .check-out-btn:hover {
+        background: var(--deep-blue-dark);
+    }
+
+    .attendance-page .completed-btn {
+        background: var(--green-light);
+        color: var(--green);
+        border-color: #CBEBD8;
+        cursor: default;
+    }
+
+    .attendance-page .attendance-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    /* LOCATION MESSAGE */
+
+    .attendance-page .location-message {
+        display: none;
+        margin-top: 18px;
+        padding: 15px 18px;
+        border-radius: var(--radius-small);
+        font-size: 18px;
+        font-weight: 500;
+        overflow-wrap: anywhere;
+    }
+
+    .attendance-page .location-message.info {
+        display: block;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        border: 1px solid #D7E4EF;
+    }
+
+    .attendance-page .location-message.success {
+        display: block;
+        background: var(--green-light);
+        color: var(--green);
+        border: 1px solid #CBEBD8;
+    }
+
+    .attendance-page .location-message.error {
+        display: block;
+        background: var(--red-light);
+        color: var(--red);
+        border: 1px solid #F5CCCC;
+    }
+
+    /* HISTORY CARD */
+
+    .attendance-page .history-card {
+        overflow: hidden;
+    }
+
+    .attendance-page .history-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 22px 25px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .attendance-page .history-header-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        flex-shrink: 0;
+        border-radius: 12px;
+        background: var(--orange-light);
+        color: var(--orange-hover);
+        font-size: 21px;
+    }
+
+    .attendance-page .history-header h2 {
+        margin: 0;
+        color: var(--deep-blue-dark);
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+    .attendance-page .history-content {
+        padding: 24px;
+    }
+
+    .attendance-page .table-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .attendance-page .table-heading h3 {
+        margin: 0;
+        color: var(--deep-blue-dark);
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .attendance-page .record-count {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 13px;
+        border-radius: var(--radius-small);
+        background: var(--orange-light);
+        color: var(--orange-hover);
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    /* TABLE */
+
+    .attendance-page .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-small);
+    }
+
+    .attendance-page .attendance-table {
+        width: 100%;
+        min-width: 850px;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .attendance-page .attendance-table th {
+        padding: 17px 16px;
+        background: var(--deep-blue);
+        color: #FFFFFF;
+        text-align: left;
+        font-size: 18px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .attendance-page .attendance-table td {
+        padding: 17px 16px;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-primary);
+        font-size: 18px;
+        vertical-align: middle;
+    }
+
+    .attendance-page .attendance-table tbody tr {
+        transition: background 0.2s ease;
+    }
+
+    .attendance-page .attendance-table tbody tr:hover {
+        background: var(--orange-light);
+    }
+
+    .attendance-page .attendance-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .attendance-page .date-cell {
+        min-width: 145px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .attendance-page .time-cell {
+        min-width: 110px;
+        white-space: nowrap;
+    }
+
+    .attendance-page .minutes-cell {
+        min-width: 130px;
+    }
+
+    .attendance-page .no-records {
+        padding: 45px 20px !important;
+        text-align: center;
+        color: var(--text-secondary) !important;
+        font-size: 18px !important;
+    }
+
+    .attendance-page .no-records i {
+        display: block;
+        margin-bottom: 12px;
+        color: #94A3B8;
+        font-size: 35px;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 1200px) {
+        .attendance-page .attendance-info {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 768px) {
+        .attendance-page {
+            padding: 18px;
+        }
+
+        .attendance-page .page-header {
+            padding: 24px;
+            margin-bottom: 25px;
+        }
+
+        .attendance-page .page-header h1 {
+            font-size: 26px;
+        }
+
+        .attendance-page .section-title {
+            font-size: 21px;
+        }
+
+        .attendance-page .today-card {
+            padding: 22px;
+        }
+
+        .attendance-page .today-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .attendance-page .attendance-info {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .attendance-page .info-box {
+            padding: 17px;
+        }
+
+        .attendance-page .info-value {
+            font-size: 22px;
+        }
+
+        .attendance-page .history-content {
+            padding: 18px;
+        }
+
+        .attendance-page .attendance-actions {
+            align-items: stretch;
+        }
+
+        .attendance-page .attendance-btn {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .attendance-page {
+            padding: 12px;
+        }
+
+        .attendance-page .page-header {
+            padding: 20px;
+        }
+
+        .attendance-page .page-header h1 {
+            font-size: 24px;
+        }
+
+        .attendance-page .today-card {
+            padding: 17px;
+        }
+
+        .attendance-page .attendance-info {
+            grid-template-columns: 1fr;
+        }
+
+        .attendance-page .today-icon {
+            width: 50px;
+            height: 50px;
+        }
+
+        .attendance-page .history-header {
+            padding: 18px;
+        }
+
+        .attendance-page .history-content {
+            padding: 13px;
+        }
+
+        .attendance-page .status-badge {
+            white-space: normal;
+        }
+    }
+</style>
+
+<div class="attendance-page">
+
+    <!-- PAGE HEADER -->
+
+    <div class="page-header">
+        <div>
+            <h1>
+                <i class="fa-solid fa-calendar-check"></i>
+                My Attendance
+            </h1>
+            <p>Check in and check out using your current location.</p>
+        </div>
+
+        <div class="header-date">
+            <i class="fa-regular fa-calendar"></i>
+            <span>{% now "d M Y" %}</span>
+        </div>
+    </div>
+
+    {% if selected_holiday %}
+    <div class="today-card" role="status">
+        <strong>{{ selected_holiday.status }}:</strong> {{ selected_holiday.name }}.
+        Check-in and check-out are unavailable today.
+    </div>
+    {% endif %}
+
+    <!-- TODAY'S ATTENDANCE -->
+
+    <div class="attendance-section">
+
+        <h2 class="section-title">
+            <span class="section-title-icon">
+                <i class="fa-solid fa-calendar-day"></i>
+            </span>
+            Today's Attendance
+        </h2>
+
+        <div class="today-card">
+
+            <div class="today-header">
+
+                <div class="today-title">
+                    <div class="today-icon">
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </div>
+
+                    <div>
+                        <h2>Attendance Overview</h2>
+                        <span>
+                            {% if attendance.date %}
+                                {{ attendance.date|date:"d M Y" }}
+                            {% else %}
+                                {% now "d M Y" %}
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+
+                {% if attendance.check_out %}
+
+                    <div class="status-badge status-present">
+                        <i class="fa-solid fa-circle-check"></i>
+                        Completed
+                    </div>
+
+                {% elif attendance.check_in %}
+
+                    {% if attendance.status == "Late" %}
+
+                        <div class="status-badge status-late">
+                            <i class="fa-solid fa-clock"></i>
+                            Late
+                        </div>
+
+                    {% else %}
+
+                        <div class="status-badge status-present">
+                            <i class="fa-solid fa-circle-check"></i>
+                            Checked In
+                        </div>
+
+                    {% endif %}
+
+                {% else %}
+
+                    <div class="status-badge status-not-started">
+                        <i class="fa-solid fa-clock"></i>
+                        Not Checked In
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+            <!-- ATTENDANCE INFORMATION -->
+
+            <div class="attendance-info">
+
+                <div class="info-box">
+                    <div class="info-label">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                        Check In
+                    </div>
+
+                    <div class="info-value">
+                        {% if attendance.check_in %}
+                            {{ attendance.check_in|time:"h:i A" }}
+                        {% else %}
+                            --
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <div class="info-label">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        Check Out
+                    </div>
+
+                    <div class="info-value">
+                        {% if attendance.check_out %}
+                            {{ attendance.check_out|time:"h:i A" }}
+                        {% else %}
+                            --
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <div class="info-label">
+                        <i class="fa-solid fa-hourglass-half"></i>
+                        Working Minutes
+                    </div>
+
+                    <div class="info-value">
+                        {% if attendance.working_minutes != None and attendance.working_minutes != "" %}
+                            {{ attendance.working_minutes }} min
+                        {% else %}
+                            --
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <div class="info-label">
+                        <i class="fa-solid fa-clock"></i>
+                        Late Minutes
+                    </div>
+
+                    <div class="info-value">
+                        {% if attendance.late_minutes %}
+                            {{ attendance.late_minutes }} min
+                        {% else %}
+                            0 min
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- CHECK-IN / CHECK-OUT BUTTONS -->
+
+            <div class="attendance-actions">
+
+                {% if selected_holiday %}
+                    <div class="status-badge status-not-started">
+                        Holiday · {{ selected_holiday.name }}
+                    </div>
+                {% else %}
+
+                {% if not attendance.check_in %}
+
+                    <button
+                        type="button"
+                        id="checkInBtn"
+                        class="attendance-btn check-in-btn"
+                        onclick="handleAttendance('check-in')"
+                    >
+                        <i class="fa-solid fa-location-dot"></i>
+                        Check In
+                    </button>
+
+                {% elif not attendance.check_out %}
+
+                    <button
+                        type="button"
+                        id="checkOutBtn"
+                        class="attendance-btn check-out-btn"
+                        onclick="handleAttendance('check-out')"
+                    >
+                        <i class="fa-solid fa-location-crosshairs"></i>
+                        Check Out
+                    </button>
+
+                {% else %}
+
+                    <button
+                        type="button"
+                        class="attendance-btn completed-btn"
+                        disabled
+                    >
+                        <i class="fa-solid fa-circle-check"></i>
+                        Attendance Completed
+                    </button>
+
+                {% endif %}
+
+                {% endif %}
+
+            </div>
+
+            <div
+                id="locationMessage"
+                class="location-message"
+                role="status"
+                aria-live="polite"
+            ></div>
+
+        </div>
+    </div>
+
+    <section class="attendance-section">
+        <h2 class="section-title">
+            <span class="section-title-icon"><i class="fa-solid fa-chart-column"></i></span>
+            Attendance Summary
+        </h2>
+        <div class="today-card">
+            <div class="attendance-info">
+                <div class="info-box"><div class="info-label">Eligible Working Days</div><div class="info-value">{{ attendance_summary.eligible_working_days }}</div></div>
+                <div class="info-box"><div class="info-label">Present</div><div class="info-value">{{ attendance_summary.present_days }}</div></div>
+                <div class="info-box"><div class="info-label">Absent</div><div class="info-value">{{ attendance_summary.absent_days }}</div></div>
+                <div class="info-box"><div class="info-label">Late</div><div class="info-value">{{ attendance_summary.late_days }}</div></div>
+                <div class="info-box"><div class="info-label">Half Days</div><div class="info-value">{{ attendance_summary.half_days }}</div></div>
+                <div class="info-box"><div class="info-label">Approved Leave</div><div class="info-value">{{ attendance_summary.leave_days }}</div></div>
+                <div class="info-box"><div class="info-label">Pending Leave Requests</div><div class="info-value">{{ attendance_summary.pending_leave_requests }}</div></div>
+                <div class="info-box"><div class="info-label">Not Submitted</div><div class="info-value">{{ attendance_summary.unsubmitted_days }}</div></div>
+                <div class="info-box"><div class="info-label">Attendance Rate</div><div class="info-value">{% if attendance_summary.percentage != None %}{{ attendance_summary.percentage }}%{% else %}N/A{% endif %}</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ATTENDANCE HISTORY -->
+
+    <div class="attendance-section">
+
+        <h2 class="section-title">
+            <span class="section-title-icon">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+            </span>
+            Attendance History
+        </h2>
+
+        <div class="history-card">
+
+            <div class="history-header">
+                <div class="history-header-icon">
+                    <i class="fa-solid fa-list-check"></i>
+                </div>
+
+                <h2>Attendance Records</h2>
+            </div>
+
+            <div class="history-content">
+
+                <div class="table-heading">
+                    <h3>Previous Attendance</h3>
+
+                    <span class="record-count">
+                        <i class="fa-solid fa-database"></i>
+                        {{ records|length }} Records
+                    </span>
+                </div>
+
+                <div class="table-wrapper">
+
+                    <table class="attendance-table">
+
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Check In</th>
+                                <th>Check Out</th>
+                                <th>Working Minutes</th>
+                                <th>Late Minutes</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {% for record in records %}
+
+                                <tr>
+                                    <td class="date-cell">
+                                        <i class="fa-regular fa-calendar"></i>
+                                        {{ record.date|date:"d M Y" }}
+                                    </td>
+
+                                    <td>
+                                        {% if record.status == "Present" %}
+
+                                            <span class="status-badge status-present">
+                                                <i class="fa-solid fa-circle-check"></i>
+                                                Present
+                                            </span>
+
+                                        {% elif record.status == "Late" %}
+
+                                            <span class="status-badge status-late">
+                                                <i class="fa-solid fa-clock"></i>
+                                                Late
+                                            </span>
+
+                                        {% elif record.status == "Half Day" %}
+
+                                            <span class="status-badge status-half">
+                                                <i class="fa-solid fa-clock"></i>
+                                                Half Day
+                                            </span>
+
+                                        {% elif record.status == "Absent" %}
+
+                                            <span class="status-badge status-absent">
+                                                <i class="fa-solid fa-circle-xmark"></i>
+                                                Absent
+                                            </span>
+
+                                        {% elif record.status == "Leave" %}
+
+                                            <span class="status-badge status-leave">
+                                                <i class="fa-solid fa-calendar-minus"></i>
+                                                On Leave
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="status-badge status-not-started">
+                                                {{ record.status|default:"Not Recorded" }}
+                                            </span>
+
+                                        {% endif %}
+                                    </td>
+
+                                    <td class="time-cell">
+                                        {% if record.check_in %}
+                                            {{ record.check_in|time:"h:i A" }}
+                                        {% else %}
+                                            --
+                                        {% endif %}
+                                    </td>
+
+                                    <td class="time-cell">
+                                        {% if record.check_out %}
+                                            {{ record.check_out|time:"h:i A" }}
+                                        {% else %}
+                                            --
+                                        {% endif %}
+                                    </td>
+
+                                    <td class="minutes-cell">
+                                        {% if record.working_minutes != None and record.working_minutes != "" %}
+                                            {{ record.working_minutes }} min
+                                        {% else %}
+                                            --
+                                        {% endif %}
+                                    </td>
+
+                                    <td class="minutes-cell">
+                                        {% if record.late_minutes %}
+                                            {{ record.late_minutes }} min
+                                        {% else %}
+                                            0 min
+                                        {% endif %}
+                                    </td>
+                                </tr>
+
+                            {% empty %}
+
+                                <tr>
+                                    <td colspan="6" class="no-records">
+                                        <i class="fa-solid fa-folder-open"></i>
+                                        <strong>No attendance records found.</strong>
+                                        <div>Your attendance history will appear here.</div>
+                                    </td>
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- GPS ATTENDANCE JAVASCRIPT -->
+
+<script>
+function showMessage(message, type = "info") {
+    const box = document.getElementById("locationMessage");
+
+    box.className = "location-message " + type;
+
+    // Use textContent for plain messages; icons are handled separately.
+    box.textContent = message;
+}
+
+function showMessageWithIcon(iconClass, message, type = "info") {
+    const box = document.getElementById("locationMessage");
+
+    box.className = "location-message " + type;
+    box.replaceChildren();
+
+    const icon = document.createElement("i");
+    icon.className = iconClass;
+
+    const text = document.createTextNode(" " + message);
+
+    box.appendChild(icon);
+    box.appendChild(text);
+}
+
+function getCSRFToken() {
+    const csrfInput = document.querySelector(
+        '[name="csrfmiddlewaretoken"]'
+    );
+
+    if (csrfInput) {
+        return csrfInput.value;
+    }
+
+    const cookies = document.cookie.split(";");
+
+    for (let cookie of cookies) {
+        cookie = cookie.trim();
+
+        if (cookie.startsWith("csrftoken=")) {
+            return decodeURIComponent(
+                cookie.substring("csrftoken=".length)
+            );
+        }
+    }
+
+    return "";
+}
+
+function handleAttendance(action) {
+    const button = action === "check-in"
+        ? document.getElementById("checkInBtn")
+        : document.getElementById("checkOutBtn");
+
+    if (button) {
+        button.disabled = true;
+    }
+
+    showMessageWithIcon(
+        "fa-solid fa-location-dot",
+        "Requesting your current location...",
+        "info"
+    );
+
+    if (!navigator.geolocation) {
+        showMessage(
+            "Geolocation is not supported by this browser.",
+            "error"
+        );
+
+        if (button) {
+            button.disabled = false;
+        }
+
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        function(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            const accuracy = position.coords.accuracy;
+
+            showMessageWithIcon(
+                "fa-solid fa-spinner fa-spin",
+                "Location received. Processing attendance...",
+                "info"
+            );
+
+            const formData = new FormData();
+
+            formData.append("latitude", latitude);
+            formData.append("longitude", longitude);
+            formData.append("accuracy", accuracy);
+
+            const csrfToken = getCSRFToken();
+
+            let url = "";
+
+            if (action === "check-in") {
+                url = "{% url 'attendance:employee_check_in' %}";
+            } else {
+                url = "{% url 'attendance:employee_check_out' %}";
+            }
+
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": csrfToken,
+                    "X-Requested-With": "XMLHttpRequest"
+                },
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Server returned an error.");
+                }
+
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    showMessageWithIcon(
+                        "fa-solid fa-circle-check",
+                        (data.message || "Attendance recorded successfully.")
+                            + " Reloading...",
+                        "success"
+                    );
+
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 1200);
+                } else {
+                    showMessageWithIcon(
+                        "fa-solid fa-circle-exclamation",
+                        data.message || "Attendance operation failed.",
+                        "error"
+                    );
+
+                    if (button) {
+                        button.disabled = false;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error(error);
+
+                showMessage(
+                    "Unable to connect to the server. Please try again.",
+                    "error"
+                );
+
+                if (button) {
+                    button.disabled = false;
+                }
+            });
+        },
+
+        function(error) {
+            let message = "Unable to get your location.";
+
+            if (error.code === 1) {
+                message =
+                    "Location permission was denied. Please allow location access in your browser.";
+            } else if (error.code === 2) {
+                message =
+                    "Your location is unavailable. Please check your device location settings.";
+            } else if (error.code === 3) {
+                message =
+                    "Location request timed out. Please try again.";
+            }
+
+            showMessageWithIcon(
+                "fa-solid fa-triangle-exclamation",
+                message,
+                "error"
+            );
+
+            if (button) {
+                button.disabled = false;
+            }
+        },
+
+        {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 0
+        }
+    );
+}
+</script>
+
+<!-- CSRF TOKEN -->
+
+<form style="display:none;">
+    {% csrf_token %}
+</form>
+
+{% endblock %}

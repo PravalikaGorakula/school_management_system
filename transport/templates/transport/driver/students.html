@@ -1,0 +1,1716 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}
+My Students
+{% endblock %}
+
+{% block extra_css %}
+<style>
+
+    /* =========================================================
+       DRIVER - MY STUDENTS
+       SMS Blue + Orange Theme
+    ========================================================= */
+
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --orange-light: #FFF4E6;
+
+        --light-blue: #EEF6FF;
+        --light-green: #ECFDF5;
+        --light-purple: #F5F3FF;
+        --light-yellow: #FFFBEB;
+        --light-red: #FEF2F2;
+        --light-cyan: #ECFEFF;
+
+        --white: #FFFFFF;
+        --light-gray: #F8FAFC;
+
+        --text-primary: #1F2937;
+        --text-secondary: #64748B;
+        --text-light: #94A3B8;
+
+        --border: #E2E8F0;
+
+        --radius-sm: 8px;
+        --radius-md: 10px;
+        --radius-lg: 14px;
+        --radius-xl: 20px;
+
+        --shadow-card:
+            0 10px 35px rgba(15, 23, 42, 0.08);
+    }
+
+
+    /* =========================================================
+       PAGE
+    ========================================================= */
+
+    .students-page {
+        width: 100%;
+        max-width: 1500px;
+        margin: 0 auto;
+    }
+
+
+    /* =========================================================
+       HEADER
+    ========================================================= */
+
+    .students-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+
+        padding: 24px 28px;
+        margin-bottom: 25px;
+
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+
+        box-shadow: var(--shadow-card);
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 17px;
+    }
+
+    .header-icon {
+        width: 58px;
+        height: 58px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+
+        border-radius: 16px;
+
+        font-size: 25px;
+    }
+
+    .page-title {
+        margin: 0;
+
+        color: var(--deep-blue-dark);
+
+        font-size: 28px;
+        font-weight: 800;
+    }
+
+    .page-subtitle {
+        margin: 4px 0 0;
+
+        color: var(--text-secondary);
+
+        font-size: 16px;
+    }
+
+    .date-badge {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        padding: 11px 17px;
+
+        background: var(--orange-light);
+        color: var(--orange-hover);
+
+        border: 1px solid #FED7AA;
+        border-radius: 12px;
+
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+
+    /* =========================================================
+       SUMMARY CARDS
+    ========================================================= */
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+
+        margin-bottom: 25px;
+    }
+
+    .summary-card {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+
+        padding: 20px;
+
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+
+        box-shadow: var(--shadow-card);
+    }
+
+    .summary-icon {
+        width: 48px;
+        height: 48px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 13px;
+
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+
+        font-size: 20px;
+
+        flex-shrink: 0;
+    }
+
+    .summary-card.orange .summary-icon {
+        background: var(--orange-light);
+        color: var(--orange-hover);
+    }
+
+    .summary-card.green .summary-icon {
+        background: var(--light-green);
+        color: #047857;
+    }
+
+    .summary-card.purple .summary-icon {
+        background: var(--light-purple);
+        color: #6D28D9;
+    }
+
+    .summary-label {
+        color: var(--text-secondary);
+
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .summary-value {
+        margin-top: 2px;
+
+        color: var(--deep-blue-dark);
+
+        font-size: 24px;
+        font-weight: 800;
+    }
+
+
+    /* =========================================================
+       TOOLBAR
+    ========================================================= */
+
+    .students-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+
+        padding: 18px 20px;
+        margin-bottom: 20px;
+
+        background: var(--white);
+
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+
+        box-shadow: var(--shadow-card);
+    }
+
+    .search-box {
+        position: relative;
+        flex: 1;
+        max-width: 500px;
+    }
+
+    .search-box i {
+        position: absolute;
+
+        left: 16px;
+        top: 50%;
+
+        transform: translateY(-50%);
+
+        color: var(--text-light);
+    }
+
+    .search-input {
+        width: 100%;
+
+        padding: 13px 16px 13px 45px;
+
+        border: 1px solid var(--border);
+        border-radius: 11px;
+
+        background: var(--light-gray);
+
+        color: var(--text-primary);
+
+        font-size: 16px;
+
+        outline: none;
+
+        transition: all .25s ease;
+    }
+
+    .search-input:focus {
+        border-color: var(--deep-blue);
+        background: var(--white);
+
+        box-shadow: 0 0 0 3px rgba(18, 59, 99, .08);
+    }
+
+    .filter-select {
+        min-width: 180px;
+
+        padding: 13px 15px;
+
+        border: 1px solid var(--border);
+        border-radius: 11px;
+
+        background: var(--white);
+
+        color: var(--text-primary);
+
+        font-size: 15px;
+
+        outline: none;
+    }
+
+
+    /* =========================================================
+       STUDENTS TABLE CARD
+    ========================================================= */
+
+    .students-card {
+        background: var(--white);
+
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+
+        box-shadow: var(--shadow-card);
+
+        overflow: hidden;
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        padding: 20px 23px;
+
+        background: var(--deep-blue-light);
+
+        border-bottom: 1px solid var(--border);
+    }
+
+    .card-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        color: var(--deep-blue-dark);
+
+        font-size: 20px;
+        font-weight: 800;
+    }
+
+    .card-title i {
+        color: var(--orange);
+    }
+
+    .student-count {
+        padding: 7px 13px;
+
+        background: var(--white);
+        color: var(--deep-blue);
+
+        border-radius: 30px;
+
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+
+    /* =========================================================
+       TABLE
+    ========================================================= */
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .students-table {
+        width: 100%;
+
+        border-collapse: collapse;
+
+        min-width: 950px;
+    }
+
+    .students-table thead {
+        background: #F8FAFC;
+    }
+
+    .students-table th {
+        padding: 15px 18px;
+
+        color: var(--text-secondary);
+
+        font-size: 13px;
+        font-weight: 800;
+
+        text-align: left;
+
+        text-transform: uppercase;
+        letter-spacing: .4px;
+
+        border-bottom: 1px solid var(--border);
+
+        white-space: nowrap;
+    }
+
+    .students-table td {
+        padding: 16px 18px;
+
+        color: var(--text-primary);
+
+        font-size: 15px;
+
+        border-bottom: 1px solid #EEF2F7;
+
+        vertical-align: middle;
+    }
+
+    .students-table tbody tr {
+        transition: all .2s ease;
+    }
+
+    .students-table tbody tr:hover {
+        background: var(--light-blue);
+    }
+
+
+    /* =========================================================
+       STUDENT PROFILE
+    ========================================================= */
+
+    .student-profile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .student-avatar {
+        width: 43px;
+        height: 43px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 12px;
+
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+
+        font-size: 16px;
+        font-weight: 800;
+
+        flex-shrink: 0;
+    }
+
+    .student-name {
+        color: var(--deep-blue-dark);
+
+        font-size: 16px;
+        font-weight: 800;
+    }
+
+    .student-id {
+        margin-top: 2px;
+
+        color: var(--text-secondary);
+
+        font-size: 13px;
+    }
+
+
+    /* =========================================================
+       BADGES
+    ========================================================= */
+
+    .info-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+
+        padding: 7px 11px;
+
+        border-radius: 8px;
+
+        background: var(--light-blue);
+        color: var(--deep-blue);
+
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .stop-badge {
+        background: var(--orange-light);
+        color: var(--orange-hover);
+    }
+
+    .active-badge {
+        background: var(--light-green);
+        color: #047857;
+    }
+
+    .inactive-badge {
+        background: var(--light-red);
+        color: #B91C1C;
+    }
+
+
+    /* =========================================================
+       ACTION BUTTON
+    ========================================================= */
+
+    .view-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+
+        padding: 9px 13px;
+
+        border: 1px solid #D9EAFE;
+        border-radius: 9px;
+
+        background: var(--light-blue);
+        color: var(--deep-blue);
+
+        font-size: 13px;
+        font-weight: 800;
+
+        cursor: pointer;
+
+        transition: all .25s ease;
+    }
+
+    .view-btn:hover {
+        background: var(--deep-blue);
+        color: var(--white);
+    }
+
+
+    /* =========================================================
+       EMPTY STATE
+    ========================================================= */
+
+    .empty-state {
+        padding: 65px 25px;
+
+        text-align: center;
+    }
+
+    .empty-icon {
+        width: 78px;
+        height: 78px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        margin: 0 auto 18px;
+
+        border-radius: 22px;
+
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+
+        font-size: 30px;
+    }
+
+    .empty-title {
+        color: var(--deep-blue-dark);
+
+        font-size: 22px;
+        font-weight: 800;
+
+        margin-bottom: 7px;
+    }
+
+    .empty-text {
+        color: var(--text-secondary);
+
+        font-size: 15px;
+    }
+
+
+    /* =========================================================
+       MODAL
+    ========================================================= */
+
+    .student-modal {
+        position: fixed;
+
+        inset: 0;
+
+        z-index: 9999;
+
+        display: none;
+
+        align-items: center;
+        justify-content: center;
+
+        padding: 20px;
+
+        background: rgba(11, 41, 69, .55);
+    }
+
+    .student-modal.show {
+        display: flex;
+    }
+
+    .modal-card {
+        width: 100%;
+        max-width: 520px;
+
+        background: var(--white);
+
+        border-radius: 20px;
+
+        box-shadow: 0 25px 70px rgba(15, 23, 42, .25);
+
+        overflow: hidden;
+
+        animation: modalOpen .2s ease;
+    }
+
+    @keyframes modalOpen {
+
+        from {
+            opacity: 0;
+            transform: translateY(15px) scale(.98);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        padding: 20px 22px;
+
+        background: var(--deep-blue);
+        color: var(--white);
+    }
+
+    .modal-title {
+        font-size: 19px;
+        font-weight: 800;
+    }
+
+    .modal-close {
+        width: 35px;
+        height: 35px;
+
+        border: none;
+        border-radius: 9px;
+
+        background: rgba(255,255,255,.12);
+        color: var(--white);
+
+        cursor: pointer;
+
+        font-size: 17px;
+    }
+
+    .modal-body {
+        padding: 23px;
+    }
+
+    .modal-profile {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+
+        margin-bottom: 20px;
+    }
+
+    .modal-avatar {
+        width: 55px;
+        height: 55px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 15px;
+
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+
+        font-size: 20px;
+        font-weight: 800;
+    }
+
+    .modal-student-name {
+        color: var(--deep-blue-dark);
+
+        font-size: 19px;
+        font-weight: 800;
+    }
+
+    .modal-student-id {
+        color: var(--text-secondary);
+
+        font-size: 14px;
+    }
+
+    .detail-list {
+        display: grid;
+        gap: 11px;
+    }
+
+    .detail-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+
+        padding: 13px 15px;
+
+        background: var(--light-gray);
+
+        border: 1px solid var(--border);
+        border-radius: 10px;
+    }
+
+    .detail-label {
+        color: var(--text-secondary);
+
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .detail-value {
+        color: var(--text-primary);
+
+        font-size: 14px;
+        font-weight: 800;
+
+        text-align: right;
+    }
+
+
+    /* =========================================================
+       RESPONSIVE
+    ========================================================= */
+
+    @media (max-width: 1150px) {
+
+        .summary-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+
+    @media (max-width: 750px) {
+
+        .students-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .date-badge {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .summary-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .students-toolbar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .search-box {
+            max-width: none;
+        }
+
+        .filter-select {
+            width: 100%;
+        }
+
+        .page-title {
+            font-size: 23px;
+        }
+    }
+
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="students-page">
+
+
+    <!-- =====================================================
+         PAGE HEADER
+    ====================================================== -->
+
+    <div class="students-header">
+
+        <div class="header-left">
+
+            <div class="header-icon">
+                <i class="fa-solid fa-users"></i>
+            </div>
+
+            <div>
+
+                <h1 class="page-title">
+                    My Students
+                </h1>
+
+                <p class="page-subtitle">
+                    View students assigned to your bus and route.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="date-badge">
+
+            <i class="fa-solid fa-calendar-day"></i>
+
+            {% if today %}
+                {{ today|date:"d M Y" }}
+            {% else %}
+                Today
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         SUMMARY
+    ====================================================== -->
+
+    <div class="summary-grid">
+
+        <div class="summary-card">
+
+            <div class="summary-icon">
+                <i class="fa-solid fa-users"></i>
+            </div>
+
+            <div>
+
+                <div class="summary-label">
+                    Total Students
+                </div>
+
+                <div class="summary-value">
+                    {{ assignments|length }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="summary-card orange">
+
+            <div class="summary-icon">
+                <i class="fa-solid fa-bus"></i>
+            </div>
+
+            <div>
+
+                <div class="summary-label">
+                    Assigned Bus
+                </div>
+
+                <div class="summary-value">
+
+                    {% if bus %}
+                        {{ bus.bus_number }}
+                    {% else %}
+                        -
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="summary-card green">
+
+            <div class="summary-icon">
+                <i class="fa-solid fa-route"></i>
+            </div>
+
+            <div>
+
+                <div class="summary-label">
+                    Route
+                </div>
+
+                <div class="summary-value">
+
+                    {% if bus and bus.route %}
+                        {{ bus.route.route_code }}
+                    {% else %}
+                        -
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="summary-card purple">
+
+            <div class="summary-icon">
+                <i class="fa-solid fa-location-dot"></i>
+            </div>
+
+            <div>
+
+                <div class="summary-label">
+                    GPS
+                </div>
+
+                <div class="summary-value">
+
+                    {% if bus and bus.tracker_is_active %}
+                        Active
+                    {% else %}
+                        Offline
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         TOOLBAR
+    ====================================================== -->
+
+    {% if assignments %}
+
+    <div class="students-toolbar">
+
+        <div class="search-box">
+
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            <input
+                type="text"
+                id="studentSearch"
+                class="search-input"
+                placeholder="Search student by name or ID..."
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <select
+            id="stopFilter"
+            class="filter-select"
+        >
+
+            <option value="all">
+                All Pickup Stops
+            </option>
+
+            {% regroup assignments by pickup_stop as pickup_groups %}
+
+            {% for group in pickup_groups %}
+
+                {% if group.grouper %}
+
+                    <option value="{{ group.grouper.stop_name|lower }}">
+                        {{ group.grouper.stop_name }}
+                    </option>
+
+                {% endif %}
+
+            {% endfor %}
+
+        </select>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- =====================================================
+         STUDENT LIST
+    ====================================================== -->
+
+    <div class="students-card">
+
+
+        <div class="card-header">
+
+            <div class="card-title">
+
+                <i class="fa-solid fa-user-graduate"></i>
+
+                Assigned Students
+
+            </div>
+
+
+            {% if assignments %}
+
+            <div
+                class="student-count"
+                id="visibleCount"
+            >
+                {{ assignments|length }} Students
+            </div>
+
+            {% endif %}
+
+        </div>
+
+
+        {% if assignments %}
+
+        <div class="table-wrapper">
+
+            <table class="students-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Student
+                        </th>
+
+                        <th>
+                            Pickup Stop
+                        </th>
+
+                        <th>
+                            Pickup
+                        </th>
+
+                        <th>
+                            Drop Stop
+                        </th>
+
+                        <th>
+                            Drop
+                        </th>
+
+                        <th>
+                            Assigned Date
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="studentTableBody">
+
+                    {% for assignment in assignments %}
+
+                    <tr
+                        class="student-row"
+                        data-name="{{ assignment.student.first_name|default:''|lower }} {{ assignment.student.last_name|default:''|lower }}"
+                        data-id="{{ assignment.student.application_id|default:''|lower }}"
+                        data-stop="{% if assignment.pickup_stop %}{{ assignment.pickup_stop.stop_name|lower }}{% endif %}"
+                    >
+
+                        <!-- STUDENT -->
+
+                        <td>
+
+                            <div class="student-profile">
+
+                                <div class="student-avatar">
+
+                                    {{ assignment.student.first_name|default:"S"|slice:":1"|upper }}
+
+                                </div>
+
+
+                                <div>
+
+                                    <div class="student-name">
+
+                                        {{ assignment.student.first_name }}
+
+                                        {% if assignment.student.last_name %}
+                                            {{ assignment.student.last_name }}
+                                        {% endif %}
+
+                                    </div>
+
+                                    <div class="student-id">
+
+                                        {{ assignment.student.application_id }}
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <!-- PICKUP STOP -->
+
+                        <td>
+
+                            {% if assignment.pickup_stop %}
+
+                                <span class="info-badge stop-badge">
+
+                                    <i class="fa-solid fa-location-dot"></i>
+
+                                    {{ assignment.pickup_stop.stop_name }}
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="info-badge">
+                                    Not Assigned
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- PICKUP -->
+
+                        <td>
+
+                            {% if assignment.pickup_required %}
+
+                                <span class="info-badge active-badge">
+
+                                    <i class="fa-solid fa-check"></i>
+
+                                    Required
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="info-badge inactive-badge">
+
+                                    <i class="fa-solid fa-minus"></i>
+
+                                    No
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- DROP STOP -->
+
+                        <td>
+
+                            {% if assignment.drop_stop %}
+
+                                <span class="info-badge stop-badge">
+
+                                    <i class="fa-solid fa-flag-checkered"></i>
+
+                                    {{ assignment.drop_stop.stop_name }}
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="info-badge">
+                                    Not Assigned
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- DROP -->
+
+                        <td>
+
+                            {% if assignment.drop_required %}
+
+                                <span class="info-badge active-badge">
+
+                                    <i class="fa-solid fa-check"></i>
+
+                                    Required
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="info-badge inactive-badge">
+
+                                    <i class="fa-solid fa-minus"></i>
+
+                                    No
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- DATE -->
+
+                        <td>
+
+                            {% if assignment.assigned_date %}
+
+                                {{ assignment.assigned_date|date:"d M Y" }}
+
+                            {% else %}
+
+                                <span style="color:var(--text-light);">
+                                    -
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- STATUS -->
+
+                        <td>
+
+                            {% if assignment.is_active %}
+
+                                <span class="info-badge active-badge">
+
+                                    <i class="fa-solid fa-circle-check"></i>
+
+                                    Active
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="info-badge inactive-badge">
+
+                                    <i class="fa-solid fa-circle-xmark"></i>
+
+                                    Inactive
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- ACTION -->
+
+                        <td>
+
+                            <button
+                                type="button"
+                                class="view-btn"
+                                onclick="openStudentModal(this)"
+                                data-name="{{ assignment.student.first_name }}{% if assignment.student.last_name %} {{ assignment.student.last_name }}{% endif %}"
+                                data-id="{{ assignment.student.application_id }}"
+                                data-pickup="{% if assignment.pickup_stop %}{{ assignment.pickup_stop.stop_name }}{% else %}Not Assigned{% endif %}"
+                                data-drop="{% if assignment.drop_stop %}{{ assignment.drop_stop.stop_name }}{% else %}Not Assigned{% endif %}"
+                                data-pickup-required="{% if assignment.pickup_required %}Required{% else %}Not Required{% endif %}"
+                                data-drop-required="{% if assignment.drop_required %}Required{% else %}Not Required{% endif %}"
+                                data-date="{% if assignment.assigned_date %}{{ assignment.assigned_date|date:'d M Y' }}{% else %}-{% endif %}"
+                            >
+
+                                <i class="fa-solid fa-eye"></i>
+
+                                View
+
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- NO SEARCH RESULT -->
+
+        <div
+            id="noSearchResult"
+            class="empty-state"
+            style="display:none;"
+        >
+
+            <div class="empty-icon">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+            </div>
+
+            <div class="empty-title">
+                No Students Found
+            </div>
+
+            <div class="empty-text">
+                No student matches your search or selected pickup stop.
+            </div>
+
+        </div>
+
+
+        {% else %}
+
+
+        <!-- EMPTY -->
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+
+                <i class="fa-solid fa-user-graduate"></i>
+
+            </div>
+
+            <div class="empty-title">
+                No Students Assigned
+            </div>
+
+            <div class="empty-text">
+                No students are currently assigned to your bus.
+                Please contact the transport administrator if this is incorrect.
+            </div>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     STUDENT DETAILS MODAL
+========================================================= -->
+
+<div
+    id="studentModal"
+    class="student-modal"
+>
+
+    <div class="modal-card">
+
+
+        <div class="modal-header">
+
+            <div class="modal-title">
+                Student Details
+            </div>
+
+            <button
+                type="button"
+                class="modal-close"
+                onclick="closeStudentModal()"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+        <div class="modal-body">
+
+
+            <div class="modal-profile">
+
+                <div
+                    id="modalAvatar"
+                    class="modal-avatar"
+                >
+                    S
+                </div>
+
+                <div>
+
+                    <div
+                        id="modalStudentName"
+                        class="modal-student-name"
+                    >
+                        Student
+                    </div>
+
+                    <div
+                        id="modalStudentId"
+                        class="modal-student-id"
+                    >
+                        -
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="detail-list">
+
+
+                <div class="detail-item">
+
+                    <span class="detail-label">
+                        Pickup Stop
+                    </span>
+
+                    <span
+                        id="modalPickup"
+                        class="detail-value"
+                    >
+                        -
+                    </span>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <span class="detail-label">
+                        Pickup Requirement
+                    </span>
+
+                    <span
+                        id="modalPickupRequired"
+                        class="detail-value"
+                    >
+                        -
+                    </span>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <span class="detail-label">
+                        Drop Stop
+                    </span>
+
+                    <span
+                        id="modalDrop"
+                        class="detail-value"
+                    >
+                        -
+                    </span>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <span class="detail-label">
+                        Drop Requirement
+                    </span>
+
+                    <span
+                        id="modalDropRequired"
+                        class="detail-value"
+                    >
+                        -
+                    </span>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <span class="detail-label">
+                        Assigned Date
+                    </span>
+
+                    <span
+                        id="modalDate"
+                        class="detail-value"
+                    >
+                        -
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const searchInput = document.getElementById("studentSearch");
+    const stopFilter = document.getElementById("stopFilter");
+
+    if (searchInput) {
+        searchInput.addEventListener("input", filterStudents);
+    }
+
+    if (stopFilter) {
+        stopFilter.addEventListener("change", filterStudents);
+    }
+
+});
+
+
+function filterStudents() {
+
+    const searchInput = document.getElementById("studentSearch");
+    const stopFilter = document.getElementById("stopFilter");
+
+    const rows = document.querySelectorAll(".student-row");
+
+    const noResult = document.getElementById("noSearchResult");
+    const visibleCount = document.getElementById("visibleCount");
+
+    if (!searchInput || !stopFilter) {
+        return;
+    }
+
+    const searchText =
+        searchInput.value.trim().toLowerCase();
+
+    const selectedStop =
+        stopFilter.value.toLowerCase();
+
+    let visible = 0;
+
+
+    rows.forEach(function (row) {
+
+        const name =
+            row.dataset.name || "";
+
+        const studentId =
+            row.dataset.id || "";
+
+        const stop =
+            row.dataset.stop || "";
+
+
+        const matchesSearch =
+            name.includes(searchText) ||
+            studentId.includes(searchText);
+
+
+        const matchesStop =
+            selectedStop === "all" ||
+            stop === selectedStop;
+
+
+        if (matchesSearch && matchesStop) {
+
+            row.style.display = "";
+
+            visible++;
+
+        } else {
+
+            row.style.display = "none";
+
+        }
+
+    });
+
+
+    if (visibleCount) {
+
+        visibleCount.textContent =
+            visible + (visible === 1 ? " Student" : " Students");
+
+    }
+
+
+    if (noResult) {
+
+        noResult.style.display =
+            visible === 0 ? "block" : "none";
+
+    }
+
+}
+
+
+function openStudentModal(button) {
+
+    const modal =
+        document.getElementById("studentModal");
+
+    const name =
+        button.dataset.name || "Student";
+
+    const studentId =
+        button.dataset.id || "-";
+
+    const pickup =
+        button.dataset.pickup || "Not Assigned";
+
+    const drop =
+        button.dataset.drop || "Not Assigned";
+
+    const pickupRequired =
+        button.dataset.pickupRequired || "-";
+
+    const dropRequired =
+        button.dataset.dropRequired || "-";
+
+    const date =
+        button.dataset.date || "-";
+
+
+    document.getElementById("modalStudentName").textContent =
+        name;
+
+    document.getElementById("modalStudentId").textContent =
+        studentId;
+
+    document.getElementById("modalPickup").textContent =
+        pickup;
+
+    document.getElementById("modalDrop").textContent =
+        drop;
+
+    document.getElementById("modalPickupRequired").textContent =
+        pickupRequired;
+
+    document.getElementById("modalDropRequired").textContent =
+        dropRequired;
+
+    document.getElementById("modalDate").textContent =
+        date;
+
+
+    const firstLetter =
+        name.trim().charAt(0).toUpperCase() || "S";
+
+    document.getElementById("modalAvatar").textContent =
+        firstLetter;
+
+
+    modal.classList.add("show");
+
+    document.body.style.overflow = "hidden";
+}
+
+
+function closeStudentModal() {
+
+    const modal =
+        document.getElementById("studentModal");
+
+    modal.classList.remove("show");
+
+    document.body.style.overflow = "";
+
+}
+
+
+document.addEventListener("click", function (event) {
+
+    const modal =
+        document.getElementById("studentModal");
+
+    if (event.target === modal) {
+        closeStudentModal();
+    }
+
+});
+
+
+document.addEventListener("keydown", function (event) {
+
+    if (event.key === "Escape") {
+        closeStudentModal();
+    }
+
+});
+
+</script>
+
+{% endblock %}

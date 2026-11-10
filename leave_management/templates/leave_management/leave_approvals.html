@@ -1,0 +1,773 @@
+
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+Leave Approvals
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* =========================================================
+   SMS THEME
+========================================================= */
+.leaves-page {
+    --deep-blue: #123B63;
+    --deep-blue-dark: #0B2945;
+    --deep-blue-light: #EAF2F8;
+    --orange: #F28C28;
+    --orange-hover: #D97706;
+    --orange-light: #FFF4E6;
+    --text-color: #1E293B;
+    --muted-color: #64748B;
+    --border-color: #D8E1EA;
+    --white: #FFFFFF;
+
+    width: 100%;
+    max-width: 1600px;
+    min-width: 0;
+    margin: 0 auto;
+    padding: 24px;
+    color: var(--text-color);
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+.leaves-page,
+.leaves-page * {
+    box-sizing: border-box;
+}
+
+.leaves-content {
+    width: 100%;
+    min-width: 0;
+}
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+.leaves-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 28px;
+    padding: 4px 0;
+}
+
+.leaves-title-area {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+}
+
+.leaves-title-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 58px;
+    height: 58px;
+    min-width: 58px;
+    color: var(--orange);
+    background: var(--orange-light);
+    border: 1px solid #FDE1BD;
+    border-radius: 13px;
+    font-size: 24px;
+}
+
+.leaves-page-header h2 {
+    margin: 0;
+    color: var(--deep-blue);
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.leaves-page-header p {
+    margin: 7px 0 0;
+    color: var(--muted-color);
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+/* =========================================================
+   ROLE BADGE
+========================================================= */
+.leaves-role-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 46px;
+    padding: 10px 18px;
+    color: var(--deep-blue);
+    background: var(--deep-blue-light);
+    border: 1px solid #C9D9E8;
+    border-radius: 24px;
+    font-size: 17px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.leaves-role-badge i {
+    color: var(--orange-hover);
+    font-size: 17px;
+}
+
+/* =========================================================
+   APPROVAL CARD
+========================================================= */
+.leave-approval-card {
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    box-shadow: 0 5px 20px rgba(11, 41, 69, 0.07);
+}
+
+/* =========================================================
+   TABLE WRAPPER
+========================================================= */
+.leave-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #A8B9C9 #F1F5F9;
+}
+
+.leave-table-wrapper::-webkit-scrollbar {
+    height: 9px;
+}
+
+.leave-table-wrapper::-webkit-scrollbar-track {
+    background: #F1F5F9;
+}
+
+.leave-table-wrapper::-webkit-scrollbar-thumb {
+    background: #A8B9C9;
+    border-radius: 10px;
+}
+
+/* =========================================================
+   APPROVAL TABLE
+========================================================= */
+.leave-approval-table {
+    width: 100%;
+    min-width: 1350px;
+    border-collapse: separate;
+    border-spacing: 0;
+    text-align: left;
+}
+
+.leave-approval-table thead {
+    background: var(--deep-blue);
+}
+
+.leave-approval-table th {
+    padding: 17px 16px;
+    color: var(--white);
+    background: var(--deep-blue);
+    border-bottom: 3px solid var(--orange);
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.5;
+    white-space: nowrap;
+}
+
+.leave-approval-table td {
+    padding: 18px 16px;
+    color: #475569;
+    background: var(--white);
+    border-bottom: 1px solid #E8EDF3;
+    font-size: 16px;
+    line-height: 1.6;
+    vertical-align: middle;
+}
+
+.leave-approval-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.leave-approval-table tbody tr:hover td {
+    background: #F7FAFD;
+}
+
+.leave-approval-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* =========================================================
+   APPLICANT DETAILS
+========================================================= */
+.applicant-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 220px;
+}
+
+.applicant-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    color: var(--deep-blue);
+    background: var(--deep-blue-light);
+    border: 1px solid #D8E6F2;
+    border-radius: 10px;
+    font-size: 19px;
+}
+
+.applicant-info strong {
+    display: block;
+    color: var(--deep-blue);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.applicant-info span {
+    display: block;
+    margin-top: 4px;
+    color: var(--muted-color);
+    font-size: 15px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   ROLE CHIP
+========================================================= */
+.role-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 35px;
+    padding: 6px 12px;
+    color: var(--deep-blue);
+    background: var(--deep-blue-light);
+    border: 1px solid #D8E6F2;
+    border-radius: 7px;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+/* =========================================================
+   LEAVE TYPE AND DATES
+========================================================= */
+.leave-approval-table .leave-type {
+    color: var(--deep-blue);
+    font-size: 16px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.date-value {
+    display: inline-block;
+    color: #475569;
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+/* =========================================================
+   DAYS BADGE
+========================================================= */
+.days-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 6px 11px;
+    color: #A65300;
+    background: var(--orange-light);
+    border: 1px solid #FDE1BD;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* =========================================================
+   REASON
+========================================================= */
+.reason-text {
+    max-width: 260px;
+    min-width: 150px;
+    color: #475569;
+    font-size: 15px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   APPROVAL ACTIONS
+========================================================= */
+.approval-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.approval-actions form {
+    display: inline-flex;
+    margin: 0;
+}
+
+/* =========================================================
+   APPROVE / REJECT BUTTONS
+========================================================= */
+.approval-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 43px;
+    padding: 10px 14px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.4;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.approve-btn {
+    color: #047857;
+    background: #ECFDF3;
+    border-color: #BBF7D0;
+}
+
+.approve-btn:hover {
+    color: #065F46;
+    background: #D1FAE5;
+    border-color: #86EFAC;
+    transform: translateY(-1px);
+}
+
+.reject-btn {
+    color: #B42318;
+    background: #FEF3F2;
+    border-color: #FECDCA;
+}
+
+.reject-btn:hover {
+    color: #912018;
+    background: #FEE4E2;
+    border-color: #FDA29B;
+    transform: translateY(-1px);
+}
+
+.approval-btn:focus-visible {
+    outline: 3px solid rgba(242, 140, 40, 0.35);
+    outline-offset: 3px;
+}
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+.approval-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 420px;
+    padding: 48px 28px;
+    text-align: center;
+}
+
+.empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 78px;
+    height: 78px;
+    margin-bottom: 20px;
+    color: #047857;
+    background: #ECFDF3;
+    border: 1px solid #BBF7D0;
+    border-radius: 50%;
+    font-size: 34px;
+}
+
+.approval-empty-state h3 {
+    margin: 0 0 10px;
+    color: var(--deep-blue);
+    font-size: 25px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.approval-empty-state p {
+    max-width: 500px;
+    margin: 0 0 26px;
+    color: var(--muted-color);
+    font-size: 17px;
+    line-height: 1.8;
+}
+
+/* =========================================================
+   BACK TO LEAVES
+========================================================= */
+.back-leaves-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 49px;
+    padding: 12px 20px;
+    color: var(--white);
+    background: var(--deep-blue);
+    border: 1px solid var(--deep-blue);
+    border-radius: 9px;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.4;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.back-leaves-btn:hover {
+    color: var(--white);
+    background: var(--deep-blue-dark);
+    border-color: var(--deep-blue-dark);
+    transform: translateY(-1px);
+}
+
+.back-leaves-btn:focus-visible {
+    outline: 3px solid rgba(242, 140, 40, 0.35);
+    outline-offset: 3px;
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+@media (max-width: 1100px) {
+    .leaves-page {
+        padding: 20px;
+    }
+
+    .leaves-page-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .leaves-role-badge {
+        align-self: flex-start;
+    }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+@media (max-width: 600px) {
+    .leaves-page {
+        padding: 14px;
+        font-size: 16px;
+    }
+
+    .leaves-page-header {
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .leaves-title-area {
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .leaves-title-icon {
+        width: 46px;
+        height: 46px;
+        min-width: 46px;
+        border-radius: 10px;
+        font-size: 20px;
+    }
+
+    .leaves-page-header h2 {
+        font-size: 24px;
+    }
+
+    .leaves-page-header p {
+        margin-top: 6px;
+        font-size: 16px;
+    }
+
+    .leaves-role-badge {
+        width: 100%;
+        justify-content: center;
+        min-height: 45px;
+        font-size: 16px;
+    }
+
+    .leave-approval-card {
+        border-radius: 10px;
+    }
+
+    .leave-approval-table {
+        min-width: 1350px;
+    }
+
+    .leave-approval-table th {
+        padding: 15px 13px;
+        font-size: 16px;
+    }
+
+    .leave-approval-table td {
+        padding: 15px 13px;
+    }
+
+    .approval-empty-state {
+        min-height: 340px;
+        padding: 34px 18px;
+    }
+
+    .empty-icon {
+        width: 66px;
+        height: 66px;
+        margin-bottom: 17px;
+        font-size: 29px;
+    }
+
+    .approval-empty-state h3 {
+        font-size: 22px;
+    }
+
+    .approval-empty-state p {
+        font-size: 16px;
+    }
+
+    .back-leaves-btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="leaves-page">
+
+    <section class="leaves-content">
+
+        <!-- PAGE HEADER -->
+        <div class="leaves-page-header">
+
+            <div class="leaves-title-area">
+
+                <div class="leaves-title-icon">
+                    <i class="fa-solid fa-user-check"></i>
+                </div>
+
+                <div>
+                    <h2>Leave Approvals</h2>
+                    <p>
+                        Review pending leave applications assigned to you.
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="leaves-role-badge">
+                <i class="fa-solid fa-user"></i>
+                <span>{{ role_display }}</span>
+            </div>
+
+        </div>
+
+        <!-- APPROVAL TABLE CARD -->
+        <div class="leave-approval-card">
+
+            {% if leaves %}
+
+                <div class="leave-table-wrapper">
+
+                    <table class="leave-approval-table">
+
+                        <thead>
+                            <tr>
+                                <th>Applicant</th>
+                                <th>Role</th>
+                                <th>Leave Type</th>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>Days</th>
+                                <th>Reason</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {% for leave in leaves %}
+
+                                <tr>
+
+                                    <!-- APPLICANT -->
+                                    <td>
+                                        <div class="applicant-info">
+
+                                            <div class="applicant-icon">
+                                                <i class="fa-solid fa-user"></i>
+                                            </div>
+
+                                            <div>
+                                                <strong>
+                                                    {{ leave.user.get_full_name|default:leave.user.username }}
+                                                </strong>
+
+                                                <span>
+                                                    {{ leave.user.username }}
+                                                </span>
+                                            </div>
+
+                                        </div>
+                                    </td>
+
+                                    <!-- ROLE -->
+                                    <td>
+                                        <span class="role-chip">
+                                            {{ leave.user.profile.get_role_display }}
+                                        </span>
+                                    </td>
+
+                                    <!-- LEAVE TYPE -->
+                                    <td>
+                                        <span class="leave-type">
+                                            {{ leave.leave_type }}
+                                        </span>
+                                    </td>
+
+                                    <!-- FROM DATE -->
+                                    <td>
+                                        <span class="date-value">
+                                            {{ leave.from_date|date:"d M Y" }}
+                                        </span>
+                                    </td>
+
+                                    <!-- TO DATE -->
+                                    <td>
+                                        <span class="date-value">
+                                            {{ leave.to_date|date:"d M Y" }}
+                                        </span>
+                                    </td>
+
+                                    <!-- DAYS -->
+                                    <td>
+                                        <span class="days-badge">
+                                            {{ leave.total_days }}
+                                            {% if leave.total_days == 1 %}
+                                                Day
+                                            {% else %}
+                                                Days
+                                            {% endif %}
+                                        </span>
+                                    </td>
+
+                                    <!-- REASON -->
+                                    <td>
+                                        <div class="reason-text">
+                                            {{ leave.reason }}
+                                        </div>
+                                    </td>
+
+                                    <!-- ACTIONS -->
+                                    <td>
+                                        <div class="approval-actions">
+
+                                            <!-- APPROVE -->
+                                            <form
+                                                method="post"
+                                                action="{% url 'leave_management:approve_leave' leave.id %}"
+                                            >
+                                                {% csrf_token %}
+
+                                                <button
+                                                    type="submit"
+                                                    class="approval-btn approve-btn"
+                                                    aria-label="Approve leave request"
+                                                >
+                                                    <i class="fa-solid fa-check"></i>
+                                                    Approve
+                                                </button>
+                                            </form>
+
+                                            <!-- REJECT -->
+                                            <form
+                                                method="post"
+                                                action="{% url 'leave_management:reject_leave' leave.id %}"
+                                            >
+                                                {% csrf_token %}
+
+                                                <button
+                                                    type="submit"
+                                                    class="approval-btn reject-btn"
+                                                    aria-label="Reject leave request"
+                                                >
+                                                    <i class="fa-solid fa-xmark"></i>
+                                                    Reject
+                                                </button>
+                                            </form>
+
+                                        </div>
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            {% else %}
+
+                <!-- EMPTY STATE -->
+                <div class="approval-empty-state">
+
+                    <div class="empty-icon">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+
+                    <h3>No Pending Leave Approvals</h3>
+
+                    <p>
+                        There are no leave applications waiting
+                        for your approval.
+                    </p>
+
+                    <a
+                        href="{% url 'leave_management:apply_leave' %}"
+                        class="back-leaves-btn"
+                    >
+                        <i class="fa-solid fa-arrow-left"></i>
+                        Back to Leaves
+                    </a>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}

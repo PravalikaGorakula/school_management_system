@@ -1,0 +1,11 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% block title %}Finance Audit Logs | SMS{% endblock %}
+{% block page_title %}Finance Audit Logs{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'finance/css/finance.css' %}">{% endblock %}
+{% block content %}
+<div class="finance-page"><header class="finance-hero"><div><h2>Finance Audit Trail</h2><p>Review who performed finance actions, when they happened, the action type and recorded IP address.</p></div></header>
+<section class="finance-panel"><form method="get" class="finance-filters"><div class="finance-field"><label>Action</label><select name="action"><option value="">All actions</option>{% for value,label in action_choices %}<option value="{{ value }}" {% if action == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div><button class="finance-btn finance-primary">Filter</button><a class="finance-btn finance-secondary" href="{% url 'finance:audit_logs' %}">Reset</a></form>
+<div class="finance-note">This page shows finance-module actions recorded by the application. It is an operational audit trail, not a replacement for a legally compliant accounting ledger.</div>
+<div class="finance-table-wrap"><table class="finance-table"><thead><tr><th>Timestamp</th><th>User</th><th>Action</th><th>Description</th><th>IP Address</th></tr></thead><tbody>{% for log in logs %}<tr><td>{{ log.timestamp|date:"d M Y, h:i:s A" }}</td><td>{{ log.user|default:"System" }}</td><td><span class="finance-badge badge-published">{{ log.get_action_display }}</span></td><td>{{ log.description }}</td><td>{{ log.ip_address|default:"—" }}</td></tr>{% empty %}<tr><td colspan="5" class="finance-empty">No finance audit events recorded yet. New finance actions will appear here.</td></tr>{% endfor %}</tbody></table></div></section></div>
+{% endblock %}

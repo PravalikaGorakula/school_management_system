@@ -1,0 +1,1111 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+Marks Entry
+{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --orange-light: #FFF4E6;
+        --white: #FFFFFF;
+        --background: #F6F8FB;
+        --text-primary: #172033;
+        --text-secondary: #64748B;
+        --border: #E2E8F0;
+        --border-dark: #CBD5E1;
+        --success: #198754;
+        --danger: #DC2626;
+    }
+
+    .marks-page {
+        padding: 24px;
+        background: var(--background);
+        min-height: calc(100vh - 70px);
+    }
+
+    /* HEADER */
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+    .heading-area {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .heading-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 10px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+    }
+
+    .heading-area h1 {
+        margin: 0;
+        color: var(--deep-blue);
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+    .heading-area p {
+        margin: 5px 0 0;
+        color: var(--text-secondary);
+        font-size: 18px;
+    }
+
+    .back-btn {
+        min-height: 44px;
+        padding: 0 17px;
+        border: 1px solid var(--border-dark);
+        border-radius: 8px;
+        background: var(--white);
+        color: var(--deep-blue);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .back-btn:hover {
+        background: var(--deep-blue-light);
+        border-color: var(--deep-blue);
+    }
+
+    /* CARD */
+
+    .card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+
+    .card-header {
+        padding: 19px 22px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+    }
+
+    .card-title {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: var(--deep-blue);
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .card-body {
+        padding: 22px;
+    }
+
+    /* FILTER */
+
+    .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-group label {
+        color: var(--text-primary);
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .required {
+        color: var(--danger);
+    }
+
+    .form-group select,
+    .form-group input {
+        width: 100%;
+        height: 48px;
+        box-sizing: border-box;
+        padding: 0 14px;
+        border: 1px solid var(--border-dark);
+        border-radius: 8px;
+        background: var(--white);
+        color: var(--text-primary);
+        font-size: 18px;
+        outline: none;
+    }
+
+    .form-group select:focus,
+    .form-group input:focus {
+        border-color: var(--deep-blue);
+        box-shadow: 0 0 0 3px rgba(18, 59, 99, 0.08);
+    }
+
+    .filter-action {
+        display: flex;
+        align-items: flex-end;
+    }
+
+    .load-btn {
+        width: 100%;
+        height: 48px;
+        border: none;
+        border-radius: 8px;
+        background: var(--deep-blue);
+        color: var(--white);
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .load-btn:hover {
+        background: var(--deep-blue-dark);
+    }
+
+    /* ASSIGNMENT INFO */
+
+    .assignment-info {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+    }
+
+    .info-box {
+        padding: 17px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: #FAFCFE;
+    }
+
+    .info-label {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--text-secondary);
+        font-size: 17px;
+    }
+
+    .info-value {
+        color: var(--deep-blue);
+        font-size: 19px;
+        font-weight: 700;
+    }
+
+    /* TABLE */
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    .marks-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1000px;
+    }
+
+    .marks-table th {
+        padding: 15px 16px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue-dark);
+        text-align: left;
+        font-size: 18px;
+        font-weight: 700;
+        border-bottom: 1px solid var(--border);
+        white-space: nowrap;
+    }
+
+    .marks-table td {
+        padding: 14px 16px;
+        color: var(--text-primary);
+        font-size: 18px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle;
+    }
+
+    .marks-table tbody tr:hover {
+        background: #FAFCFE;
+    }
+
+    .student-name {
+        color: var(--deep-blue);
+        font-weight: 700;
+    }
+
+    .admission-id {
+        color: var(--text-secondary);
+    }
+
+    .marks-input {
+        width: 130px;
+        height: 43px;
+        box-sizing: border-box;
+        padding: 0 12px;
+        border: 1px solid var(--border-dark);
+        border-radius: 7px;
+        font-size: 18px;
+        color: var(--text-primary);
+        outline: none;
+    }
+
+    .marks-input:focus {
+        border-color: var(--orange);
+        box-shadow: 0 0 0 3px rgba(242, 140, 40, 0.12);
+    }
+
+    .remarks-input {
+        width: 220px;
+    }
+
+    .grade-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 55px;
+        padding: 7px 10px;
+        border-radius: 7px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    .percentage {
+        font-weight: 600;
+    }
+
+    /* ACTIONS */
+
+    .bottom-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .left-actions,
+    .right-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn {
+        min-height: 46px;
+        padding: 0 20px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: 1px solid transparent;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .btn-secondary {
+        background: var(--white);
+        color: var(--deep-blue);
+        border-color: var(--border-dark);
+    }
+
+    .btn-secondary:hover {
+        background: var(--deep-blue-light);
+        border-color: var(--deep-blue);
+    }
+
+    .btn-save {
+        background: var(--deep-blue);
+        color: var(--white);
+    }
+
+    .btn-save:hover {
+        background: var(--deep-blue-dark);
+    }
+
+    .btn-submit {
+        background: var(--orange);
+        color: var(--white);
+    }
+
+    .btn-submit:hover {
+        background: var(--orange-hover);
+    }
+
+    /* EMPTY */
+
+    .empty-state {
+        padding: 55px 20px;
+        text-align: center;
+    }
+
+    .empty-icon {
+        width: 68px;
+        height: 68px;
+        margin: 0 auto 15px;
+        border-radius: 50%;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 27px;
+    }
+
+    .empty-state h3 {
+        margin: 0 0 7px;
+        color: var(--deep-blue);
+        font-size: 21px;
+    }
+
+    .empty-state p {
+        margin: 0;
+        color: var(--text-secondary);
+        font-size: 18px;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 1000px) {
+        .filter-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .assignment-info {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .filter-action {
+            grid-column: 1 / -1;
+        }
+    }
+
+    @media (max-width: 700px) {
+        .marks-page {
+            padding: 16px;
+        }
+
+        .page-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .heading-area h1 {
+            font-size: 24px;
+        }
+
+        .filter-grid,
+        .assignment-info {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-action {
+            grid-column: auto;
+        }
+
+        .bottom-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .left-actions,
+        .right-actions {
+            width: 100%;
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+
+<div class="marks-page">
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <div class="page-header">
+
+        <div class="heading-area">
+
+            <div class="heading-icon">
+                <i class="fa-solid fa-pen-to-square"></i>
+            </div>
+
+            <div>
+                <h1>Marks Entry</h1>
+                <p>Enter and manage student examination marks</p>
+            </div>
+
+        </div>
+
+        <a
+            href="{% url 'exams:exam_list' %}"
+            class="back-btn"
+        >
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to Examinations
+        </a>
+
+    </div>
+
+
+    <!-- =========================
+         SELECT EXAM / CLASS / SUBJECT
+    ========================== -->
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <div class="card-title">
+                <i class="fa-solid fa-filter"></i>
+                Select Examination
+            </div>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <form method="get">
+
+                <div class="filter-grid">
+
+                    <!-- EXAM -->
+
+                    <div class="form-group">
+
+                        <label for="examination">
+                            Examination
+                            <span class="required">*</span>
+                        </label>
+
+                        <select
+                            id="examination"
+                            name="examination"
+                            required
+                        >
+
+                            <option value="">
+                                Select Examination
+                            </option>
+
+                            {% for exam in examinations %}
+
+                                <option
+                                    value="{{ exam.pk }}"
+                                    {% if selected_examination and selected_examination.pk == exam.pk %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    {{ exam.exam_name }}
+                                    - {{ exam.academic_year }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- CLASS -->
+
+                    <div class="form-group">
+
+                        <label for="class_section">
+                            Class & Section
+                            <span class="required">*</span>
+                        </label>
+
+                        <select
+                            id="class_section"
+                            name="class_section"
+                            required
+                        >
+
+                            <option value="">
+                                Select Class
+                            </option>
+
+                            {% for class_section in class_sections %}
+
+                                <option
+                                    value="{{ class_section.pk }}"
+                                    {% if selected_class and selected_class.pk == class_section.pk %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    {{ class_section }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- SUBJECT -->
+
+                    <div class="form-group">
+
+                        <label for="subject">
+                            Subject
+                            <span class="required">*</span>
+                        </label>
+
+                        <select
+                            id="subject"
+                            name="subject"
+                            required
+                        >
+
+                            <option value="">
+                                Select Subject
+                            </option>
+
+                            {% for subject in subjects %}
+
+                                <option
+                                    value="{{ subject.pk }}"
+                                    {% if selected_subject and selected_subject.pk == subject.pk %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    {{ subject.subject_name }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- LOAD -->
+
+                    <div class="filter-action">
+
+                        <button
+                            type="submit"
+                            class="load-btn"
+                        >
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            Load Students
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    {% if selected_assignment %}
+
+    <!-- =========================
+         ASSIGNMENT INFORMATION
+    ========================== -->
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <div class="card-title">
+                <i class="fa-solid fa-circle-info"></i>
+                Examination Details
+            </div>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <div class="assignment-info">
+
+                <div class="info-box">
+
+                    <span class="info-label">
+                        Examination
+                    </span>
+
+                    <span class="info-value">
+                        {{ selected_assignment.examination.exam_name }}
+                    </span>
+
+                </div>
+
+
+                <div class="info-box">
+
+                    <span class="info-label">
+                        Class
+                    </span>
+
+                    <span class="info-value">
+                        {{ selected_assignment.class_section }}
+                    </span>
+
+                </div>
+
+
+                <div class="info-box">
+
+                    <span class="info-label">
+                        Subject
+                    </span>
+
+                    <span class="info-value">
+
+                        {% if selected_assignment.subject %}
+                            {{ selected_assignment.subject.subject_name }}
+                        {% else %}
+                            —
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+                <div class="info-box">
+
+                    <span class="info-label">
+                        Maximum Marks
+                    </span>
+
+                    <span class="info-value">
+                        {{ selected_assignment.max_marks }}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         MARKS TABLE
+    ========================== -->
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <div class="card-title">
+                <i class="fa-solid fa-users"></i>
+                Student Marks
+            </div>
+
+            <span style="font-size:18px;color:var(--text-secondary);">
+                {{ students|length }} student{{ students|length|pluralize }}
+            </span>
+
+        </div>
+
+
+        {% if students %}
+
+        <form method="post">
+
+            {% csrf_token %}
+
+            <input
+                type="hidden"
+                name="examination"
+                value="{{ selected_assignment.examination.pk }}"
+            >
+
+            <input
+                type="hidden"
+                name="class_section"
+                value="{{ selected_assignment.class_section.pk }}"
+            >
+
+            <input
+                type="hidden"
+                name="subject"
+                value="{{ selected_assignment.subject.pk }}"
+            >
+
+
+            <div class="table-wrapper">
+
+                <table class="marks-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>#</th>
+
+                            <th>Student</th>
+
+                            <th>Admission ID</th>
+
+                            <th>Maximum</th>
+
+                            <th>Obtained Marks</th>
+
+                            <th>Percentage</th>
+
+                            <th>Grade</th>
+
+                            <th>Remarks</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for student in students %}
+
+                        {% with mark=student.exam_mark %}
+
+                        <tr>
+
+                            <td>
+                                {{ forloop.counter }}
+                            </td>
+
+
+                            <td>
+
+                                <span class="student-name">
+
+                                    {% if student.full_name %}
+                                        {{ student.full_name }}
+                                    {% else %}
+                                        {{ student.first_name }}
+                                        {{ student.last_name }}
+                                    {% endif %}
+
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="admission-id">
+
+                                    {% if student.admission_id %}
+                                        {{ student.admission_id }}
+                                    {% elif student.application_id %}
+                                        {{ student.application_id }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                {{ selected_assignment.max_marks }}
+
+                                <input
+                                    type="hidden"
+                                    name="max_marks_{{ student.pk }}"
+                                    value="{{ selected_assignment.max_marks }}"
+                                >
+
+                            </td>
+
+
+                            <td>
+
+                                <input
+                                    type="number"
+                                    name="obtained_marks_{{ student.pk }}"
+                                    class="marks-input"
+                                    value="{% if mark %}{{ mark.obtained_marks }}{% endif %}"
+                                    min="0"
+                                    max="{{ selected_assignment.max_marks }}"
+                                    step="0.01"
+                                    placeholder="Marks"
+                                >
+
+                            </td>
+
+
+                            <td>
+
+                                <span
+                                    class="percentage"
+                                    id="percentage-{{ student.pk }}"
+                                >
+                                    {% if mark %}
+                                        {{ mark.percentage }}%
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <span
+                                    class="grade-badge"
+                                    id="grade-{{ student.pk }}"
+                                >
+                                    {% if mark %}
+                                        {{ mark.grade }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <input
+                                    type="text"
+                                    name="remarks_{{ student.pk }}"
+                                    class="marks-input remarks-input"
+                                    value="{% if mark %}{{ mark.remarks }}{% endif %}"
+                                    placeholder="Optional remarks"
+                                >
+
+                            </td>
+
+                        </tr>
+
+                        {% endwith %}
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <!-- ACTIONS -->
+
+            <div
+                class="bottom-actions"
+                style="
+                    padding:20px 22px;
+                    border-top:1px solid var(--border);
+                "
+            >
+
+                <div class="left-actions">
+
+                    <a
+                        href="{% url 'exams:exam_list' %}"
+                        class="btn btn-secondary"
+                    >
+                        <i class="fa-solid fa-xmark"></i>
+                        Cancel
+                    </a>
+
+                </div>
+
+
+                <div class="right-actions">
+
+                    <button
+                        type="submit"
+                        name="action"
+                        value="save"
+                        class="btn btn-save"
+                    >
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Save Marks
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        name="action"
+                        value="submit"
+                        class="btn btn-submit"
+                        onclick="return confirm('Are you sure you want to submit these marks?');"
+                    >
+                        <i class="fa-solid fa-paper-plane"></i>
+                        Save & Submit
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+        {% else %}
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                <i class="fa-solid fa-users"></i>
+            </div>
+
+            <h3>No Students Found</h3>
+
+            <p>
+                There are no students available for the selected class.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+
+    {% else %}
+
+    <!-- =========================
+         INITIAL EMPTY STATE
+    ========================== -->
+
+    <div class="card">
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                <i class="fa-solid fa-pen-to-square"></i>
+            </div>
+
+            <h3>Select Examination Details</h3>
+
+            <p>
+                Select an examination, class and subject above to load students.
+            </p>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const maxMarks = parseFloat(
+        "{{ selected_assignment.max_marks|default:0 }}"
+    );
+
+    const inputs = document.querySelectorAll(".marks-input");
+
+    inputs.forEach(function (input) {
+
+        if (!input.name.startsWith("obtained_marks_")) {
+            return;
+        }
+
+        input.addEventListener("input", function () {
+
+            const studentId = input.name.replace(
+                "obtained_marks_",
+                ""
+            );
+
+            const percentageElement =
+                document.getElementById(
+                    "percentage-" + studentId
+                );
+
+            const gradeElement =
+                document.getElementById(
+                    "grade-" + studentId
+                );
+
+            const obtained = parseFloat(input.value);
+
+            if (
+                isNaN(obtained) ||
+                maxMarks <= 0
+            ) {
+                percentageElement.textContent = "—";
+                gradeElement.textContent = "—";
+                return;
+            }
+
+            const percentage =
+                (obtained / maxMarks) * 100;
+
+            percentageElement.textContent =
+                percentage.toFixed(2) + "%";
+
+
+            let grade = "F";
+
+            if (percentage >= 90) {
+                grade = "A+";
+            } else if (percentage >= 80) {
+                grade = "A";
+            } else if (percentage >= 70) {
+                grade = "B+";
+            } else if (percentage >= 60) {
+                grade = "B";
+            } else if (percentage >= 50) {
+                grade = "C";
+            } else if (percentage >= 40) {
+                grade = "D";
+            }
+
+            gradeElement.textContent = grade;
+
+        });
+
+    });
+
+});
+</script>
+
+{% endblock %}

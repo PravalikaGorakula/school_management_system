@@ -1,0 +1,1420 @@
+
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}
+New Employee Application
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'admissions/css/admissions.css' %}">
+
+<style>
+/* =====================================================
+   EMPLOYEE APPLICATION FORM - SMS THEME
+===================================================== */
+
+.employee-form-page {
+    --deep-blue: #123B63;
+    --deep-blue-dark: #0B2945;
+    --deep-blue-light: #EAF2F8;
+    --orange: #F28C28;
+    --orange-hover: #D97706;
+    --orange-light: #FFF4E6;
+    --text-dark: #263445;
+    --text-muted: #64748B;
+    --border-color: #DCE5EE;
+    --surface: #FFFFFF;
+    --page-bg: #F5F8FC;
+
+    width: 100%;
+    padding: 24px;
+    color: var(--text-dark);
+    font-size: 18px;
+}
+
+.employee-form-page *,
+.employee-form-page *::before,
+.employee-form-page *::after {
+    box-sizing: border-box;
+}
+
+/* =====================================================
+   PAGE HEADER
+===================================================== */
+
+.employee-form-page .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+
+    margin: 0 0 26px;
+    padding: 24px 26px;
+
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-left: 5px solid var(--orange);
+    border-radius: 12px;
+
+    box-shadow: 0 4px 14px rgba(18, 59, 99, 0.06);
+}
+
+.employee-form-page .page-header h1 {
+    margin: 0 0 9px;
+    color: var(--deep-blue);
+    font-size: 28px;
+    font-weight: 750;
+    line-height: 1.4;
+}
+
+.employee-form-page .page-header p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+/* =====================================================
+   BUTTONS
+===================================================== */
+
+.employee-form-page .btn-primary,
+.employee-form-page .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    min-height: 48px;
+    padding: 12px 20px;
+
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.4;
+    text-align: center;
+    text-decoration: none;
+
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.employee-form-page .btn-primary {
+    color: #FFFFFF;
+    background: var(--orange);
+    border: 1px solid var(--orange);
+}
+
+.employee-form-page .btn-primary:hover {
+    color: #FFFFFF;
+    background: var(--orange-hover);
+    border-color: var(--orange-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(242, 140, 40, 0.2);
+}
+
+.employee-form-page .btn-secondary {
+    color: var(--deep-blue);
+    background: #FFFFFF;
+    border: 1px solid #C9D7E5;
+}
+
+.employee-form-page .btn-secondary:hover {
+    color: #FFFFFF;
+    background: var(--deep-blue);
+    border-color: var(--deep-blue);
+}
+
+.employee-form-page .btn-primary:focus-visible,
+.employee-form-page .btn-secondary:focus-visible {
+    outline: 3px solid rgba(242, 140, 40, 0.4);
+    outline-offset: 3px;
+}
+
+/* =====================================================
+   FORM SECTIONS
+===================================================== */
+
+.employee-form-page .admission-form {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    width: 100%;
+}
+
+.employee-form-page .form-section {
+    width: 100%;
+    min-width: 0;
+    padding: 25px;
+
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+
+    box-shadow: 0 4px 14px rgba(18, 59, 99, 0.045);
+}
+
+/* =====================================================
+   SECTION HEADINGS
+===================================================== */
+
+.employee-form-page .form-section-title {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+
+    margin-bottom: 25px;
+    padding-bottom: 18px;
+
+    border-bottom: 1px solid #E7EDF4;
+}
+
+.employee-form-page .form-section-title > i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    width: 48px;
+    height: 48px;
+
+    color: #FFFFFF;
+    background: var(--deep-blue);
+    border-radius: 10px;
+
+    font-size: 21px;
+}
+
+.employee-form-page .form-section-title h2 {
+    margin: 0 0 7px;
+    color: var(--deep-blue);
+    font-size: 23px;
+    font-weight: 750;
+    line-height: 1.4;
+}
+
+.employee-form-page .form-section-title p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 18px;
+    line-height: 1.55;
+}
+
+/* =====================================================
+   FORM GRID
+===================================================== */
+
+.employee-form-page .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 23px 25px;
+    width: 100%;
+}
+
+.employee-form-page .form-group {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    min-width: 0;
+    margin: 0;
+}
+
+.employee-form-page .form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+/* =====================================================
+   LABELS
+===================================================== */
+
+.employee-form-page .form-group label {
+    display: block;
+    margin: 0 0 9px;
+
+    color: var(--deep-blue-dark);
+    font-size: 18px;
+    font-weight: 650;
+    line-height: 1.5;
+}
+
+.employee-form-page .form-group label span {
+    margin-left: 3px;
+    color: #DC2626;
+    font-weight: 750;
+}
+
+/* =====================================================
+   INPUTS AND SELECTS
+===================================================== */
+
+.employee-form-page .form-group input:not([type="checkbox"]):not([type="radio"]),
+.employee-form-page .form-group select,
+.employee-form-page .form-group textarea {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-height: 48px;
+    padding: 11px 14px;
+
+    color: var(--text-dark);
+    background: #FFFFFF;
+    border: 1px solid #C9D5E2;
+    border-radius: 8px;
+
+    font-family: inherit;
+    font-size: 18px;
+    line-height: 1.5;
+
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.employee-form-page .form-group textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.employee-form-page .form-group input[type="file"] {
+    min-height: 48px;
+    padding: 9px;
+    background: #F8FAFC;
+}
+
+.employee-form-page .form-group input[type="file"]::file-selector-button {
+    margin-right: 12px;
+    padding: 8px 12px;
+    color: #FFFFFF;
+    background: var(--deep-blue);
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.employee-form-page .form-group input:focus,
+.employee-form-page .form-group select:focus,
+.employee-form-page .form-group textarea:focus {
+    outline: none;
+    border-color: var(--deep-blue);
+    box-shadow: 0 0 0 3px rgba(18, 59, 99, 0.12);
+}
+
+.employee-form-page .form-group input::placeholder,
+.employee-form-page .form-group textarea::placeholder {
+    color: #8996A5;
+}
+
+/* =====================================================
+   FIELD ERRORS
+===================================================== */
+
+.employee-form-page .field-error {
+    margin-top: 7px;
+    color: #B91C1C;
+    font-size: 16px;
+    line-height: 1.55;
+}
+
+.employee-form-page .field-error ul {
+    margin: 5px 0 0;
+    padding-left: 22px;
+}
+
+.employee-form-page .form-error-box {
+    padding: 16px 18px;
+    color: #991B1B;
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    border-left: 4px solid #DC2626;
+    border-radius: 9px;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+/* =====================================================
+   TRANSPORT SECTION
+===================================================== */
+
+.employee-form-page .transport-section {
+    position: relative;
+}
+
+.employee-form-page .transport-info-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+
+    margin-bottom: 23px;
+    padding: 18px 20px;
+
+    background: var(--deep-blue-light);
+    border: 1px solid #D6E7F7;
+    border-radius: 10px;
+}
+
+.employee-form-page .transport-info-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    width: 46px;
+    height: 46px;
+
+    color: #FFFFFF;
+    background: var(--deep-blue);
+    border-radius: 10px;
+    font-size: 21px;
+}
+
+.employee-form-page .transport-info-content strong {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--deep-blue);
+    font-size: 18px;
+    font-weight: 750;
+}
+
+.employee-form-page .transport-info-content p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.employee-form-page .transport-fields {
+    display: none;
+    margin-top: 23px;
+    padding: 23px;
+
+    background: #F8FAFC;
+    border: 1px solid var(--border-color);
+    border-radius: 11px;
+}
+
+.employee-form-page .transport-fields.active {
+    display: block;
+}
+
+.employee-form-page .transport-field-description {
+    display: block;
+    margin-top: 8px;
+    color: var(--text-muted);
+    font-size: 16px;
+    line-height: 1.55;
+}
+
+.employee-form-page .transport-fields input,
+.employee-form-page .transport-fields select {
+    width: 100%;
+    min-height: 48px;
+    padding: 11px 14px;
+
+    color: var(--text-dark);
+    background: #FFFFFF;
+    border: 1px solid #C9D5E2;
+    border-radius: 8px;
+
+    font-family: inherit;
+    font-size: 18px;
+}
+
+.employee-form-page .transport-fields input:focus,
+.employee-form-page .transport-fields select:focus {
+    outline: none;
+    border-color: var(--deep-blue);
+    box-shadow: 0 0 0 3px rgba(18, 59, 99, 0.12);
+}
+
+.employee-form-page .transport-fields select {
+    cursor: pointer;
+}
+
+.employee-form-page .location-input-wrapper {
+    position: relative;
+}
+
+.employee-form-page .location-input-wrapper input {
+    padding-right: 45px;
+}
+
+.employee-form-page .location-input-wrapper::after {
+    content: "\f3c5";
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: var(--deep-blue);
+    pointer-events: none;
+}
+
+.employee-form-page .transport-selection-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+
+    margin-top: 22px;
+    padding: 15px 17px;
+
+    color: #854D0E;
+    background: var(--orange-light);
+    border: 1px solid #FED7AA;
+    border-radius: 9px;
+
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.employee-form-page .transport-selection-note i {
+    flex-shrink: 0;
+    margin-top: 5px;
+    color: var(--orange);
+}
+
+/* =====================================================
+   EMERGENCY CONTACT AND DOCUMENTS
+===================================================== */
+
+.employee-form-page .form-group input[type="checkbox"],
+.employee-form-page .form-group input[type="radio"] {
+    accent-color: var(--deep-blue);
+}
+
+.employee-form-page .form-group input[type="checkbox"],
+.employee-form-page .form-group input[type="radio"] {
+    width: 19px;
+    height: 19px;
+}
+
+/* =====================================================
+   FORM ACTIONS
+===================================================== */
+
+.employee-form-page .form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 14px;
+
+    width: 100%;
+    margin-top: 2px;
+    padding: 21px 24px;
+
+    background: #FFFFFF;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+}
+
+.employee-form-page .form-actions .btn-primary,
+.employee-form-page .form-actions .btn-secondary {
+    min-width: 150px;
+}
+
+/* =====================================================
+   RESPONSIVE DESIGN
+===================================================== */
+
+@media (max-width: 900px) {
+    .employee-form-page {
+        padding: 18px;
+    }
+
+    .employee-form-page .form-section {
+        padding: 21px;
+    }
+
+    .employee-form-page .form-grid {
+        gap: 20px;
+    }
+}
+
+@media (max-width: 600px) {
+    .employee-form-page {
+        padding: 12px;
+    }
+
+    .employee-form-page .page-header {
+        align-items: stretch;
+        flex-direction: column;
+        padding: 19px;
+        margin-bottom: 20px;
+    }
+
+    .employee-form-page .page-header h1 {
+        font-size: 24px;
+    }
+
+    .employee-form-page .page-header .btn-secondary {
+        width: 100%;
+    }
+
+    .employee-form-page .admission-form {
+        gap: 16px;
+    }
+
+    .employee-form-page .form-section {
+        padding: 17px;
+        border-radius: 10px;
+    }
+
+    .employee-form-page .form-section-title {
+        gap: 12px;
+        margin-bottom: 21px;
+        padding-bottom: 15px;
+    }
+
+    .employee-form-page .form-section-title > i {
+        width: 42px;
+        height: 42px;
+        font-size: 19px;
+    }
+
+    .employee-form-page .form-section-title h2 {
+        font-size: 21px;
+    }
+
+    .employee-form-page .form-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 19px;
+    }
+
+    .employee-form-page .form-group.full-width {
+        grid-column: auto;
+    }
+
+    .employee-form-page .transport-fields {
+        padding: 15px;
+    }
+
+    .employee-form-page .transport-info-box {
+        gap: 12px;
+        padding: 15px;
+    }
+
+    .employee-form-page .transport-info-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .employee-form-page .form-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+        padding: 17px;
+    }
+
+    .employee-form-page .form-actions .btn-primary,
+    .employee-form-page .form-actions .btn-secondary {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="employee-form-page">
+
+    <!-- PAGE HEADER -->
+
+    <div class="page-header">
+
+        <div>
+            <h1>
+                <i class="fas fa-user-tie"></i>
+                New Employee Application
+            </h1>
+
+            <p>
+                Enter employee admission details.
+            </p>
+        </div>
+
+        <a
+            href="{% url 'admissions:employee_applications' %}"
+            class="btn-secondary"
+        >
+            <i class="fas fa-arrow-left"></i>
+            Back
+        </a>
+
+    </div>
+
+
+    <!-- EMPLOYEE APPLICATION FORM -->
+
+    <form
+        method="POST"
+        enctype="multipart/form-data"
+        class="admission-form"
+        id="employee-admission-form"
+    >
+
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+        <div class="form-error-box">
+            {{ form.non_field_errors }}
+        </div>
+        {% endif %}
+
+
+        <!-- =================================================
+             PERSONAL DETAILS
+        ================================================== -->
+
+        <div class="form-section">
+
+            <div class="form-section-title">
+                <i class="fas fa-user"></i>
+
+                <div>
+                    <h2>Personal Details</h2>
+                    <p>Enter employee personal information.</p>
+                </div>
+            </div>
+
+            <div class="form-grid">
+
+                {% for field in form %}
+                    {% if field.name == "first_name" or field.name == "last_name" or field.name == "date_of_birth" or field.name == "gender" or field.name == "marital_status" %}
+
+                    <div class="form-group">
+
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                            {% if field.field.required %}<span>*</span>{% endif %}
+                        </label>
+
+                        {{ field }}
+
+                        {% if field.errors %}
+                        <div class="field-error">{{ field.errors }}</div>
+                        {% endif %}
+
+                    </div>
+
+                    {% endif %}
+                {% endfor %}
+
+            </div>
+        </div>
+
+
+        <!-- =================================================
+             CONTACT DETAILS
+        ================================================== -->
+
+        <div class="form-section">
+
+            <div class="form-section-title">
+                <i class="fas fa-phone"></i>
+
+                <div>
+                    <h2>Contact Details</h2>
+                    <p>Enter employee contact information.</p>
+                </div>
+            </div>
+
+            <div class="form-grid">
+
+                {% for field in form %}
+                    {% if field.name == "email" or field.name == "phone" or field.name == "alternate_phone" %}
+
+                    <div class="form-group">
+
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                            {% if field.field.required %}<span>*</span>{% endif %}
+                        </label>
+
+                        {{ field }}
+
+                        {% if field.errors %}
+                        <div class="field-error">{{ field.errors }}</div>
+                        {% endif %}
+
+                    </div>
+
+                    {% endif %}
+                {% endfor %}
+
+            </div>
+        </div>
+
+
+        <!-- =================================================
+             PROFESSIONAL DETAILS
+        ================================================== -->
+
+        <div class="form-section">
+
+            <div class="form-section-title">
+                <i class="fas fa-briefcase"></i>
+
+                <div>
+                    <h2>Professional Details</h2>
+                    <p>Enter employee professional information.</p>
+                </div>
+            </div>
+
+            <div class="form-grid">
+
+                {% for field in form %}
+                    {% if field.name == "designation" or field.name == "staff_role" or field.name == "department" or field.name == "joining_date" or field.name == "qualification" or field.name == "specialization" or field.name == "experience_years" or field.name == "previous_organization" or field.name == "previous_salary" %}
+
+                    <div class="form-group">
+
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                            {% if field.field.required %}<span>*</span>{% endif %}
+                        </label>
+
+                        {{ field }}
+
+                        {% if field.errors %}
+                        <div class="field-error">{{ field.errors }}</div>
+                        {% endif %}
+
+                    </div>
+
+                    {% endif %}
+                {% endfor %}
+
+            </div>
+        </div>
+
+
+        <!-- =================================================
+             ADDRESS DETAILS
+        ================================================== -->
+
+        <div class="form-section">
+
+            <div class="form-section-title">
+                <i class="fas fa-map-marker-alt"></i>
+
+                <div>
+                    <h2>Address Details</h2>
+                    <p>Enter employee address information.</p>
+                </div>
+            </div>
+
+            <div class="form-grid">
+
+                {% for field in form %}
+                    {% if field.name == "address" or field.name == "city" or field.name == "state" or field.name == "pincode" %}
+
+                    <div class="form-group {% if field.name == 'address' %}full-width{% endif %}">
+
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                            {% if field.field.required %}<span>*</span>{% endif %}
+                        </label>
+
+                        {{ field }}
+
+                        {% if field.errors %}
+                        <div class="field-error">{{ field.errors }}</div>
+                        {% endif %}
+
+                    </div>
+
+                    {% endif %}
+                {% endfor %}
+
+            </div>
+        </div>
+
+
+        <!-- =================================================
+             TRANSPORT DETAILS
+        ================================================== -->
+
+        <div class="form-section transport-section">
+
+            <div class="form-section-title">
+                <i class="fas fa-bus"></i>
+
+                <div>
+                    <h2>Transport Details</h2>
+                    <p>Select whether the employee requires school transportation.</p>
+                </div>
+            </div>
+
+            <div class="transport-info-box">
+
+                <div class="transport-info-icon">
+                    <i class="fas fa-route"></i>
+                </div>
+
+                <div class="transport-info-content">
+                    <strong>School Bus Transportation</strong>
+                    <p>
+                        Select Yes if the employee requires school bus
+                        transportation. You can then choose a location,
+                        route and pickup stop.
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- BUS REQUIRED FIELD -->
+
+            <div class="form-grid">
+
+                {% for field in form %}
+                    {% if field.name == "bus_required" %}
+
+                    <div class="form-group">
+
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                            {% if field.field.required %}<span>*</span>{% endif %}
+                        </label>
+
+                        {{ field }}
+
+                        <small class="transport-field-description">
+                            Select Yes to enter the employee's transport details.
+                        </small>
+
+                        {% if field.errors %}
+                        <div class="field-error">{{ field.errors }}</div>
+                        {% endif %}
+
+                    </div>
+
+                    {% endif %}
+                {% endfor %}
+
+            </div>
+
+
+            <!-- LOCATION / ROUTE / PICKUP STOP -->
+
+            <div id="transport-fields" class="transport-fields">
+
+                <div class="form-grid">
+
+                    <!-- LOCATION -->
+
+                    {% for field in form %}
+                        {% if field.name == "bus_location" %}
+
+                        <div class="form-group">
+
+                            <label for="{{ field.id_for_label }}">
+                                {{ field.label }}
+                                {% if field.field.required %}<span>*</span>{% endif %}
+                            </label>
+
+                            <div class="location-input-wrapper">
+                                {{ field }}
+                            </div>
+
+                            <small class="transport-field-description">
+                                Enter the employee's residential location.
+                                Example: Madanapalle.
+                            </small>
+
+                            {% if field.errors %}
+                            <div class="field-error">{{ field.errors }}</div>
+                            {% endif %}
+
+                        </div>
+
+                        {% endif %}
+                    {% endfor %}
+
+
+                    <!-- BUS ROUTE -->
+
+                    {% for field in form %}
+                        {% if field.name == "bus_route" %}
+
+                        <div class="form-group">
+
+                            <label for="{{ field.id_for_label }}">
+                                {{ field.label }}
+                                {% if field.field.required %}<span>*</span>{% endif %}
+                            </label>
+
+                            {{ field }}
+
+                            <small class="transport-field-description">
+                                Select the bus route serving this location.
+                            </small>
+
+                            {% if field.errors %}
+                            <div class="field-error">{{ field.errors }}</div>
+                            {% endif %}
+
+                        </div>
+
+                        {% endif %}
+                    {% endfor %}
+
+
+                    <!-- PICKUP STOP -->
+
+                    {% for field in form %}
+                        {% if field.name == "pickup_stop" %}
+
+                        <div class="form-group">
+
+                            <label for="{{ field.id_for_label }}">
+                                {{ field.label }}
+                                {% if field.field.required %}<span>*</span>{% endif %}
+                            </label>
+
+                            {{ field }}
+
+                            <small class="transport-field-description">
+                                Select the pickup stop closest to the employee's location.
+                            </small>
+
+                            {% if field.errors %}
+                            <div class="field-error">{{ field.errors }}</div>
+                            {% endif %}
+
+                        </div>
+
+                        {% endif %}
+                    {% endfor %}
+
+                </div>
+
+                <div class="transport-selection-note">
+                    <i class="fas fa-circle-info"></i>
+
+                    <span>
+                        Enter the employee's location first. Then select the
+                        matching route and choose the nearest pickup stop.
+                    </span>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             EMERGENCY CONTACT
+        ================================================== -->
+
+        <div class="form-section">
+
+            <div class="form-section-title">
+                <i class="fas fa-phone-square-alt"></i>
+
+                <div>
+                    <h2>Emergency Contact</h2>
+                    <p>Enter emergency contact information.</p>
+                </div>
+            </div>
+
+            <div class="form-grid">
+
+                {% for field in form %}
+                    {% if field.name == "emergency_contact_name" or field.name == "emergency_contact_phone" or field.name == "emergency_contact_relation" %}
+
+                    <div class="form-group">
+
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                            {% if field.field.required %}<span>*</span>{% endif %}
+                        </label>
+
+                        {{ field }}
+
+                        {% if field.errors %}
+                        <div class="field-error">{{ field.errors }}</div>
+                        {% endif %}
+
+                    </div>
+
+                    {% endif %}
+                {% endfor %}
+
+            </div>
+        </div>
+
+
+        <!-- =================================================
+             EMPLOYEE DOCUMENTS
+        ================================================== -->
+
+        <div class="form-section">
+
+            <div class="form-section-title">
+                <i class="fas fa-file-alt"></i>
+
+                <div>
+                    <h2>Employee Documents</h2>
+                    <p>Upload the required employee documents.</p>
+                </div>
+            </div>
+
+            <div class="form-grid">
+
+                {% for field in form %}
+                    {% if field.name == "employee_photo" or field.name == "aadhaar_card" or field.name == "pan_card" or field.name == "educational_certificate" or field.name == "experience_certificate" or field.name == "resume" or field.name == "joining_document" %}
+
+                    <div class="form-group">
+
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                            {% if field.field.required %}<span>*</span>{% endif %}
+                        </label>
+
+                        {{ field }}
+
+                        {% if field.errors %}
+                        <div class="field-error">{{ field.errors }}</div>
+                        {% endif %}
+
+                    </div>
+
+                    {% endif %}
+                {% endfor %}
+
+            </div>
+        </div>
+
+
+        <!-- =================================================
+             FORM ACTIONS
+        ================================================== -->
+
+        <div class="form-actions">
+
+            <a
+                href="{% url 'admissions:employee_applications' %}"
+                class="btn-secondary"
+            >
+                <i class="fas fa-times"></i>
+                Cancel
+            </a>
+
+            <button type="submit" class="btn-primary">
+                <i class="fas fa-paper-plane"></i>
+                Submit Application
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<!-- =====================================================
+     TRANSPORT ROUTE AND STOP LOGIC
+===================================================== -->
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const form = document.getElementById("employee-admission-form");
+
+    const busRequired = document.getElementById("id_bus_required");
+    const transportFields = document.getElementById("transport-fields");
+
+    const locationSelect = document.getElementById("id_bus_location");
+    const routeSelect = document.getElementById("id_bus_route");
+    const stopSelect = document.getElementById("id_pickup_stop");
+
+    const routeUrl = "{% url 'transport:route_options' %}";
+    const stopUrl = "{% url 'transport:stop_options' %}";
+
+
+    // -----------------------------------------------------
+    // GET VALUE FROM SELECT / CHECKBOX / RADIO WIDGETS
+    // -----------------------------------------------------
+
+    function getBusRequiredValue() {
+
+        if (!busRequired) {
+            return false;
+        }
+
+        if (busRequired.type === "checkbox") {
+            return busRequired.checked;
+        }
+
+        if (busRequired.type === "radio") {
+            const checkedRadio = form.querySelector(
+                'input[name="' + busRequired.name + '"]:checked'
+            );
+
+            if (!checkedRadio) {
+                return false;
+            }
+
+            return ["yes", "true", "1"].includes(
+                checkedRadio.value.toLowerCase()
+            );
+        }
+
+        return ["yes", "true", "1"].includes(
+            String(busRequired.value).toLowerCase()
+        );
+    }
+
+
+    // -----------------------------------------------------
+    // SHOW / HIDE TRANSPORT FIELDS
+    // -----------------------------------------------------
+
+    function updateTransportVisibility() {
+
+        if (!transportFields) {
+            return;
+        }
+
+        const shouldShow = getBusRequiredValue();
+
+        transportFields.classList.toggle("active", shouldShow);
+
+        if (!shouldShow) {
+            return;
+        }
+
+        // If a location is already selected, ensure its routes load.
+        if (locationSelect && locationSelect.value && routeSelect) {
+            if (routeSelect.options.length <= 1) {
+                loadRoutes(
+                    locationSelect.value,
+                    routeSelect.dataset.selected || routeSelect.value,
+                    stopSelect ? (stopSelect.dataset.selected || stopSelect.value) : ""
+                );
+            }
+        }
+    }
+
+
+    // -----------------------------------------------------
+    // LOAD ROUTES FOR THE SELECTED LOCATION
+    // -----------------------------------------------------
+
+    async function loadRoutes(location, selectedRoute = "", selectedStop = "") {
+
+        if (!routeSelect || !stopSelect) {
+            return;
+        }
+
+        routeSelect.innerHTML = '<option value="">Loading routes...</option>';
+        routeSelect.disabled = true;
+
+        stopSelect.innerHTML = '<option value="">Select pickup stop</option>';
+        stopSelect.disabled = true;
+
+        if (!location) {
+            routeSelect.innerHTML = '<option value="">Select route</option>';
+            routeSelect.disabled = false;
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                routeUrl + "?location=" + encodeURIComponent(location)
+                    + "&selected_route_id=" + encodeURIComponent(selectedRoute),
+                {
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest"
+                    }
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Unable to load routes.");
+            }
+
+            const data = await response.json();
+
+            routeSelect.innerHTML = '<option value="">Select route</option>';
+
+            (data.routes || []).forEach(function (route) {
+                const option = document.createElement("option");
+
+                option.value = route.id;
+                option.textContent = route.name + " (" + route.code + ")";
+
+                if (String(route.id) === String(selectedRoute)) {
+                    option.selected = true;
+                }
+
+                routeSelect.appendChild(option);
+            });
+
+            routeSelect.disabled = false;
+
+            if (selectedRoute && routeSelect.value) {
+                await loadStops(routeSelect.value, selectedStop);
+            } else {
+                stopSelect.innerHTML = '<option value="">Select pickup stop</option>';
+                stopSelect.disabled = false;
+            }
+
+        } catch (error) {
+            console.error("Route loading failed:", error);
+
+            routeSelect.innerHTML = '<option value="">Unable to load routes</option>';
+            routeSelect.disabled = false;
+
+            stopSelect.innerHTML = '<option value="">Select pickup stop</option>';
+            stopSelect.disabled = false;
+        }
+    }
+
+
+    // -----------------------------------------------------
+    // LOAD PICKUP STOPS FOR THE SELECTED ROUTE
+    // -----------------------------------------------------
+
+    async function loadStops(routeId, selectedStop = "") {
+
+        if (!stopSelect) {
+            return;
+        }
+
+        stopSelect.innerHTML = '<option value="">Loading pickup stops...</option>';
+        stopSelect.disabled = true;
+
+        if (!routeId) {
+            stopSelect.innerHTML = '<option value="">Select pickup stop</option>';
+            stopSelect.disabled = false;
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                stopUrl + "?route_id=" + encodeURIComponent(routeId)
+                    + "&selected_stop_id=" + encodeURIComponent(selectedStop),
+                {
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest"
+                    }
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Unable to load pickup stops.");
+            }
+
+            const data = await response.json();
+
+            stopSelect.innerHTML = '<option value="">Select pickup stop</option>';
+
+            (data.stops || []).forEach(function (stop) {
+                const option = document.createElement("option");
+
+                option.value = stop.id;
+                option.textContent = stop.order + ". " + stop.name;
+
+                if (String(stop.id) === String(selectedStop)) {
+                    option.selected = true;
+                }
+
+                stopSelect.appendChild(option);
+            });
+
+            stopSelect.disabled = false;
+
+        } catch (error) {
+            console.error("Pickup stop loading failed:", error);
+
+            stopSelect.innerHTML = '<option value="">Unable to load pickup stops</option>';
+            stopSelect.disabled = false;
+        }
+    }
+
+
+    // -----------------------------------------------------
+    // LOCATION CHANGE
+    // -----------------------------------------------------
+
+    if (locationSelect) {
+        locationSelect.addEventListener("change", function () {
+
+            if (routeSelect) {
+                routeSelect.dataset.selected = "";
+            }
+
+            if (stopSelect) {
+                stopSelect.dataset.selected = "";
+            }
+
+            loadRoutes(this.value);
+        });
+    }
+
+
+    // -----------------------------------------------------
+    // ROUTE CHANGE
+    // -----------------------------------------------------
+
+    if (routeSelect) {
+        routeSelect.addEventListener("change", function () {
+
+            if (stopSelect) {
+                stopSelect.dataset.selected = "";
+            }
+
+            loadStops(this.value);
+        });
+    }
+
+
+    // -----------------------------------------------------
+    // BUS REQUIRED CHANGE
+    // -----------------------------------------------------
+
+    if (busRequired) {
+        busRequired.addEventListener("change", updateTransportVisibility);
+
+        if (busRequired.type === "radio" && form) {
+            form.querySelectorAll(
+                'input[name="' + busRequired.name + '"]'
+            ).forEach(function (radio) {
+                radio.addEventListener("change", updateTransportVisibility);
+            });
+        }
+    }
+
+
+    // -----------------------------------------------------
+    // INITIAL VALUES
+    // Handles form re-render after validation errors.
+    // -----------------------------------------------------
+
+    const selectedLocation = locationSelect ? locationSelect.value : "";
+    const selectedRoute = routeSelect ? routeSelect.value : "";
+    const selectedStop = stopSelect ? stopSelect.value : "";
+
+    if (routeSelect) {
+        routeSelect.dataset.selected = selectedRoute;
+    }
+
+    if (stopSelect) {
+        stopSelect.dataset.selected = selectedStop;
+    }
+
+    updateTransportVisibility();
+
+    if (selectedLocation && getBusRequiredValue()) {
+        loadRoutes(selectedLocation, selectedRoute, selectedStop);
+    } else if (selectedRoute && getBusRequiredValue()) {
+        loadStops(selectedRoute, selectedStop);
+    }
+
+});
+</script>
+
+{% endblock %}

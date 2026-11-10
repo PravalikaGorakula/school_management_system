@@ -1,0 +1,254 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}My Attendance{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'attendance/css/attendance.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="page-content">
+
+    <!-- HEADER -->
+    <div class="attendance-page-header">
+
+        <div>
+            <h1 class="attendance-page-title">
+                My Attendance
+            </h1>
+        </div>
+
+    </div>
+
+
+    <!-- PERCENTAGE -->
+    <div class="attendance-percentage-card mb-4">
+
+        <div class="attendance-percentage-title">
+            Overall Attendance
+        </div>
+
+        <div class="attendance-percentage-value">
+            {{ percentage|default:"0" }}%
+        </div>
+
+        <div class="attendance-progress">
+
+            <div
+                class="attendance-progress-bar"
+                style="width: {{ percentage|default:0 }}%;">
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- STAT CARDS -->
+    <div class="attendance-stats-grid">
+
+        <div class="attendance-stat-card">
+
+            <div class="attendance-stat-icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+
+            <div class="attendance-stat-label">
+                Total Days
+            </div>
+
+            <div class="attendance-stat-value">
+                {{ total|default:"0" }}
+            </div>
+
+        </div>
+
+
+        <div class="attendance-stat-card">
+
+            <div class="attendance-stat-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+
+            <div class="attendance-stat-label">
+                Present
+            </div>
+
+            <div class="attendance-stat-value">
+                {{ present|default:"0" }}
+            </div>
+
+        </div>
+
+
+        <div class="attendance-stat-card">
+
+            <div class="attendance-stat-icon">
+                <i class="fas fa-times-circle"></i>
+            </div>
+
+            <div class="attendance-stat-label">
+                Absent
+            </div>
+
+            <div class="attendance-stat-value">
+                {{ absent|default:"0" }}
+            </div>
+
+        </div>
+
+
+        <div class="attendance-stat-card">
+
+            <div class="attendance-stat-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+
+            <div class="attendance-stat-label">
+                Late
+            </div>
+
+            <div class="attendance-stat-value">
+                {{ late|default:"0" }}
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- RECORDS -->
+    <div class="attendance-content-card">
+
+        <div class="attendance-content-card-header">
+
+            <h2 class="attendance-content-card-title">
+                Attendance History
+            </h2>
+
+        </div>
+
+
+        <div class="attendance-content-card-body">
+
+            {% if records %}
+
+            <div class="attendance-table-wrapper">
+
+                <table class="attendance-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Check In</th>
+                            <th>Check Out</th>
+                            <th>Remarks</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for record in records %}
+
+                        <tr>
+
+                            <td>
+                                {{ record.date|date:"d M Y" }}
+                            </td>
+
+                            <td>
+
+                                {% if record.status == "Present" %}
+
+                                    <span class="attendance-status attendance-status-present">
+                                        Present
+                                    </span>
+
+                                {% elif record.status == "Absent" %}
+
+                                    <span class="attendance-status attendance-status-absent">
+                                        Absent
+                                    </span>
+
+                                {% elif record.status == "Late" %}
+
+                                    <span class="attendance-status attendance-status-late">
+                                        Late
+                                    </span>
+
+                                {% elif record.status == "Leave" %}
+
+                                    <span class="attendance-status attendance-status-leave">
+                                        Leave
+                                    </span>
+
+                                {% elif record.status == "Half Day" %}
+
+                                    <span class="attendance-status attendance-status-half-day">
+                                        Half Day
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="attendance-status">
+                                        {{ record.status }}
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+                                {{ record.check_in|default:"-" }}
+                            </td>
+
+                            <td>
+                                {{ record.check_out|default:"-" }}
+                            </td>
+
+                            <td>
+                                {{ record.remarks|default:"-" }}
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="attendance-empty">
+
+                <div class="attendance-empty-icon">
+                    <i class="fas fa-calendar-times"></i>
+                </div>
+
+                <h3 class="attendance-empty-title">
+                    No Attendance Records
+                </h3>
+
+                <p class="attendance-empty-text">
+                    Your attendance records will appear here.
+                </p>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

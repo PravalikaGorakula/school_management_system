@@ -1,0 +1,837 @@
+
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Student Attendance Management{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'attendance/css/attendance.css' %}">
+
+<style>
+.student-page {
+    padding: 20px;
+}
+
+.student-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 24px;
+    box-shadow: 0 3px 12px rgba(18, 59, 99, 0.08);
+}
+
+.student-page-header {
+    margin-bottom: 22px;
+}
+
+.student-page-header h1 {
+    color: #123B63;
+    font-size: 27px;
+    font-weight: 700;
+    margin: 0 0 8px;
+}
+
+.student-page-header p {
+    color: #64748b;
+    margin: 0;
+    line-height: 1.6;
+}
+
+.student-card-title {
+    color: #123B63;
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 18px;
+}
+
+.student-filter-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    align-items: end;
+}
+
+.student-filter-grid label {
+    display: block;
+    color: #123B63;
+    font-weight: 600;
+    margin-bottom: 7px;
+}
+
+.student-filter-grid select,
+.student-filter-grid input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: 1px solid #ced8e2;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 15px;
+}
+
+.student-filter-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.student-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #F28C28;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.student-btn:hover {
+    color: #fff;
+    background: #D97706;
+}
+
+.student-btn-secondary {
+    background: #123B63;
+}
+
+.student-btn-secondary:hover {
+    background: #0B2945;
+}
+
+.student-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+.student-summary-card {
+    background: #fff;
+    border: 1px solid #e5eaf0;
+    border-radius: 14px;
+    padding: 22px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-width: 0;
+    box-shadow: 0 4px 12px rgba(11, 41, 69, 0.06);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.student-summary-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 18px rgba(11, 41, 69, 0.11);
+}
+
+.student-summary-icon {
+    width: 52px;
+    height: 52px;
+    min-width: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+.student-summary-info {
+    min-width: 0;
+}
+
+.student-summary-info p {
+    margin: 0 0 7px;
+    color: #526477;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.student-summary-info h3 {
+    margin: 0 0 5px;
+    color: #123B63;
+    font-size: 29px;
+    font-weight: 800;
+    overflow-wrap: anywhere;
+}
+
+.student-summary-info span {
+    color: #718096;
+    font-size: 12px;
+}
+
+.summary-blue {
+    border-bottom: 4px solid #123B63;
+}
+
+.summary-blue .student-summary-icon {
+    background: #EAF2F8;
+    color: #123B63;
+}
+
+.summary-green {
+    border-bottom: 4px solid #16a34a;
+}
+
+.summary-green .student-summary-icon {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.summary-red {
+    border-bottom: 4px solid #dc2626;
+}
+
+.summary-red .student-summary-icon {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.summary-orange {
+    border-bottom: 4px solid #F28C28;
+}
+
+.summary-orange .student-summary-icon {
+    background: #fff0d8;
+    color: #b76a00;
+}
+
+.summary-purple {
+    border-bottom: 4px solid #7c3aed;
+}
+
+.summary-purple .student-summary-icon {
+    background: #ede9fe;
+    color: #5b21b6;
+}
+
+.student-selected-info {
+    background: #EAF2F8;
+    border-left: 4px solid #F28C28;
+    border-radius: 8px;
+    padding: 15px 18px;
+    color: #123B63;
+    line-height: 1.9;
+    margin-bottom: 20px;
+}
+
+.student-percentage-section {
+    margin-top: 22px;
+    padding: 18px;
+    background: #f8fafc;
+    border-radius: 10px;
+    border: 1px solid #e5eaf0;
+}
+
+.student-percentage-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    color: #123B63;
+    font-weight: 700;
+}
+
+.student-progress-track {
+    height: 12px;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 20px;
+    background: #e2e8f0;
+}
+
+.student-progress-bar {
+    height: 100%;
+    background: #16a34a;
+    border-radius: 20px;
+    transition: width .3s ease;
+}
+
+.student-note {
+    color: #64748b;
+    font-size: 13px;
+    margin-top: 10px;
+    line-height: 1.6;
+}
+
+.student-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.student-table {
+    width: 100%;
+    min-width: 900px;
+    border-collapse: collapse;
+}
+
+.student-table th {
+    background: #123B63;
+    color: #fff;
+    text-align: left;
+    white-space: nowrap;
+    padding: 14px;
+    font-size: 13px;
+}
+
+.student-table td {
+    padding: 13px 14px;
+    border-bottom: 1px solid #e6edf3;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+.student-table tbody tr:hover {
+    background: #f5f9fc;
+}
+
+.student-name {
+    color: #123B63;
+    font-weight: 700;
+}
+
+.student-subtext {
+    display: block;
+    color: #64748b;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.student-status {
+    display: inline-block;
+    border-radius: 20px;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.student-status-present {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.student-status-absent {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.student-status-late {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.student-status-leave {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.student-empty {
+    text-align: center;
+    color: #64748b;
+    padding: 32px 18px !important;
+}
+
+.student-empty i {
+    display: block;
+    font-size: 30px;
+    margin-bottom: 12px;
+    color: #94a3b8;
+}
+
+@media (max-width: 1100px) {
+    .student-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .student-filter-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .student-page {
+        padding: 10px;
+    }
+
+    .student-card {
+        padding: 15px;
+    }
+
+    .student-page-header h1 {
+        font-size: 23px;
+    }
+
+    .student-summary-grid,
+    .student-filter-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .student-summary-card {
+        padding: 18px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-content student-page">
+
+    <!-- HEADER -->
+    <div class="student-page-header">
+        <h1>
+            <i class="fas fa-user-graduate"></i>
+            Student Attendance
+        </h1>
+
+        <p>
+            Monitor class-wise attendance, individual student records
+            and attendance percentages.
+        </p>
+    </div>
+
+    <!-- FILTER -->
+    <div class="student-card">
+
+        <h2 class="student-card-title">
+            <i class="fas fa-filter"></i>
+            Attendance Filter
+        </h2>
+
+        <form method="get">
+            <div class="student-filter-grid">
+
+                <div>
+                    <label for="class_id">Class / Section</label>
+
+                    <select id="class_id" name="class_id">
+                        <option value="">All Class Sections</option>
+
+                        {% for section in classes %}
+                            <option
+                                value="{{ section.id }}"
+                                {% if selected_class_id|stringformat:"s" == section.id|stringformat:"s" %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ section.grade }} - {{ section.section }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label for="student_id">Individual Student</label>
+
+                    <select id="student_id" name="student_id">
+                        <option value="">All Students</option>
+
+                        {% for student in student_options %}
+                            <option
+                                value="{{ student.id }}"
+                                {% if selected_student_id|stringformat:"s" == student.id|stringformat:"s" %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ student.first_name }} {{ student.last_name }}
+                                — {{ student.application_id }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label for="subject_id">Subject</label>
+                    <select id="subject_id" name="subject_id">
+                        <option value="">All Subjects</option>
+                        {% for subject in subjects %}
+                        <option value="{{ subject.pk }}" {% if selected_subject_id|stringformat:"s" == subject.pk|stringformat:"s" %}selected{% endif %}>
+                            {{ subject.subject_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label for="attendance-date">Attendance Date</label>
+
+                    <input
+                        type="date"
+                        id="attendance-date"
+                        name="date"
+                        value="{{ selected_date }}"
+                        required
+                    >
+                </div>
+
+                <div>
+                    <label for="report-month">Month</label>
+                    <input type="month" id="report-month" name="month" value="{{ selected_month }}">
+                </div>
+
+                <div>
+                    <label for="report-start">From</label>
+                    <input type="date" id="report-start" name="start_date" value="{{ report_start_date }}">
+                </div>
+
+                <div>
+                    <label for="report-end">To</label>
+                    <input type="date" id="report-end" name="end_date" value="{{ report_end_date }}">
+                </div>
+
+            </div>
+
+            <div class="student-filter-actions" style="margin-top:18px;">
+                <button type="submit" class="student-btn">
+                    <i class="fas fa-search"></i>
+                    Apply Filter
+                </button>
+
+                <a
+                    href="{% url 'attendance:student_attendance_management' %}"
+                    class="student-btn student-btn-secondary"
+                >
+                    <i class="fas fa-undo"></i>
+                    Reset
+                </a>
+            </div>
+        </form>
+    </div>
+
+    {% if holiday_entries %}
+    <div class="student-selected-info" role="status">
+        {% for entry in holiday_entries %}
+            <strong>{{ entry.status }}:</strong> {{ entry.date|date:"d M Y" }} · {{ entry.name }}{% if not forloop.last %}<br>{% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- CLASS-WISE SUMMARY -->
+    {% if selected_class and not selected_student %}
+
+        {% if selected_holiday %}
+        <div class="student-selected-info" role="status">
+            <strong>{{ selected_holiday.status }}:</strong> {{ selected_holiday.name }}.
+            Attendance is not expected on this date.
+        </div>
+        {% endif %}
+
+        <div class="student-card">
+            <h2 class="student-card-title">
+                <i class="fas fa-school"></i>
+                Class-wise Attendance Summary
+            </h2>
+
+            <div class="student-selected-info">
+                <strong>Class:</strong>
+                {{ selected_class.grade }} - {{ selected_class.section }}
+                <br>
+
+                <strong>Attendance Date:</strong>
+                {{ selected_date }}
+            </div>
+
+            <div class="student-summary-grid">
+
+                <div class="student-summary-card summary-blue">
+                    <div class="student-summary-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="student-summary-info">
+                        <p>Total Students</p>
+                        <h3>{{ class_summary.total_students }}</h3>
+                        <span>Eligible students for this date</span>
+                    </div>
+                </div>
+
+                <div class="student-summary-card summary-green">
+                    <div class="student-summary-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="student-summary-info">
+                        <p>Present</p>
+                        <h3>{{ class_summary.present }}</h3>
+                        <span>Students present</span>
+                    </div>
+                </div>
+
+                <div class="student-summary-card summary-red">
+                    <div class="student-summary-icon">
+                        <i class="fas fa-user-times"></i>
+                    </div>
+                    <div class="student-summary-info">
+                        <p>Absent</p>
+                        <h3>{{ class_summary.absent }}</h3>
+                        <span>Students absent</span>
+                    </div>
+                </div>
+
+                <div class="student-summary-card summary-orange">
+                    <div class="student-summary-icon">
+                        <i class="fas fa-calendar-minus"></i>
+                    </div>
+                    <div class="student-summary-info">
+                        <p>On Leave</p>
+                        <h3>{{ class_summary.leave }}</h3>
+                        <span>Students on leave</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="student-percentage-section">
+                <div class="student-percentage-heading">
+                    <span>Class Attendance Percentage</span>
+                    <span>{% if class_summary.percentage != None %}{{ class_summary.percentage }}%{% else %}N/A{% endif %}</span>
+                </div>
+
+                <div class="student-progress-track">
+                    <div
+                        class="student-progress-bar"
+                        data-attendance-percentage="{{ class_summary.percentage|default:0 }}"
+                    ></div>
+                </div>
+
+                <p class="student-note">
+                    Percentage uses eligible students for the selected working day.
+                    Holidays and approved leave are excluded. Not submitted:
+                    {{ class_summary.unsubmitted }}; marked: {{ class_summary.marked_students }}.
+                </p>
+            </div>
+        </div>
+
+    {% endif %}
+
+    <!-- INDIVIDUAL STUDENT SUMMARY -->
+    {% if selected_student %}
+
+        <div class="student-card">
+
+            <h2 class="student-card-title">
+                <i class="fas fa-chart-pie"></i>
+                Individual Student Attendance Summary
+            </h2>
+
+            <div class="student-selected-info">
+                <strong>Student:</strong>
+                {{ selected_student.first_name }} {{ selected_student.last_name }}
+                <br>
+
+                <strong>Application ID:</strong>
+                {{ selected_student.application_id }}
+                <br>
+
+                <strong>Class:</strong>
+                {% if selected_student.class_section %}
+                    {{ selected_student.class_section.grade }}
+                    - {{ selected_student.class_section.section }}
+                {% else %}
+                    Not assigned
+                {% endif %}
+            </div>
+
+            <div class="student-summary-grid">
+
+                <div class="student-summary-card summary-blue">
+                    <div class="student-summary-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="student-summary-info">
+                        <p>Eligible Working Days</p>
+                        <h3>{{ student_summary.eligible_working_days }}</h3>
+                        <span>Excludes holidays and approved leave</span>
+                    </div>
+                </div>
+
+                <div class="student-summary-card summary-green">
+                    <div class="student-summary-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="student-summary-info">
+                        <p>Total Present</p>
+                        <h3>{{ student_summary.present_days }}</h3>
+                        <span>Days attended</span>
+                    </div>
+                </div>
+
+                <div class="student-summary-card summary-red">
+                    <div class="student-summary-icon">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="student-summary-info">
+                        <p>Total Absent</p>
+                        <h3>{{ student_summary.absent_days }}</h3>
+                        <span>Days absent</span>
+                    </div>
+                </div>
+
+                <div class="student-summary-card summary-orange">
+                    <div class="student-summary-icon">
+                        <i class="fas fa-calendar-minus"></i>
+                    </div>
+                    <div class="student-summary-info">
+                        <p>Total Leave</p>
+                        <h3>{{ student_summary.leave_days }}</h3>
+                        <span>Days on leave</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="student-percentage-section">
+                <div class="student-percentage-heading">
+                    <span>Individual Attendance Percentage</span>
+                    <span>{% if student_summary.percentage != None %}{{ student_summary.percentage }}%{% else %}N/A{% endif %}</span>
+                </div>
+
+                <div class="student-progress-track">
+                    <div
+                        class="student-progress-bar"
+                        data-attendance-percentage="{{ student_summary.percentage|default:0 }}"
+                    ></div>
+                </div>
+
+                <p class="student-note">
+                    Eligible working days exclude Sundays, declared holidays and approved leave.
+                    Approved leave: {{ student_summary.leave_days }} ·
+                    Pending leave requests: {{ student_summary.pending_leave_requests }} ·
+                    Not submitted: {{ student_summary.unsubmitted_days }} day(s).
+                </p>
+            </div>
+
+        </div>
+
+    {% endif %}
+
+    <!-- ATTENDANCE RECORDS TABLE -->
+    <div class="student-card">
+
+        <h2 class="student-card-title">
+            <i class="fas fa-clipboard-list"></i>
+
+            {% if selected_student %}
+                Individual Student Attendance History
+            {% elif selected_class %}
+                Class Attendance Records
+            {% else %}
+                Student Attendance Records
+            {% endif %}
+        </h2>
+
+        <div class="student-table-wrapper">
+            <table class="student-table">
+
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Class</th>
+                        <th>Subject</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Marked By</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for record in records %}
+                        <tr>
+
+                            <td>
+                                <div class="student-name">
+                                    {{ record.student.first_name }}
+                                    {{ record.student.last_name }}
+                                </div>
+
+                                <span class="student-subtext">
+                                    {{ record.student.application_id }}
+                                </span>
+                            </td>
+
+                            <td>
+                                {% if record.class_section %}
+                                    {{ record.class_section.grade }}
+                                    - {{ record.class_section.section }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if record.subject %}
+                                    {{ record.subject.subject_name }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+
+                            <td>{{ record.date|date:"d M Y" }}</td>
+
+                            <td>
+                                {% if record.status == "Present" %}
+                                    <span class="student-status student-status-present">
+                                        Present
+                                    </span>
+
+                                {% elif record.status == "Absent" %}
+                                    <span class="student-status student-status-absent">
+                                        Absent
+                                    </span>
+
+                                {% elif record.status == "Late" %}
+                                    <span class="student-status student-status-late">
+                                        Late
+                                    </span>
+
+                                {% elif record.status == "Leave" %}
+                                    <span class="student-status student-status-leave">
+                                        Leave
+                                    </span>
+
+                                {% else %}
+                                    <span class="student-status">
+                                        {{ record.status|default:"-" }}
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if record.marked_by %}
+                                    {{ record.marked_by.get_full_name|default:record.marked_by.username }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+
+                        </tr>
+
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" class="student-empty">
+                                <i class="fas fa-calendar-times"></i>
+                                No attendance records found for the selected filters.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+document.querySelectorAll("[data-attendance-percentage]").forEach(function (bar) {
+    const percentage = Number(bar.dataset.attendancePercentage);
+    bar.style.width = `${Number.isFinite(percentage) ? Math.max(0, Math.min(100, percentage)) : 0}%`;
+});
+</script>
+
+{% endblock %}

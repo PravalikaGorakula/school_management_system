@@ -1,0 +1,555 @@
+/* =========================================================
+   SCHOOL MANAGEMENT SYSTEM
+   AUTHENTICATION COMMON THEME
+========================================================= */
+
+:root {
+
+    /* Main Theme */
+
+    --deep-blue: #123B63;
+    --deep-blue-dark: #0B2945;
+    --deep-blue-light: #EAF2F8;
+
+    --orange: #F28C28;
+    --orange-hover: #D97706;
+    --orange-light: #FFF4E6;
+
+    /* Pastel Colors */
+
+    --light-blue: #EEF6FF;
+    --light-green: #ECFDF5;
+    --light-purple: #F5F3FF;
+    --light-yellow: #FFFBEB;
+    --light-red: #FEF2F2;
+    --light-cyan: #ECFEFF;
+    --light-gray: #F8FAFC;
+
+    /* Basic */
+
+    --white: #FFFFFF;
+
+    --text-primary: #1F2937;
+    --text-secondary: #64748B;
+    --text-light: #94A3B8;
+
+    --border: #E2E8F0;
+
+    /* Sizes */
+
+    --font-size-base: 18px;
+    --font-size-small: 16px;
+    --font-size-heading: 32px;
+
+    /* Radius */
+
+    --radius-sm: 8px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+
+    /* Shadow */
+
+    --shadow-card:
+        0 15px 45px rgba(15, 23, 42, 0.10);
+
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+html {
+    font-size: 100%;
+}
+
+
+body {
+
+    min-height: 100vh;
+
+    font-family:
+        "Segoe UI",
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    font-size: var(--font-size-base);
+
+    color: var(--text-primary);
+
+}
+
+
+/* =========================================================
+   AUTH PAGE BACKGROUND
+========================================================= */
+
+.auth-page {
+
+    min-height: 100vh;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 30px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--light-blue) 0%,
+            #F8FAFC 50%,
+            var(--orange-light) 100%
+        );
+
+}
+
+
+/* =========================================================
+   COMMON AUTH CARD
+========================================================= */
+
+.auth-card {
+
+    width: 100%;
+
+    max-width: 520px;
+
+    background: var(--white);
+
+    border-radius: var(--radius-xl);
+
+    padding: 45px;
+
+    box-shadow: var(--shadow-card);
+
+}
+
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.auth-logo {
+
+    width: 65px;
+
+    height: 65px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: var(--deep-blue);
+
+    color: var(--white);
+
+    border-radius: var(--radius-md);
+
+    font-size: 22px;
+
+    font-weight: 800;
+
+    margin-bottom: 25px;
+
+}
+
+
+/* =========================================================
+   HEADINGS
+========================================================= */
+
+.auth-title {
+
+    color: var(--deep-blue);
+
+    font-size: var(--font-size-heading);
+
+    font-weight: 700;
+
+    line-height: 1.25;
+
+    margin-bottom: 10px;
+
+}
+
+
+.auth-description {
+
+    color: var(--text-secondary);
+
+    font-size: var(--font-size-base);
+
+    line-height: 1.6;
+
+    margin-bottom: 28px;
+
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.auth-form-group {
+
+    margin-bottom: 21px;
+
+}
+
+
+.auth-label {
+
+    display: block;
+
+    color: var(--text-primary);
+
+    font-size: var(--font-size-base);
+
+    font-weight: 600;
+
+    margin-bottom: 9px;
+
+}
+
+
+.auth-input-wrapper {
+
+    position: relative;
+
+}
+
+
+.auth-input {
+
+    width: 100%;
+
+    height: 54px;
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-md);
+
+    background: var(--white);
+
+    color: var(--text-primary);
+
+    font-size: var(--font-size-base);
+
+    padding: 0 16px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+
+}
+
+
+.auth-input:focus {
+
+    border-color: var(--orange);
+
+    box-shadow:
+        0 0 0 4px
+        rgba(242, 140, 40, 0.12);
+
+}
+
+
+.auth-input::placeholder {
+
+    color: var(--text-light);
+
+}
+
+
+/* =========================================================
+   PASSWORD INPUT
+========================================================= */
+
+.auth-password-input {
+
+    padding-right: 70px;
+
+}
+
+
+/* =========================================================
+   PASSWORD SHOW / HIDE BUTTON
+========================================================= */
+
+.password-toggle {
+
+    position: absolute;
+
+    top: 50%;
+
+    right: 14px;
+
+    transform: translateY(-50%);
+
+    border: none;
+
+    background: transparent;
+
+    color: var(--deep-blue);
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    padding: 5px;
+
+}
+
+
+.password-toggle:hover {
+
+    color: var(--orange-hover);
+
+}
+
+
+/* =========================================================
+   FORGOT PASSWORD
+========================================================= */
+
+.auth-options {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    margin-top: -5px;
+
+    margin-bottom: 24px;
+
+}
+
+
+.auth-link {
+
+    color: var(--orange-hover);
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    text-decoration: none;
+
+}
+
+
+.auth-link:hover {
+
+    text-decoration: underline;
+
+}
+
+
+/* =========================================================
+   PRIMARY BUTTON
+========================================================= */
+
+.auth-button {
+
+    width: 100%;
+
+    min-height: 55px;
+
+    border: none;
+
+    border-radius: var(--radius-md);
+
+    background: var(--orange);
+
+    color: var(--white);
+
+    font-size: var(--font-size-base);
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+
+}
+
+
+.auth-button:hover {
+
+    background: var(--orange-hover);
+
+    transform: translateY(-1px);
+
+}
+
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.auth-error {
+
+    background: var(--light-red);
+
+    border: 1px solid #FECACA;
+
+    color: #B91C1C;
+
+    border-radius: var(--radius-md);
+
+    padding: 13px 15px;
+
+    font-size: 16px;
+
+    line-height: 1.5;
+
+    margin-bottom: 20px;
+
+}
+
+
+/* =========================================================
+   SUCCESS
+========================================================= */
+
+.auth-success {
+
+    background: var(--light-green);
+
+    border: 1px solid #A7F3D0;
+
+    color: #047857;
+
+    border-radius: var(--radius-md);
+
+    padding: 15px;
+
+    font-size: 16px;
+
+    line-height: 1.6;
+
+    margin-bottom: 22px;
+
+}
+
+
+/* =========================================================
+   INFO BOX
+========================================================= */
+
+.auth-info-box {
+
+    background: var(--light-blue);
+
+    border: 1px solid #D9EAFB;
+
+    border-radius: var(--radius-md);
+
+    padding: 15px;
+
+    color: var(--text-secondary);
+
+    font-size: 15px;
+
+    line-height: 1.6;
+
+    margin: 22px 0;
+
+}
+
+
+/* =========================================================
+   BACK LINK
+========================================================= */
+
+.auth-back-link {
+
+    display: block;
+
+    text-align: center;
+
+    color: var(--deep-blue);
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    text-decoration: none;
+
+    margin-top: 22px;
+
+}
+
+
+.auth-back-link:hover {
+
+    color: var(--orange-hover);
+
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.auth-footer {
+
+    text-align: center;
+
+    color: var(--text-secondary);
+
+    font-size: 15px;
+
+    margin-top: 25px;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .auth-page {
+
+        padding: 18px;
+
+    }
+
+
+    .auth-card {
+
+        padding: 32px 24px;
+
+    }
+
+
+    .auth-title {
+
+        font-size: 28px;
+
+    }
+
+}

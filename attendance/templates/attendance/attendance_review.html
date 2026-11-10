@@ -1,0 +1,145 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Attendance Review{% endblock %}
+
+{% block content %}
+<style>
+.review-page { padding: 28px; color: #243447; }
+.review-page h1, .review-page h2 { color: #123B63; }
+.review-panel { margin: 0 0 22px; padding: 20px; background: #fff; border: 1px solid #D8E2EC; border-radius: 10px; }
+.review-filters, .review-actions { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; }
+.review-filters label { display: flex; flex-direction: column; gap: 6px; min-width: 160px; color: #123B63; font-weight: 700; }
+.review-filters input, .review-filters select, .review-actions input, .review-actions select { min-height: 42px; padding: 8px 10px; border: 1px solid #CBD5E1; border-radius: 6px; font: inherit; }
+.review-page button { min-height: 42px; padding: 8px 14px; border: 0; border-radius: 6px; background: #123B63; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+.review-page button:hover { background: #D97706; }
+.review-table { width: 100%; border-collapse: collapse; }
+.review-table th, .review-table td { padding: 10px; border-bottom: 1px solid #E2E8F0; text-align: left; vertical-align: top; }
+.review-table th { background: #123B63; color: #fff; }
+.review-records { margin: 12px 0 18px; overflow-x: auto; }
+.review-message { margin-bottom: 10px; }
+.review-message.error { color: #A83232; }
+.review-message.success { color: #26734D; }
+.correction-item { padding: 14px 0; border-top: 1px solid #E2E8F0; }
+@media (max-width: 650px) { .review-page { padding: 16px; } .review-filters label { width: 100%; } }
+</style>
+
+<main class="review-page">
+    <h1>Attendance Review</h1>
+
+    {% if messages %}
+    <div aria-live="polite">
+        {% for message in messages %}
+        <p class="review-message {{ message.tags }}">{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <section class="review-panel">
+        <form method="get" class="review-filters">
+            <label>Status
+                <select name="status">
+                    {% for value, label in statuses %}
+                    <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>Class / Section
+                <select name="class_section">
+                    <option value="">All classes</option>
+                    {% for class_item in classes %}
+                    <option value="{{ class_item.pk }}" {% if class_id == class_item.pk|stringformat:'s' %}selected{% endif %}>{{ class_item }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>Subject
+                <select name="subject">
+                    <option value="">All subjects</option>
+                    {% for subject_id_option, subject_name in subjects %}
+                    <option value="{{ subject_id_option }}" {% if subject_id == subject_id_option|stringformat:'s' %}selected{% endif %}>{{ subject_name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>Date
+                <input type="date" name="date" value="{{ date_string }}">
+            </label>
+            <button type="submit">Filter</button>
+        </form>
+    </section>
+
+    {% for row in session_rows %}
+    <section class="review-panel">
+        <h2>{{ row.session.class_section }} / {{ row.session.subject }} / {{ row.session.date|date:"d M Y" }}</h2>
+        <p>Teacher: {{ row.session.created_by.get_full_name|default:row.session.created_by.username }} · Status: {{ row.session.get_status_display }}</p>
+        {% if row.session.finalized_by %}
+        <p>Finalized by {{ row.session.finalized_by.get_full_name|default:row.session.finalized_by.username }}{% if row.session.finalized_at %} on {{ row.session.finalized_at|date:"d M Y, H:i" }}{% endif %}</p>
+        {% endif %}
+        <div class="review-records">
+            <table class="review-table">
+                <thead><tr><th>Student</th><th>Application ID</th><th>Status</th></tr></thead>
+                <tbody>
+                    {% for record in row.records %}
+                    <tr>
+                        <td>{{ record.student.first_name }} {{ record.student.last_name }}</td>
+                        <td>{{ record.student.application_id }}</td>
+                        <td>{{ record.get_status_display }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="3">No attendance records found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if row.session.status == "submitted" %}
+        <form method="post" action="{% url 'attendance:finalize_student_attendance' row.session.pk %}">
+            {% csrf_token %}
+            <button type="submit">Finalize Attendance</button>
+        </form>
+        {% endif %}
+    </section>
+    {% empty %}
+    <section class="review-panel">No attendance sessions match these filters.</section>
+    {% endfor %}
+
+    <section class="review-panel">
+        <h2>System-Generated Absences Awaiting Teacher Submission</h2>
+        <div class="review-records">
+            <table class="review-table">
+                <thead><tr><th>Student</th><th>Class / Subject</th><th>Date</th><th>Follow-up</th></tr></thead>
+                <tbody>
+                    {% for record in system_unsubmitted_records %}
+                    <tr>
+                        <td>{{ record.student.first_name }} {{ record.student.last_name }} ({{ record.student.application_id }})</td>
+                        <td>{{ record.class_section }} / {{ record.subject }}</td>
+                        <td>{{ record.date|date:"d M Y" }}</td>
+                        <td><a href="{% url 'attendance:student_attendance_management' %}?class_id={{ record.class_section_id }}&date={{ record.date|date:'Y-m-d' }}">Review</a></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4">No system-generated absences are awaiting review.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="review-panel">
+        <h2>Pending Correction Requests</h2>
+        {% for correction in correction_requests %}
+        <article class="correction-item">
+            <p><strong>{{ correction.attendance.student.first_name }} {{ correction.attendance.student.last_name }}</strong>
+                ({{ correction.attendance.student.application_id }}) · {{ correction.attendance.class_section }} ·
+                {{ correction.attendance.subject }} · {{ correction.attendance.date|date:"d M Y" }}</p>
+            <p>{{ correction.old_status }} → {{ correction.new_status }}. Reason: {{ correction.reason }}</p>
+            <p>Requested by {{ correction.requested_by.get_full_name|default:correction.requested_by.username }}</p>
+            <form method="post" action="{% url 'attendance:review_attendance_correction' correction.pk %}" class="review-actions">
+                {% csrf_token %}
+                <input type="text" name="reviewer_remarks" maxlength="500" placeholder="Review note (optional)">
+                <button type="submit" name="decision" value="approved">Approve</button>
+                <button type="submit" name="decision" value="rejected">Reject</button>
+            </form>
+        </article>
+        {% empty %}
+        <p>No pending correction requests.</p>
+        {% endfor %}
+    </section>
+</main>
+{% endblock %}

@@ -1,0 +1,1053 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+My Results
+{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --deep-blue: #123B63;
+        --deep-blue-dark: #0B2945;
+        --deep-blue-light: #EAF2F8;
+        --orange: #F28C28;
+        --orange-hover: #D97706;
+        --orange-light: #FFF4E6;
+        --white: #FFFFFF;
+        --background: #F6F8FB;
+        --text-primary: #172033;
+        --text-secondary: #64748B;
+        --border: #E2E8F0;
+        --border-dark: #CBD5E1;
+        --success: #198754;
+        --danger: #DC2626;
+    }
+
+    .results-page {
+        min-height: calc(100vh - 70px);
+        padding: 24px;
+        background: var(--background);
+    }
+
+    /* HEADER */
+
+    .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+    .heading-area {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .heading-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 10px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 23px;
+    }
+
+    .heading-area h1 {
+        margin: 0;
+        color: var(--deep-blue);
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+    .heading-area p {
+        margin: 5px 0 0;
+        color: var(--text-secondary);
+        font-size: 18px;
+    }
+
+    /* EXAM SELECTOR */
+
+    .selector-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 21px 22px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+    }
+
+    .selector-title {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin-bottom: 16px;
+        color: var(--deep-blue);
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .selector-form {
+        display: flex;
+        align-items: end;
+        gap: 14px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        min-width: 320px;
+    }
+
+    .form-group label {
+        color: var(--text-primary);
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .form-group select {
+        width: 100%;
+        height: 46px;
+        padding: 0 13px;
+        border: 1px solid var(--border-dark);
+        border-radius: 7px;
+        background: var(--white);
+        color: var(--text-primary);
+        font-size: 18px;
+        outline: none;
+    }
+
+    .form-group select:focus {
+        border-color: var(--deep-blue);
+        box-shadow: 0 0 0 3px rgba(18, 59, 99, 0.08);
+    }
+
+    .view-btn {
+        height: 46px;
+        padding: 0 20px;
+        border: none;
+        border-radius: 7px;
+        background: var(--deep-blue);
+        color: var(--white);
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .view-btn:hover {
+        background: var(--deep-blue-dark);
+    }
+
+    /* STUDENT CARD */
+
+    .student-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 22px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+    }
+
+    .student-icon {
+        width: 64px;
+        height: 64px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 27px;
+    }
+
+    .student-info h2 {
+        margin: 0 0 5px;
+        color: var(--deep-blue);
+        font-size: 23px;
+    }
+
+    .student-info p {
+        margin: 3px 0;
+        color: var(--text-secondary);
+        font-size: 18px;
+    }
+
+    /* EXAM INFO */
+
+    .exam-card {
+        background: var(--deep-blue-light);
+        border: 1px solid #D5E4EF;
+        border-radius: 10px;
+        padding: 20px 22px;
+        margin-bottom: 20px;
+    }
+
+    .exam-card h2 {
+        margin: 0 0 7px;
+        color: var(--deep-blue);
+        font-size: 23px;
+    }
+
+    .exam-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 22px;
+        color: var(--text-secondary);
+        font-size: 18px;
+    }
+
+    .exam-meta strong {
+        color: var(--deep-blue-dark);
+    }
+
+    /* SUMMARY */
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-bottom: 20px;
+    }
+
+    .summary-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 21px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+    }
+
+    .summary-icon {
+        width: 52px;
+        height: 52px;
+        flex-shrink: 0;
+        border-radius: 9px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+    }
+
+    .summary-card:nth-child(2) .summary-icon {
+        background: var(--orange-light);
+        color: var(--orange-hover);
+    }
+
+    .summary-card:nth-child(3) .summary-icon {
+        background: #EAF7EF;
+        color: var(--success);
+    }
+
+    .summary-label {
+        margin-bottom: 4px;
+        color: var(--text-secondary);
+        font-size: 18px;
+    }
+
+    .summary-value {
+        color: var(--deep-blue);
+        font-size: 26px;
+        font-weight: 700;
+    }
+
+    /* RESULT CARD */
+
+    .result-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+    }
+
+    .result-header {
+        padding: 19px 22px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .result-title {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: var(--deep-blue);
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .published-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 13px;
+        border-radius: 20px;
+        background: #EAF7EF;
+        color: var(--success);
+        font-size: 17px;
+        font-weight: 600;
+    }
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .result-table {
+        width: 100%;
+        min-width: 900px;
+        border-collapse: collapse;
+    }
+
+    .result-table th {
+        padding: 15px 16px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue-dark);
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+        font-size: 18px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .result-table td {
+        padding: 16px;
+        border-bottom: 1px solid var(--border);
+        color: var(--text-primary);
+        font-size: 18px;
+        vertical-align: middle;
+    }
+
+    .result-table tbody tr:hover {
+        background: #FAFCFE;
+    }
+
+    .subject-name {
+        color: var(--deep-blue);
+        font-weight: 700;
+    }
+
+    .marks {
+        color: var(--deep-blue);
+        font-weight: 700;
+    }
+
+    .percentage {
+        font-weight: 700;
+    }
+
+    .grade-badge {
+        min-width: 50px;
+        padding: 7px 10px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 7px;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    /* REPORT BUTTON */
+
+    .report-area {
+        padding: 20px 22px;
+        display: flex;
+        justify-content: flex-end;
+        border-top: 1px solid var(--border);
+    }
+
+    .report-btn {
+        min-height: 46px;
+        padding: 0 19px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border-radius: 7px;
+        background: var(--orange);
+        border: 1px solid var(--orange);
+        color: var(--white);
+        text-decoration: none;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .report-btn:hover {
+        background: var(--orange-hover);
+        border-color: var(--orange-hover);
+    }
+
+    /* EMPTY */
+
+    .empty-state {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 70px 20px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+    }
+
+    .empty-icon {
+        width: 72px;
+        height: 72px;
+        margin: 0 auto 16px;
+        border-radius: 50%;
+        background: var(--deep-blue-light);
+        color: var(--deep-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 29px;
+    }
+
+    .empty-state h3 {
+        margin: 0 0 8px;
+        color: var(--deep-blue);
+        font-size: 22px;
+    }
+
+    .empty-state p {
+        margin: 0;
+        color: var(--text-secondary);
+        font-size: 18px;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 900px) {
+        .summary-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .selector-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .form-group {
+            min-width: 100%;
+        }
+
+        .view-btn {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 700px) {
+        .results-page {
+            padding: 16px;
+        }
+
+        .page-header {
+            align-items: flex-start;
+        }
+
+        .heading-area h1 {
+            font-size: 24px;
+        }
+
+        .student-card {
+            align-items: flex-start;
+        }
+
+        .exam-meta {
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .result-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .report-area {
+            justify-content: stretch;
+        }
+
+        .report-btn {
+            width: 100%;
+        }
+    }
+</style>
+
+
+<div class="results-page">
+
+    <!-- =========================
+         PAGE HEADER
+    ========================== -->
+
+    <div class="page-header">
+
+        <div class="heading-area">
+
+            <div class="heading-icon">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+
+            <div>
+
+                <h1>
+                    My Results
+                </h1>
+
+                <p>
+                    View your published examination results
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         EXAM SELECTOR
+    ========================== -->
+
+    <div class="selector-card">
+
+        <div class="selector-title">
+            <i class="fa-solid fa-filter"></i>
+            Select Examination
+        </div>
+
+        <form method="get">
+
+            <div class="selector-form">
+
+                <div class="form-group">
+
+                    <label for="examination">
+                        Examination
+                    </label>
+
+                    <select
+                        id="examination"
+                        name="examination"
+                    >
+
+                        <option value="">
+                            Select Examination
+                        </option>
+
+                        {% for exam in examinations %}
+
+                            <option
+                                value="{{ exam.pk }}"
+                                {% if selected_examination and selected_examination.pk == exam.pk %}
+                                    selected
+                                {% elif request.GET.examination == exam.pk|stringformat:"s" %}
+                                    selected
+                                {% endif %}
+                            >
+
+                                {{ exam.exam_name }}
+
+                                {% if exam.academic_year %}
+                                    - {{ exam.academic_year }}
+                                {% endif %}
+
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="view-btn"
+                >
+                    <i class="fa-solid fa-eye"></i>
+                    View Result
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    {% if student %}
+
+        <!-- =========================
+             STUDENT INFORMATION
+        ========================== -->
+
+        <div class="student-card">
+
+            <div class="student-icon">
+                <i class="fa-solid fa-user-graduate"></i>
+            </div>
+
+            <div class="student-info">
+
+                <h2>
+
+                    {% if student.full_name %}
+
+                        {{ student.full_name }}
+
+                    {% else %}
+
+                        {{ student.first_name }}
+                        {{ student.last_name }}
+
+                    {% endif %}
+
+                </h2>
+
+
+                {% if student.admission_id %}
+
+                    <p>
+                        <strong>Admission ID:</strong>
+                        {{ student.admission_id }}
+                    </p>
+
+                {% elif student.application_id %}
+
+                    <p>
+                        <strong>Admission ID:</strong>
+                        {{ student.application_id }}
+                    </p>
+
+                {% endif %}
+
+
+                {% if student.class_section %}
+
+                    <p>
+                        <strong>Class:</strong>
+                        {{ student.class_section }}
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+
+    {% if selected_examination %}
+
+        <!-- =========================
+             EXAMINATION INFORMATION
+        ========================== -->
+
+        <div class="exam-card">
+
+            <h2>
+                {{ selected_examination.exam_name }}
+            </h2>
+
+            <div class="exam-meta">
+
+                {% if selected_examination.exam_type %}
+
+                    <span>
+                        <strong>Type:</strong>
+                        {{ selected_examination.exam_type|title }}
+                    </span>
+
+                {% endif %}
+
+
+                {% if selected_examination.academic_year %}
+
+                    <span>
+                        <strong>Academic Year:</strong>
+                        {{ selected_examination.academic_year }}
+                    </span>
+
+                {% endif %}
+
+
+                {% if selected_examination.start_date %}
+
+                    <span>
+                        <strong>Start:</strong>
+                        {{ selected_examination.start_date|date:"d M Y" }}
+                    </span>
+
+                {% endif %}
+
+
+                {% if selected_examination.end_date %}
+
+                    <span>
+                        <strong>End:</strong>
+                        {{ selected_examination.end_date|date:"d M Y" }}
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             RESULT SUMMARY
+        ========================== -->
+
+        <div class="summary-grid">
+
+            <div class="summary-card">
+
+                <div class="summary-icon">
+                    <i class="fa-solid fa-star"></i>
+                </div>
+
+                <div>
+
+                    <div class="summary-label">
+                        Total Obtained
+                    </div>
+
+                    <div class="summary-value">
+
+                        {% if total_obtained %}
+                            {{ total_obtained }}
+                        {% else %}
+                            0
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon">
+                    <i class="fa-solid fa-chart-column"></i>
+                </div>
+
+                <div>
+
+                    <div class="summary-label">
+                        Maximum Marks
+                    </div>
+
+                    <div class="summary-value">
+
+                        {% if total_maximum %}
+                            {{ total_maximum }}
+                        {% else %}
+                            0
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon">
+                    <i class="fa-solid fa-percent"></i>
+                </div>
+
+                <div>
+
+                    <div class="summary-label">
+                        Overall Percentage
+                    </div>
+
+                    <div class="summary-value">
+
+                        {% if overall_percentage %}
+                            {{ overall_percentage }}%
+                        {% else %}
+                            0%
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             RESULT TABLE
+        ========================== -->
+
+        <div class="result-card">
+
+            <div class="result-header">
+
+                <div class="result-title">
+
+                    <i class="fa-solid fa-table-list"></i>
+
+                    Subject-wise Result
+
+                </div>
+
+
+                <div class="published-badge">
+
+                    <i class="fa-solid fa-circle-check"></i>
+
+                    Published
+
+                </div>
+
+            </div>
+
+
+            {% if results %}
+
+                <div class="table-wrapper">
+
+                    <table class="result-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>#</th>
+
+                                <th>Subject</th>
+
+                                <th>Subject Code</th>
+
+                                <th>Maximum Marks</th>
+
+                                <th>Obtained Marks</th>
+
+                                <th>Percentage</th>
+
+                                <th>Grade</th>
+
+                                <th>Status</th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for result in results %}
+
+                                <tr>
+
+                                    <td>
+                                        {{ forloop.counter }}
+                                    </td>
+
+
+                                    <td>
+
+                                        <span class="subject-name">
+
+                                            {% if result.subject.subject_name %}
+                                                {{ result.subject.subject_name }}
+                                            {% else %}
+                                                {{ result.subject }}
+                                            {% endif %}
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        {% if result.subject.subject_code %}
+
+                                            {{ result.subject.subject_code }}
+
+                                        {% elif result.subject.code %}
+
+                                            {{ result.subject.code }}
+
+                                        {% else %}
+
+                                            —
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <td>
+                                        <strong>
+                                            {{ result.max_marks }}
+                                        </strong>
+                                    </td>
+
+
+                                    <td>
+
+                                        <span class="marks">
+                                            {{ result.obtained_marks }}
+                                        </span>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <span class="percentage">
+
+                                            {% if result.percentage %}
+                                                {{ result.percentage }}%
+                                            {% else %}
+                                                —
+                                            {% endif %}
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <span class="grade-badge">
+
+                                            {% if result.grade %}
+                                                {{ result.grade }}
+                                            {% else %}
+                                                —
+                                            {% endif %}
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <span class="published-badge">
+
+                                            <i class="fa-solid fa-circle-check"></i>
+
+                                            Published
+
+                                        </span>
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <!-- =========================
+                     REPORT CARD
+                ========================== -->
+
+                {% if student %}
+
+                    <div class="report-area">
+
+                        <a
+                            href="{% url 'exams:report_card' student.pk %}?examination={{ selected_examination.pk }}"
+                            class="report-btn"
+                        >
+
+                            <i class="fa-solid fa-file-lines"></i>
+
+                            View / Print Report Card
+
+                        </a>
+
+                    </div>
+
+                {% endif %}
+
+
+            {% else %}
+
+                <div class="empty-state">
+
+                    <div class="empty-icon">
+                        <i class="fa-solid fa-file-circle-xmark"></i>
+                    </div>
+
+                    <h3>
+                        Result Not Available
+                    </h3>
+
+                    <p>
+                        Your result has not been published for this examination yet.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+    {% else %}
+
+        <!-- =========================
+             NO EXAM SELECTED
+        ========================== -->
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                <i class="fa-solid fa-square-poll-vertical"></i>
+            </div>
+
+            <h3>
+                Select an Examination
+            </h3>
+
+            <p>
+                Select an examination above to view your published result.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
